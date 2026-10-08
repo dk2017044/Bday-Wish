@@ -1,12 +1,12 @@
 /* ==========================================================================
    ULTIMATE BIRTHDAY EXPERIENCE - JAVASCRIPT LOGIC
    Microphone Blow Detection, 3D Polaroids, Canvas Scratchers, Multi-Tab Studio,
-   LZ-String URL Compression, Image Compressor, Birthday Countdown & Downloader
+   Customizable Birthday Wishes & Scratch Passes, LZ-String URL Compression
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- STATE CONFIGURATION ---
+    // --- DEFAULT ASSETS & CONFIGURATION ---
     const defaultPhotos = [
         {
             img: 'assets/photo1.jpg',
@@ -30,11 +30,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
+    const defaultCoupons = [
+        {
+            emoji: '🫂',
+            code: 'CODE: BESTIE-FOR-LIFE',
+            title: 'Unlimited Free Hugs',
+            desc: 'Valid 24/7 for whenever you need a listening ear or comforting warm hug!'
+        },
+        {
+            emoji: '☕🍰',
+            code: 'CODE: TREAT-ON-ME',
+            title: 'Midnight Food & Cafe Date',
+            desc: 'All coffee, pastries & late night street food on me, anywhere you choose!'
+        },
+        {
+            emoji: '🧞‍♂️✨',
+            code: 'CODE: WISH-GRANTED-100',
+            title: 'The Universal Wish Pass',
+            desc: 'Ask me for anything — a roadtrip, a movie binge, or a secret favor — no questions asked!'
+        }
+    ];
+
+    // Presets for Scratch Coupons
+    const couponPresets = {
+        couple: [
+            { emoji: '❤️', code: 'CODE: FOREVER-YOURS', title: '1000 Kisses & Cozy Cuddles', desc: 'Redeemable anytime you need warmth, romantic cuddles, and tight embraces!' },
+            { emoji: '🍕🎬', code: 'CODE: DATE-NIGHT', title: 'Candlelight Dinner & Movie Night', desc: 'Your choice of favorite food, dessert & romantic movie, completely on me!' },
+            { emoji: '🌟💍', code: 'CODE: SOULMATE-WISH', title: '1 Dream Vacation / Special Wish', desc: 'Ask me for any surprise dream or weekend getaway — I promise to make it happen!' }
+        ],
+        bestie: [
+            { emoji: '📞😂', code: 'CODE: 2AM-CALL', title: '2 AM Gossip & Late Night Call', desc: 'Guaranteed to pick up anytime you have tea to spill or need to rant!' },
+            { emoji: '🍟🥤', code: 'CODE: FREE-TREAT', title: 'Unlimited Fast Food & Momos Treat', desc: 'Burgers, fries, pizza or street food on me whenever your cravings strike!' },
+            { emoji: '🚗🗺️', code: 'CODE: ROADTRIP', title: 'Impulsive Road Trip Adventure', desc: 'No excuses, we just get in the car and drive with our favorite playlist on blast!' }
+        ],
+        sweet: [
+            { emoji: '☕📚', code: 'CODE: COZY-VIBE', title: 'Peaceful Cafe & Coffee Date', desc: 'A slow relaxing afternoon with iced matcha, pastries, and peaceful conversation.' },
+            { emoji: '🎁✨', code: 'CODE: SURPRISE-GIFT', title: 'A Mystery Surprise Gift', desc: 'A thoughtfully chosen present delivered straight to your doorstep!' },
+            { emoji: '🌈💫', code: 'CODE: WISH-MAGIC', title: 'The Golden Wish Pass', desc: '1 unconditional favor or wish granted anytime with zero questions asked!' }
+        ]
+    };
+
     const state = {
         recipientName: 'Ananya',
         milestone: 'Level 21',
-        birthdate: '', // YYYY-MM-DD
+        birthdate: '',
         senderName: 'Your Best Friend 💛',
+        heroWish: 'May your day be filled with endless magic, radiant smiles, and unforgettable moments!',
+        coupons: JSON.parse(JSON.stringify(defaultCoupons)),
         letterText: `Happy Birthday to one of the most wonderfully authentic and radiant souls I know! 🌟
 
 Looking back at all the laughter we've shared, the late-night talks, and the quiet moments where no words were needed, I'm reminded of just how blessed everyone in your orbit is to have you. You bring warmth into rooms just by stepping into them.
@@ -111,6 +153,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     const inputMilestone = document.getElementById('input-milestone');
     const inputBirthdate = document.getElementById('input-birthdate');
     const inputSender = document.getElementById('input-sender-name');
+    const inputHeroWishes = document.getElementById('input-hero-wishes');
     const inputLetterMsg = document.getElementById('input-letter-msg');
 
     // Sharing Actions
@@ -320,22 +363,18 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
             const bdayParts = state.birthdate.split('-');
             const targetYear = now.getFullYear();
 
-            // Birthday this year
             let target = new Date(targetYear, parseInt(bdayParts[1]) - 1, parseInt(bdayParts[2]), 0, 0, 0);
 
-            // If birthday already passed this year by more than 1 day, target next year
             const diffFromToday = now - target;
             if (diffFromToday > 24 * 60 * 60 * 1000) {
                 target = new Date(targetYear + 1, parseInt(bdayParts[1]) - 1, parseInt(bdayParts[2]), 0, 0, 0);
             }
 
-            // Friendly date string
             const options = { month: 'long', day: 'numeric' };
             const prettyDate = target.toLocaleDateString(undefined, options);
             if (bdayFormattedDate) bdayFormattedDate.textContent = `Birthday: ${prettyDate}`;
             if (gateBdayTag) gateBdayTag.textContent = `🎂 Celebration: ${prettyDate}`;
 
-            // Check if TODAY is the birthday!
             const isToday = (now.getDate() === target.getDate() && now.getMonth() === target.getMonth());
 
             if (isToday) {
@@ -528,6 +567,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         let isDrawing = false;
 
         function drawFoil() {
+            ctx.globalCompositeOperation = 'source-over';
             const grad = ctx.createLinearGradient(0, 0, width, height);
             if (isGolden) {
                 grad.addColorStop(0, '#fef08a');
@@ -808,7 +848,6 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         });
     }
 
-    // Hook up 4 photo inputs
     const photoFileInputs = document.querySelectorAll('.photo-file-input');
     photoFileInputs.forEach(input => {
         input.addEventListener('change', async (e) => {
@@ -820,11 +859,9 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 const compressedDataUrl = await compressImageFile(file);
                 state.photos[idx].img = compressedDataUrl;
 
-                // Update Studio Thumbnail preview
                 const thumb = document.getElementById(`thumb-prev-${idx + 1}`);
                 if (thumb) thumb.src = compressedDataUrl;
 
-                // Update Clothesline Hanging Polaroid directly
                 const liveImg = document.getElementById(`polaroid-img-${idx + 1}`);
                 if (liveImg) liveImg.src = compressedDataUrl;
 
@@ -859,13 +896,107 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     }
 
     // ==========================================
-    // 15. APPLY CUSTOMIZATIONS TO DOM
+    // 15. SCRATCH COUPONS PRESETS & EDITOR LOGIC
+    // ==========================================
+    function applyCouponPreset(presetKey) {
+        const preset = couponPresets[presetKey];
+        if (!preset) return;
+
+        state.coupons = JSON.parse(JSON.stringify(preset));
+
+        // Sync inputs in modal
+        for (let i = 1; i <= 3; i++) {
+            const c = state.coupons[i - 1];
+            const emojiInp = document.getElementById(`input-coupon-emoji-${i}`);
+            const codeInp = document.getElementById(`input-coupon-code-${i}`);
+            const titleInp = document.getElementById(`input-coupon-title-${i}`);
+            const descInp = document.getElementById(`input-coupon-desc-${i}`);
+
+            if (emojiInp) emojiInp.value = c.emoji;
+            if (codeInp) codeInp.value = c.code;
+            if (titleInp) titleInp.value = c.title;
+            if (descInp) descInp.value = c.desc;
+        }
+
+        renderCouponsInDOM();
+        if (window.birthdayAudio) window.birthdayAudio.playChime();
+    }
+
+    const presetCoupleBtn = document.getElementById('preset-couple-btn');
+    const presetBestieBtn = document.getElementById('preset-bestie-btn');
+    const presetSweetBtn = document.getElementById('preset-sweet-btn');
+
+    if (presetCoupleBtn) presetCoupleBtn.addEventListener('click', () => applyCouponPreset('couple'));
+    if (presetBestieBtn) presetBestieBtn.addEventListener('click', () => applyCouponPreset('bestie'));
+    if (presetSweetBtn) presetSweetBtn.addEventListener('click', () => applyCouponPreset('sweet'));
+
+    function renderCouponsInDOM() {
+        for (let i = 1; i <= 3; i++) {
+            const c = state.coupons[i - 1];
+            const emojiEl = document.getElementById(`coupon-emoji-${i}`);
+            const codeEl = document.getElementById(`coupon-code-${i}`);
+            const titleEl = document.getElementById(`coupon-title-${i}`);
+            const descEl = document.getElementById(`coupon-desc-${i}`);
+
+            if (emojiEl) emojiEl.textContent = c.emoji;
+            if (codeEl) codeEl.textContent = c.code;
+            if (titleEl) titleEl.textContent = c.title;
+            if (descEl) descEl.textContent = c.desc;
+        }
+    }
+
+    // Real-time coupon inputs
+    for (let i = 1; i <= 3; i++) {
+        const emojiInp = document.getElementById(`input-coupon-emoji-${i}`);
+        const codeInp = document.getElementById(`input-coupon-code-${i}`);
+        const titleInp = document.getElementById(`input-coupon-title-${i}`);
+        const descInp = document.getElementById(`input-coupon-desc-${i}`);
+
+        if (emojiInp) {
+            emojiInp.addEventListener('input', () => {
+                state.coupons[i - 1].emoji = emojiInp.value;
+                const el = document.getElementById(`coupon-emoji-${i}`);
+                if (el) el.textContent = emojiInp.value;
+            });
+        }
+        if (codeInp) {
+            codeInp.addEventListener('input', () => {
+                state.coupons[i - 1].code = codeInp.value;
+                const el = document.getElementById(`coupon-code-${i}`);
+                if (el) el.textContent = codeInp.value;
+            });
+        }
+        if (titleInp) {
+            titleInp.addEventListener('input', () => {
+                state.coupons[i - 1].title = titleInp.value;
+                const el = document.getElementById(`coupon-title-${i}`);
+                if (el) el.textContent = titleInp.value;
+            });
+        }
+        if (descInp) {
+            descInp.addEventListener('input', () => {
+                state.coupons[i - 1].desc = descInp.value;
+                const el = document.getElementById(`coupon-desc-${i}`);
+                if (el) el.textContent = descInp.value;
+            });
+        }
+    }
+
+    // ==========================================
+    // 16. APPLY ALL CUSTOMIZATIONS TO DOM
     // ==========================================
     function applyCustomizations() {
         state.recipientName = inputRecipient.value.trim() || 'Bestie';
         state.milestone = inputMilestone.value.trim() || 'Level 21';
         state.birthdate = inputBirthdate.value || state.birthdate;
         state.senderName = inputSender.value.trim() || 'Your Friend';
+
+        const customHeroWish = inputHeroWishes.value.trim();
+        if (customHeroWish) {
+            state.heroWish = customHeroWish;
+            const heroSubtitle = document.getElementById('hero-tagline-text');
+            if (heroSubtitle) heroSubtitle.textContent = customHeroWish;
+        }
 
         const customLetter = inputLetterMsg.value.trim();
         if (customLetter) {
@@ -900,6 +1031,9 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
             if (noteEl && p.note) noteEl.textContent = p.note;
         }
 
+        // Scratch Coupons in DOM
+        renderCouponsInDOM();
+
         // Theme
         const checkedRadio = document.querySelector('input[name="modal-theme"]:checked');
         if (checkedRadio) applyTheme(checkedRadio.value);
@@ -915,7 +1049,23 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         inputMilestone.value = state.milestone;
         inputBirthdate.value = state.birthdate;
         inputSender.value = state.senderName;
+        inputHeroWishes.value = state.heroWish;
         inputLetterMsg.value = state.letterText;
+
+        // Sync coupons inputs
+        for (let i = 1; i <= 3; i++) {
+            const c = state.coupons[i - 1];
+            const emojiInp = document.getElementById(`input-coupon-emoji-${i}`);
+            const codeInp = document.getElementById(`input-coupon-code-${i}`);
+            const titleInp = document.getElementById(`input-coupon-title-${i}`);
+            const descInp = document.getElementById(`input-coupon-desc-${i}`);
+
+            if (emojiInp) emojiInp.value = c.emoji;
+            if (codeInp) codeInp.value = c.code;
+            if (titleInp) titleInp.value = c.title;
+            if (descInp) descInp.value = c.desc;
+        }
+
         customizerModal.classList.remove('hidden');
     });
 
@@ -931,7 +1081,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     });
 
     // ==========================================
-    // 16. LZ-STRING COMPRESSED SHARING URL
+    // 17. LZ-STRING COMPRESSED SHARING URL
     // ==========================================
     function generateShareUrl() {
         applyCustomizations();
@@ -942,6 +1092,8 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
             bday: state.birthdate,
             from: state.senderName,
             theme: state.currentTheme,
+            heroWish: state.heroWish,
+            coupons: state.coupons,
             letter: state.letterText,
             photos: state.photos.map(p => ({
                 img: p.img,
@@ -979,21 +1131,19 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
 
     shareWhatsappBtn.addEventListener('click', () => {
         const shareUrl = generateShareUrl();
-        const msg = `🎂 Hey ${state.recipientName}! I created a special birthday surprise website for you with our photos, cake & secret coupons! Open your surprise here: ${shareUrl}`;
+        const msg = `🎂 Hey ${state.recipientName}! I created a special birthday surprise website for you with our photos, cake & secret scratch passes! Open your surprise here: ${shareUrl}`;
         const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
         window.open(waUrl, '_blank');
     });
 
     // ==========================================
-    // 17. DOWNLOAD STANDALONE HTML FILE
+    // 18. DOWNLOAD STANDALONE HTML FILE
     // ==========================================
     downloadHtmlBtn.addEventListener('click', () => {
         applyCustomizations();
 
-        // Get full HTML document
         let fullHtml = document.documentElement.outerHTML;
 
-        // Embed the state directly into the standalone HTML file so it works anywhere offline
         const stateInjection = `
         <script>
             window.__INITIAL_STATE__ = ${JSON.stringify(state)};
@@ -1014,17 +1164,15 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     });
 
     // ==========================================
-    // 18. UNPACK SHARED URL DATA ON LOAD
+    // 19. UNPACK SHARED URL DATA ON LOAD
     // ==========================================
     function unpackSharedData() {
-        // 1. Check for standalone injected state
         if (window.__INITIAL_STATE__) {
             Object.assign(state, window.__INITIAL_STATE__);
             applyCustomizations();
             return;
         }
 
-        // 2. Check for Hash (#d=...)
         const hash = window.location.hash;
         if (hash && hash.startsWith('#d=')) {
             const compressed = hash.substring(3);
@@ -1043,7 +1191,12 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                     if (data.bday) state.birthdate = data.bday;
                     if (data.from) state.senderName = data.from;
                     if (data.theme) state.currentTheme = data.theme;
+                    if (data.heroWish) state.heroWish = data.heroWish;
                     if (data.letter) state.letterText = data.letter;
+
+                    if (data.coupons && Array.isArray(data.coupons)) {
+                        state.coupons = data.coupons;
+                    }
 
                     if (data.photos && Array.isArray(data.photos)) {
                         data.photos.forEach((p, idx) => {
@@ -1065,13 +1218,14 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
             }
         }
 
-        // 3. Fallback: URL Search Params
+        // Fallback: URL Search Params
         const params = new URLSearchParams(window.location.search);
         if (params.has('name')) state.recipientName = params.get('name');
         if (params.has('milestone')) state.milestone = params.get('milestone');
         if (params.has('bday')) state.birthdate = params.get('bday');
         if (params.has('from')) state.senderName = params.get('from');
         if (params.has('theme')) state.currentTheme = params.get('theme');
+        if (params.has('wish')) state.heroWish = params.get('wish');
         if (params.has('msg')) {
             try { state.letterText = decodeURIComponent(params.get('msg')); }
             catch (e) { state.letterText = params.get('msg'); }

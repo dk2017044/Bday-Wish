@@ -133,6 +133,7 @@
                 <span class="gradient-text recipient-name-display" id="hero-name-heading">Ananya</span>! 🎉
             </h1>
 
+            <!-- Customizable Birthday Wishes Tagline -->
             <p class="hero-subtitle" id="hero-tagline-text">
                 May your day be filled with endless magic, radiant smiles, and unforgettable moments!
             </p>
@@ -247,7 +248,7 @@
                         <span>🔪 Cut the Cake!</span>
                     </button>
                     <div class="wish-granted-banner hidden" id="wish-banner">
-                        <span>✨ Your Birthday Wish Has Been Sent to the Stars! ✨</span>
+                        <span id="wish-banner-text">✨ Your Birthday Wish Has Been Sent to the Stars! ✨</span>
                     </div>
                 </div>
             </div>
@@ -286,7 +287,7 @@
                                 <div class="polaroid-front">
                                     <div class="tape-strip"></div>
                                     <div class="photo-frame">
-                                        <img src="assets/photo1.jpg" alt="Golden Hour Beach Memories" class="polaroid-img" id="polaroid-img-1" loading="lazy">
+                                        <img src="assets/photo1.jpg" alt="Polaroid 1" class="polaroid-img" id="polaroid-img-1" loading="lazy">
                                     </div>
                                     <div class="polaroid-caption">
                                         <p class="handwritten" id="caption-1">Golden Hour Beach '23 ✨</p>
@@ -314,7 +315,7 @@
                                 <div class="polaroid-front">
                                     <div class="tape-strip"></div>
                                     <div class="photo-frame">
-                                        <img src="assets/photo2.jpg" alt="Cozy Cafe Memories" class="polaroid-img" id="polaroid-img-2" loading="lazy">
+                                        <img src="assets/photo2.jpg" alt="Polaroid 2" class="polaroid-img" id="polaroid-img-2" loading="lazy">
                                     </div>
                                     <div class="polaroid-caption">
                                         <p class="handwritten" id="caption-2">Celebrate & Joy ☕🧁</p>
@@ -342,7 +343,7 @@
                                 <div class="polaroid-front">
                                     <div class="tape-strip"></div>
                                     <div class="photo-frame">
-                                        <img src="assets/photo3.jpg" alt="Party Confetti Fun" class="polaroid-img" id="polaroid-img-3" loading="lazy">
+                                        <img src="assets/photo3.jpg" alt="Polaroid 3" class="polaroid-img" id="polaroid-img-3" loading="lazy">
                                     </div>
                                     <div class="polaroid-caption">
                                         <p class="handwritten" id="caption-3">Pure Chaos & Confetti 🥳</p>
@@ -370,7 +371,7 @@
                                 <div class="polaroid-front">
                                     <div class="tape-strip"></div>
                                     <div class="photo-frame">
-                                        <img src="assets/photo4.jpg" alt="Summer Picnic Days" class="polaroid-img" id="polaroid-img-4" loading="lazy">
+                                        <img src="assets/photo4.jpg" alt="Polaroid 4" class="polaroid-img" id="polaroid-img-4" loading="lazy">
                                     </div>
                                     <div class="polaroid-caption">
                                         <p class="handwritten" id="caption-4">Summer Days & Daisies 🌼</p>
@@ -405,42 +406,42 @@
             <div class="coupons-grid">
                 
                 <!-- Coupon 1 -->
-                <div class="coupon-ticket">
+                <div class="coupon-ticket" id="coupon-ticket-1">
                     <div class="ticket-cutout left"></div>
                     <div class="ticket-cutout right"></div>
                     <div class="ticket-secret-content">
                         <span class="coupon-emoji" id="coupon-emoji-1">🫂</span>
                         <h3 class="coupon-title" id="coupon-title-1">Unlimited Free Hugs</h3>
                         <p class="coupon-text" id="coupon-desc-1">Valid 24/7 for whenever you need a listening ear or comforting warm hug!</p>
-                        <span class="coupon-code">CODE: BESTIE-FOR-LIFE</span>
+                        <span class="coupon-code" id="coupon-code-1">CODE: BESTIE-FOR-LIFE</span>
                     </div>
                     <canvas class="scratch-canvas" id="scratch-canvas-1" width="300" height="190"></canvas>
                     <div class="scratch-status" id="scratch-status-1">Scratch to reveal ✨</div>
                 </div>
 
                 <!-- Coupon 2 -->
-                <div class="coupon-ticket">
+                <div class="coupon-ticket" id="coupon-ticket-2">
                     <div class="ticket-cutout left"></div>
                     <div class="ticket-cutout right"></div>
                     <div class="ticket-secret-content">
                         <span class="coupon-emoji" id="coupon-emoji-2">☕🍰</span>
                         <h3 class="coupon-title" id="coupon-title-2">Midnight Food & Cafe Date</h3>
                         <p class="coupon-text" id="coupon-desc-2">All coffee, pastries & late night street food on me, anywhere you choose!</p>
-                        <span class="coupon-code">CODE: TREAT-ON-ME</span>
+                        <span class="coupon-code" id="coupon-code-2">CODE: TREAT-ON-ME</span>
                     </div>
                     <canvas class="scratch-canvas" id="scratch-canvas-2" width="300" height="190"></canvas>
                     <div class="scratch-status" id="scratch-status-2">Scratch to reveal ✨</div>
                 </div>
 
                 <!-- Coupon 3 (Golden Ticket) -->
-                <div class="coupon-ticket golden-ticket">
+                <div class="coupon-ticket golden-ticket" id="coupon-ticket-3">
                     <div class="ticket-cutout left"></div>
                     <div class="ticket-cutout right"></div>
                     <div class="ticket-secret-content">
                         <span class="coupon-emoji" id="coupon-emoji-3">🧞‍♂️✨</span>
                         <h3 class="coupon-title" id="coupon-title-3">The Universal Wish Pass</h3>
                         <p class="coupon-text" id="coupon-desc-3">Ask me for anything — a roadtrip, a movie binge, or a secret favor — no questions asked!</p>
-                        <span class="coupon-code">CODE: WISH-GRANTED-100</span>
+                        <span class="coupon-code" id="coupon-code-3">CODE: WISH-GRANTED-100</span>
                     </div>
                     <canvas class="scratch-canvas" id="scratch-canvas-3" width="300" height="190"></canvas>
                     <div class="scratch-status" id="scratch-status-3">Scratch to reveal ✨</div>
@@ -544,15 +545,16 @@
 
             <!-- Studio Navigation Tabs -->
             <div class="studio-tabs-bar">
-                <button class="studio-tab-btn active" data-tab="tab-basics">👤 Basics & Date</button>
-                <button class="studio-tab-btn" data-tab="tab-photos">📸 4 Photos & Memories</button>
+                <button class="studio-tab-btn active" data-tab="tab-basics">👤 Basics & Wishes</button>
+                <button class="studio-tab-btn" data-tab="tab-photos">📸 4 Photos</button>
+                <button class="studio-tab-btn" data-tab="tab-scratch">🎟️ 3 Scratch Passes</button>
                 <button class="studio-tab-btn" data-tab="tab-letter">💌 Love Letter</button>
                 <button class="studio-tab-btn" data-tab="tab-share">🚀 Share Link</button>
             </div>
 
             <div class="modal-body studio-modal-body">
 
-                <!-- TAB 1: BASICS & BIRTHDAY DATE -->
+                <!-- TAB 1: BASICS & BIRTHDAY DATE & WISHES -->
                 <div class="studio-tab-pane active" id="tab-basics">
                     <div class="form-row-2">
                         <!-- Recipient Name -->
@@ -581,6 +583,13 @@
                             <label for="input-sender-name">Your Name / Title *</label>
                             <input type="text" id="input-sender-name" value="Your Best Friend 💛" placeholder="e.g. Rahul, Your Soulmate, Always Yours">
                         </div>
+                    </div>
+
+                    <!-- Main Birthday Wish / Subtitle Tagline Customizer -->
+                    <div class="form-group">
+                        <label for="input-hero-wishes">🌟 Main Birthday Wish / Tagline (Under their name)</label>
+                        <textarea id="input-hero-wishes" rows="2" placeholder="e.g. May your day be filled with endless magic, radiant smiles, and unforgettable moments!">May your day be filled with endless magic, radiant smiles, and unforgettable moments!</textarea>
+                        <span class="input-helper-text">This will be highlighted right under their name in the hero celebration section.</span>
                     </div>
 
                     <!-- Theme Preset Selection -->
@@ -639,7 +648,7 @@
                                 </label>
                             </div>
                             <div class="photo-fields">
-                                <input type="text" class="studio-caption-input" id="input-caption-1" placeholder="Front Caption (e.g. Golden Hour Beach ✨)" value="Golden Hour Beach '23 ✨">
+                                <input type="text" class="studio-caption-input" id="input-caption-1" placeholder="Front Caption" value="Golden Hour Beach '23 ✨">
                                 <textarea class="studio-note-input" id="input-note-1" rows="2" placeholder="Secret Note on Back of Polaroid...">"That evening we ran toward the waves with sparklers in our hands, laughing so hard our ribs ached. Always keep that radiant laughter alive!"</textarea>
                             </div>
                         </div>
@@ -654,7 +663,7 @@
                                 </label>
                             </div>
                             <div class="photo-fields">
-                                <input type="text" class="studio-caption-input" id="input-caption-2" placeholder="Front Caption (e.g. Cute Cafe Date ☕)" value="Celebrate & Joy ☕🧁">
+                                <input type="text" class="studio-caption-input" id="input-caption-2" placeholder="Front Caption" value="Celebrate & Joy ☕🧁">
                                 <textarea class="studio-note-input" id="input-note-2" rows="2" placeholder="Secret Note on Back of Polaroid...">"Our endless cafe conversations over iced matcha and cupcakes. Thank you for always being my safe space and biggest cheerleader."</textarea>
                             </div>
                         </div>
@@ -669,7 +678,7 @@
                                 </label>
                             </div>
                             <div class="photo-fields">
-                                <input type="text" class="studio-caption-input" id="input-caption-3" placeholder="Front Caption (e.g. Pure Chaos 🥳)" value="Pure Chaos & Confetti 🥳">
+                                <input type="text" class="studio-caption-input" id="input-caption-3" placeholder="Front Caption" value="Pure Chaos & Confetti 🥳">
                                 <textarea class="studio-note-input" id="input-note-3" rows="2" placeholder="Secret Note on Back of Polaroid...">"Party hats, confetti in our hair, and zero regrets! No one brings energy and pure fun into a room like you do."</textarea>
                             </div>
                         </div>
@@ -684,8 +693,106 @@
                                 </label>
                             </div>
                             <div class="photo-fields">
-                                <input type="text" class="studio-caption-input" id="input-caption-4" placeholder="Front Caption (e.g. Summer Sunshine 🌼)" value="Summer Days & Daisies 🌼">
+                                <input type="text" class="studio-caption-input" id="input-caption-4" placeholder="Front Caption" value="Summer Days & Daisies 🌼">
                                 <textarea class="studio-note-input" id="input-note-4" rows="2" placeholder="Secret Note on Back of Polaroid...">"Under the warm sun with pastel balloons and wild daisies. Grateful for every single season of life spent together."</textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button type="button" class="btn-primary tab-next-btn" data-next="tab-scratch">Next: 🎟️ Customize Scratch Passes →</button>
+                </div>
+
+                <!-- TAB 3: CUSTOMIZABLE SCRATCH PASSES -->
+                <div class="studio-tab-pane" id="tab-scratch">
+                    <div class="photos-instruction-banner">
+                        <span>🎟️ Customize the 3 secret scratch coupons that your partner scratches with their finger to reveal!</span>
+                    </div>
+
+                    <!-- Preset Quick Pickers -->
+                    <div class="scratch-presets-wrap">
+                        <span class="preset-label">Quick 1-Click Presets:</span>
+                        <div class="preset-pills-row">
+                            <button type="button" class="preset-pill-btn" id="preset-couple-btn">❤️ Romantic Partner</button>
+                            <button type="button" class="preset-pill-btn" id="preset-bestie-btn">👯 Best Friend Chaos</button>
+                            <button type="button" class="preset-pill-btn" id="preset-sweet-btn">🍰 Sweet & Cozy</button>
+                        </div>
+                    </div>
+
+                    <div class="scratch-coupons-editor-grid">
+                        
+                        <!-- Coupon 1 Edit Card -->
+                        <div class="coupon-edit-card">
+                            <div class="coupon-card-top-tag">
+                                <span class="tag-number">Pass #1</span>
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>Emoji Icon</label>
+                                    <input type="text" id="input-coupon-emoji-1" value="🫂" maxlength="4">
+                                </div>
+                                <div class="form-group">
+                                    <label>Coupon Code Tag</label>
+                                    <input type="text" id="input-coupon-code-1" value="CODE: BESTIE-FOR-LIFE">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Pass Title</label>
+                                <input type="text" id="input-coupon-title-1" value="Unlimited Free Hugs">
+                            </div>
+                            <div class="form-group">
+                                <label>Pass Secret Message / Reward</label>
+                                <textarea id="input-coupon-desc-1" rows="2">Valid 24/7 for whenever you need a listening ear or comforting warm hug!</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Coupon 2 Edit Card -->
+                        <div class="coupon-edit-card">
+                            <div class="coupon-card-top-tag">
+                                <span class="tag-number">Pass #2</span>
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>Emoji Icon</label>
+                                    <input type="text" id="input-coupon-emoji-2" value="☕🍰" maxlength="4">
+                                </div>
+                                <div class="form-group">
+                                    <label>Coupon Code Tag</label>
+                                    <input type="text" id="input-coupon-code-2" value="CODE: TREAT-ON-ME">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Pass Title</label>
+                                <input type="text" id="input-coupon-title-2" value="Midnight Food & Cafe Date">
+                            </div>
+                            <div class="form-group">
+                                <label>Pass Secret Message / Reward</label>
+                                <textarea id="input-coupon-desc-2" rows="2">All coffee, pastries & late night street food on me, anywhere you choose!</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Coupon 3 Edit Card (Golden Ticket) -->
+                        <div class="coupon-edit-card golden-edit-card">
+                            <div class="coupon-card-top-tag">
+                                <span class="tag-number">Pass #3 (🌟 Golden Ticket)</span>
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>Emoji Icon</label>
+                                    <input type="text" id="input-coupon-emoji-3" value="🧞‍♂️✨" maxlength="4">
+                                </div>
+                                <div class="form-group">
+                                    <label>Coupon Code Tag</label>
+                                    <input type="text" id="input-coupon-code-3" value="CODE: WISH-GRANTED-100">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Pass Title</label>
+                                <input type="text" id="input-coupon-title-3" value="The Universal Wish Pass">
+                            </div>
+                            <div class="form-group">
+                                <label>Pass Secret Message / Reward</label>
+                                <textarea id="input-coupon-desc-3" rows="2">Ask me for anything — a roadtrip, a movie binge, or a secret favor — no questions asked!</textarea>
                             </div>
                         </div>
 
@@ -694,7 +801,7 @@
                     <button type="button" class="btn-primary tab-next-btn" data-next="tab-letter">Next: 💌 Write Personal Letter →</button>
                 </div>
 
-                <!-- TAB 3: PERSONAL LETTER -->
+                <!-- TAB 4: PERSONAL LETTER -->
                 <div class="studio-tab-pane" id="tab-letter">
                     <div class="form-group">
                         <label for="input-letter-msg">Personal Heartfelt Letter (Displayed inside the 3D unfolding wax-sealed letter)</label>
@@ -704,11 +811,11 @@
                     <button type="button" class="btn-primary tab-next-btn" data-next="tab-share">Next: 🚀 Preview & Generate Link →</button>
                 </div>
 
-                <!-- TAB 4: SHARE LINK & PREVIEW -->
+                <!-- TAB 5: SHARE LINK & PREVIEW -->
                 <div class="studio-tab-pane" id="tab-share">
                     <div class="share-actions-card">
                         <h4>🎉 Your Custom Birthday Website is Ready!</h4>
-                        <p>Apply your custom photos and details live, then generate the shareable link to send to your partner!</p>
+                        <p>Apply your custom photos, wishes, and scratch passes live, then generate the shareable link to send to your partner!</p>
 
                         <div class="modal-actions-wrap">
                             <button type="button" class="btn-primary" id="apply-changes-btn">
@@ -727,7 +834,7 @@
 
                         <!-- Result output box -->
                         <div class="share-link-result hidden" id="share-link-box">
-                            <label>Shareable Link (Compressed with all your photos & messages):</label>
+                            <label>Shareable Link (Compressed with all your photos, scratch passes & messages):</label>
                             <textarea id="share-url-input" rows="3" readonly></textarea>
                             <span class="copy-success-tag" id="copy-success-msg">Copied link to clipboard! Ready to send on WhatsApp ✨</span>
                         </div>

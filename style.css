@@ -129,7 +129,6 @@ body {
 #ambient-canvas { z-index: 1; }
 #celebration-canvas { z-index: 999; }
 
-/* Helper utility */
 .hidden { display: none !important; }
 
 .gradient-text {
@@ -160,7 +159,6 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
 }
 
-/* Vinyl Player Widget */
 .music-widget {
     display: flex;
     align-items: center;
@@ -227,7 +225,6 @@ body {
 
 .icon-btn:hover { transform: scale(1.2); }
 
-/* Equalizer Visualizer */
 .equalizer-bars {
     display: flex;
     align-items: flex-end;
@@ -295,7 +292,6 @@ body {
     background: var(--accent-gradient);
 }
 
-/* Theme menu dropdown */
 .theme-picker-container { position: relative; }
 
 .theme-dropdown {
@@ -395,7 +391,6 @@ body {
     100% { transform: translateY(-6px); }
 }
 
-/* 3D Realistic Envelope */
 .envelope-card {
     position: relative;
     width: 100%;
@@ -438,7 +433,6 @@ body {
     z-index: 0;
 }
 
-/* Golden Wax Seal */
 .wax-seal {
     position: absolute;
     top: 90px;
@@ -647,9 +641,10 @@ body {
 .hero-subtitle {
     font-size: clamp(1.05rem, 2.5vw, 1.35rem);
     color: var(--text-secondary);
-    max-width: 640px;
+    max-width: 680px;
     margin: 0 auto 32px;
     font-weight: 300;
+    line-height: 1.6;
 }
 
 /* Birthday Date & Live Countdown Widget */
@@ -820,7 +815,6 @@ body {
     color: var(--text-muted);
 }
 
-/* 3D Cake Visual Structure */
 .cake-display {
     position: relative;
     width: 280px;
@@ -1650,7 +1644,7 @@ body {
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     width: 100%;
-    max-width: 720px;
+    max-width: 740px;
     max-height: 92vh;
     overflow-y: auto;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px var(--glow-color);
@@ -1887,7 +1881,89 @@ body {
     resize: vertical;
 }
 
-/* --- TAB 4: SHARING PANEL --- */
+/* --- TAB 3: CUSTOMIZABLE SCRATCH PASSES EDITOR --- */
+.scratch-presets-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+}
+
+.preset-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent-gold);
+}
+
+.preset-pills-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.preset-pill-btn {
+    padding: 5px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-pill);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.preset-pill-btn:hover {
+    background: var(--accent-gradient);
+    color: #111;
+    border-color: transparent;
+    transform: translateY(-1px);
+}
+
+.scratch-coupons-editor-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.coupon-edit-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 18px;
+    position: relative;
+}
+
+.golden-edit-card {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(0, 0, 0, 0.2));
+    border-color: rgba(245, 158, 11, 0.35);
+}
+
+.coupon-card-top-tag {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.tag-number {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent-primary);
+}
+
+.golden-edit-card .tag-number {
+    color: var(--accent-gold);
+}
+
+/* --- TAB 5: SHARING PANEL --- */
 .share-actions-card {
     text-align: center;
     padding: 10px 0;
@@ -2080,4 +2156,5 @@ body {
     .countdown-timer-display { gap: 8px; }
     .countdown-unit { min-width: 48px; padding: 6px 6px; }
     .countdown-unit strong { font-size: 1.2rem; }
+    .scratch-presets-wrap { flex-direction: column; align-items: flex-start; }
 }
