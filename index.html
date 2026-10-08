@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday! ✨ A Special Surprise Just For You</title>
+    <meta name="description" content="An interactive, cinematic birthday website experience featuring candle blowing, custom polaroid memories, scratch cards, and heartfelt wishes.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-rosegold" id="main-body">
+
+    <!-- Ambient Sparkle Particle Canvas -->
+    <canvas id="ambient-canvas"></canvas>
+    <!-- Confetti & Fireworks Canvas -->
+    <canvas id="celebration-canvas"></canvas>
+
+    <!-- Floating Top Music & Theme Bar -->
+    <header class="floating-header" id="top-navbar">
+        <div class="header-left">
+            <!-- Vinyl Music Player Widget -->
+            <div class="music-widget" id="music-widget-container">
+                <div class="vinyl-disc" id="vinyl-disc" title="Click to Play/Pause Music">
+                    <div class="vinyl-grooves"></div>
+                    <div class="vinyl-center">🎵</div>
+                </div>
+                <div class="music-info">
+                    <span class="track-title" id="track-name">Happy Birthday Lo-Fi 🎶</span>
+                    <div class="music-controls">
+                        <button class="icon-btn" id="play-pause-btn" aria-label="Play or Pause Music">
+                            <span id="play-icon">▶</span>
+                        </button>
+                        <div class="equalizer-bars" id="audio-equalizer">
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                            <span class="bar"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- Theme Selector Dropdown -->
+            <div class="theme-picker-container">
+                <button class="pill-btn theme-toggle-btn" id="theme-menu-btn">
+                    <span class="theme-icon">🎨</span>
+                    <span class="theme-label" id="current-theme-name">Rose Gold</span>
+                    <span class="chevron">▾</span>
+                </button>
+                <div class="theme-dropdown hidden" id="theme-dropdown-menu">
+                    <button class="theme-option active" data-theme="theme-rosegold">
+                        <span class="swatch rosegold-swatch"></span> Rose Gold Velvet
+                    </button>
+                    <button class="theme-option" data-theme="theme-midnight">
+                        <span class="swatch midnight-swatch"></span> Midnight Stardust
+                    </button>
+                    <button class="theme-option" data-theme="theme-sunset">
+                        <span class="swatch sunset-swatch"></span> Golden Sunset
+                    </button>
+                    <button class="theme-option" data-theme="theme-matcha">
+                        <span class="swatch matcha-swatch"></span> Matcha Dream
+                    </button>
+                </div>
+            </div>
+
+            <!-- Customize Button -->
+            <button class="pill-btn highlight-btn" id="open-customizer-btn">
+                <span>✨ Surprise Studio</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ==============================================
+         SCENE 0: THE MYSTERY ENVELOPE GATE (UNWRAPPING)
+         ============================================== -->
+    <section class="gate-overlay" id="surprise-gate-screen">
+        <div class="gate-content">
+            <div class="gift-box-wrapper">
+                <div class="floating-badge">💌 Special Delivery for You</div>
+                
+                <div class="envelope-card" id="envelope-interactive">
+                    <div class="envelope-flap"></div>
+                    <div class="wax-seal" id="wax-seal-button" title="Click to break the seal and open">
+                        <div class="seal-inner">
+                            <span class="seal-letter" id="seal-letter-text">A</span>
+                            <span class="seal-ring"></span>
+                        </div>
+                    </div>
+                    <div class="envelope-pocket">
+                        <div class="envelope-front-text">
+                            <h2 class="recipient-tag">To: <span class="recipient-name-display">Ananya</span> 💖</h2>
+                            <p class="tagline">A universe of our favorite memories awaits...</p>
+                            <p class="gate-date-display" id="gate-bday-tag">🎂 Special Celebration Day</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="gate-instruction">
+                    <span class="sparkle-pulse">✨</span> 
+                    <strong>Tap the Golden Wax Seal</strong> to unwrap your surprise
+                    <span class="sparkle-pulse">✨</span>
+                </p>
+                <button class="unlock-btn" id="open-surprise-btn">
+                    <span>Unwrap My Surprise 🎁</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==============================================
+         MAIN CINEMATIC BIRTHDAY EXPERIENCE
+         ============================================== -->
+    <main class="main-experience hidden" id="main-content-flow">
+
+        <!-- 1. HERO GREETING SECTION WITH BIRTHDAY DATE & COUNTDOWN -->
+        <section class="hero-section" id="hero-celebration">
+            <div class="hero-badge">
+                <span class="sparkle-icon">✦</span>
+                <span id="milestone-badge-text">Celebrating Level 21</span>
+                <span class="sparkle-icon">✦</span>
+            </div>
+
+            <h1 class="hero-title">
+                Happy Birthday, <br class="mobile-break">
+                <span class="gradient-text recipient-name-display" id="hero-name-heading">Ananya</span>! 🎉
+            </h1>
+
+            <p class="hero-subtitle" id="hero-tagline-text">
+                May your day be filled with endless magic, radiant smiles, and unforgettable moments!
+            </p>
+
+            <!-- Birthday Date & Live Countdown Widget -->
+            <div class="countdown-widget-wrapper" id="bday-countdown-widget">
+                <div class="countdown-header-tag">
+                    <span class="cal-icon">📅</span>
+                    <span id="bday-formatted-date">Birthday: October 15</span>
+                </div>
+                <div class="countdown-timer-display" id="countdown-timer-text">
+                    <span class="countdown-unit" id="unit-days"><strong>0</strong><small>Days</small></span>
+                    <span class="countdown-unit" id="unit-hours"><strong>0</strong><small>Hours</small></span>
+                    <span class="countdown-unit" id="unit-mins"><strong>0</strong><small>Mins</small></span>
+                    <span class="countdown-unit" id="unit-secs"><strong>0</strong><small>Secs</small></span>
+                </div>
+                <p class="countdown-status-note" id="countdown-status-note">Countdown to midnight celebration! ✨</p>
+            </div>
+
+            <div class="scroll-prompt">
+                <span>Scroll down to celebrate</span>
+                <div class="scroll-arrow">↓</div>
+            </div>
+        </section>
+
+        <!-- 2. INTERACTIVE CAKE & CANDLE SECTION -->
+        <section class="section-container cake-section" id="cake-interactive-section">
+            <div class="section-header">
+                <span class="section-tag">Make A Birthday Wish</span>
+                <h2 class="section-title">The Virtual Birthday Cake 🎂</h2>
+                <p class="section-desc">Blow into your microphone or tap the candle to blow it out, then slice the cake!</p>
+            </div>
+
+            <div class="cake-stage-container">
+                <!-- Microphone blowing status bar -->
+                <div class="mic-status-bar" id="mic-status-container">
+                    <button class="mic-btn" id="toggle-mic-btn" title="Enable microphone blow detection">
+                        <span id="mic-icon">🎙️</span>
+                        <span id="mic-label">Enable Mic to Blow</span>
+                    </button>
+                    <div class="mic-meter-wrapper hidden" id="mic-meter-wrapper">
+                        <div class="mic-meter-fill" id="mic-meter-fill"></div>
+                        <span class="mic-hint">Blow gently into your microphone! 💨</span>
+                    </div>
+                </div>
+
+                <!-- 3D Layered Birthday Cake -->
+                <div class="cake-display" id="birthday-cake-wrapper">
+                    <!-- Plate -->
+                    <div class="cake-plate"></div>
+
+                    <!-- Candle -->
+                    <div class="candle-assembly" id="cake-candle" title="Click to blow out the candle!">
+                        <div class="candle-flame" id="flame-element">
+                            <div class="flame-glow"></div>
+                            <div class="flame-core"></div>
+                            <div class="smoke-puff hidden" id="smoke-element"></div>
+                        </div>
+                        <div class="candle-wick"></div>
+                        <div class="candle-stick">
+                            <div class="stripe s1"></div>
+                            <div class="stripe s2"></div>
+                            <div class="stripe s3"></div>
+                        </div>
+                    </div>
+
+                    <!-- Cake Tiers -->
+                    <div class="cake-tier top-tier" id="cake-top-tier">
+                        <div class="frosting-layer">
+                            <span class="frosting-drip d1"></span>
+                            <span class="frosting-drip d2"></span>
+                            <span class="frosting-drip d3"></span>
+                            <span class="frosting-drip d4"></span>
+                            <span class="frosting-drip d5"></span>
+                        </div>
+                        <div class="cherries-row">
+                            <span class="cherry c1">🍒</span>
+                            <span class="cherry c2">🍓</span>
+                            <span class="cherry c3">🍒</span>
+                            <span class="cherry c4">🍓</span>
+                        </div>
+                    </div>
+
+                    <div class="cake-tier middle-tier" id="cake-middle-tier">
+                        <div class="cream-fill"></div>
+                        <div class="sprinkles-grid">
+                            <span class="sprinkle sp1"></span>
+                            <span class="sprinkle sp2"></span>
+                            <span class="sprinkle sp3"></span>
+                            <span class="sprinkle sp4"></span>
+                            <span class="sprinkle sp5"></span>
+                            <span class="sprinkle sp6"></span>
+                        </div>
+                    </div>
+
+                    <div class="cake-tier bottom-tier" id="cake-bottom-tier">
+                        <div class="ribbon-band"></div>
+                    </div>
+
+                    <!-- Cut Slice Effect -->
+                    <div class="cake-slice-cut hidden" id="cake-slice-display">
+                        <div class="slice-inner">🍰 Slice for You!</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons for Cake -->
+                <div class="cake-action-buttons">
+                    <button class="action-btn blow-btn" id="blow-candle-btn">
+                        <span>💨 Tap to Blow Candle</span>
+                    </button>
+                    <button class="action-btn cut-btn hidden" id="cut-cake-btn">
+                        <span>🔪 Cut the Cake!</span>
+                    </button>
+                    <div class="wish-granted-banner hidden" id="wish-banner">
+                        <span>✨ Your Birthday Wish Has Been Sent to the Stars! ✨</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 21ST.DEV STYLE HANGING POLAROID MEMORY LANE -->
+        <section class="section-container polaroid-section" id="polaroid-gallery-section">
+            <div class="section-header">
+                <span class="section-tag">Golden Moments</span>
+                <h2 class="section-title">Memory Lane Clothesline 📸</h2>
+                <p class="section-desc">Hover to tilt, drag to swing, or click any polaroid to flip and view the secret note!</p>
+            </div>
+
+            <!-- Clothesline String with Fairy Lights -->
+            <div class="clothesline-container">
+                <div class="twinkle-lights">
+                    <span class="light-bulb b1"></span>
+                    <span class="light-bulb b2"></span>
+                    <span class="light-bulb b3"></span>
+                    <span class="light-bulb b4"></span>
+                    <span class="light-bulb b5"></span>
+                    <span class="light-bulb b6"></span>
+                    <span class="light-bulb b7"></span>
+                    <span class="light-bulb b8"></span>
+                </div>
+                <div class="line-wire"></div>
+
+                <!-- Polaroids Grid / Hanging Row -->
+                <div class="polaroid-board" id="polaroid-cards-board">
+                    
+                    <!-- Polaroid 1 -->
+                    <div class="polaroid-wrapper" data-index="1" style="--rotation: -4deg; --hang-delay: 0s;">
+                        <div class="peg-clip"></div>
+                        <div class="polaroid-card" id="polaroid-card-1">
+                            <div class="polaroid-inner">
+                                <div class="polaroid-front">
+                                    <div class="tape-strip"></div>
+                                    <div class="photo-frame">
+                                        <img src="assets/photo1.jpg" alt="Golden Hour Beach Memories" class="polaroid-img" id="polaroid-img-1" loading="lazy">
+                                    </div>
+                                    <div class="polaroid-caption">
+                                        <p class="handwritten" id="caption-1">Golden Hour Beach '23 ✨</p>
+                                        <span class="flip-hint">↺ Tap to flip</span>
+                                    </div>
+                                </div>
+                                <div class="polaroid-back">
+                                    <div class="note-paper">
+                                        <h4 class="note-heading">Memory Note 💭</h4>
+                                        <p class="handwritten-body" id="note-1">
+                                            "That evening we ran toward the waves with sparklers in our hands, laughing so hard our ribs ached. Always keep that radiant laughter alive!"
+                                        </p>
+                                        <span class="heart-stamp">💖 Best Day</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Polaroid 2 -->
+                    <div class="polaroid-wrapper" data-index="2" style="--rotation: 3deg; --hang-delay: 0.2s;">
+                        <div class="peg-clip"></div>
+                        <div class="polaroid-card" id="polaroid-card-2">
+                            <div class="polaroid-inner">
+                                <div class="polaroid-front">
+                                    <div class="tape-strip"></div>
+                                    <div class="photo-frame">
+                                        <img src="assets/photo2.jpg" alt="Cozy Cafe Memories" class="polaroid-img" id="polaroid-img-2" loading="lazy">
+                                    </div>
+                                    <div class="polaroid-caption">
+                                        <p class="handwritten" id="caption-2">Celebrate & Joy ☕🧁</p>
+                                        <span class="flip-hint">↺ Tap to flip</span>
+                                    </div>
+                                </div>
+                                <div class="polaroid-back">
+                                    <div class="note-paper">
+                                        <h4 class="note-heading">Cozy Days 🌸</h4>
+                                        <p class="handwritten-body" id="note-2">
+                                            "Our endless cafe conversations over iced matcha and cupcakes. Thank you for always being my safe space and biggest cheerleader."
+                                        </p>
+                                        <span class="heart-stamp">✨ Sweet Soul</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Polaroid 3 -->
+                    <div class="polaroid-wrapper" data-index="3" style="--rotation: -3deg; --hang-delay: 0.4s;">
+                        <div class="peg-clip"></div>
+                        <div class="polaroid-card" id="polaroid-card-3">
+                            <div class="polaroid-inner">
+                                <div class="polaroid-front">
+                                    <div class="tape-strip"></div>
+                                    <div class="photo-frame">
+                                        <img src="assets/photo3.jpg" alt="Party Confetti Fun" class="polaroid-img" id="polaroid-img-3" loading="lazy">
+                                    </div>
+                                    <div class="polaroid-caption">
+                                        <p class="handwritten" id="caption-3">Pure Chaos & Confetti 🥳</p>
+                                        <span class="flip-hint">↺ Tap to flip</span>
+                                    </div>
+                                </div>
+                                <div class="polaroid-back">
+                                    <div class="note-paper">
+                                        <h4 class="note-heading">Birthday Vibes 🎈</h4>
+                                        <p class="handwritten-body" id="note-3">
+                                            "Party hats, confetti in our hair, and zero regrets! No one brings energy and pure fun into a room like you do."
+                                        </p>
+                                        <span class="heart-stamp">⭐ Forever Iconic</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Polaroid 4 -->
+                    <div class="polaroid-wrapper" data-index="4" style="--rotation: 4.5deg; --hang-delay: 0.6s;">
+                        <div class="peg-clip"></div>
+                        <div class="polaroid-card" id="polaroid-card-4">
+                            <div class="polaroid-inner">
+                                <div class="polaroid-front">
+                                    <div class="tape-strip"></div>
+                                    <div class="photo-frame">
+                                        <img src="assets/photo4.jpg" alt="Summer Picnic Days" class="polaroid-img" id="polaroid-img-4" loading="lazy">
+                                    </div>
+                                    <div class="polaroid-caption">
+                                        <p class="handwritten" id="caption-4">Summer Days & Daisies 🌼</p>
+                                        <span class="flip-hint">↺ Tap to flip</span>
+                                    </div>
+                                </div>
+                                <div class="polaroid-back">
+                                    <div class="note-paper">
+                                        <h4 class="note-heading">Sunlit Memories 🌻</h4>
+                                        <p class="handwritten-body" id="note-4">
+                                            "Under the warm sun with pastel balloons and wild daisies. Grateful for every single season of life spent together."
+                                        </p>
+                                        <span class="heart-stamp">💛 Pure Magic</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. SCRATCH-TO-REVEAL SURPRISE COUPONS -->
+        <section class="section-container coupons-section" id="scratch-coupons-section">
+            <div class="section-header">
+                <span class="section-tag">Interactive Gifts</span>
+                <h2 class="section-title">Scratch & Win Birthday Passes 🎟️</h2>
+                <p class="section-desc">Scratch the silver foil with your finger or mouse to claim your special birthday treats!</p>
+            </div>
+
+            <div class="coupons-grid">
+                
+                <!-- Coupon 1 -->
+                <div class="coupon-ticket">
+                    <div class="ticket-cutout left"></div>
+                    <div class="ticket-cutout right"></div>
+                    <div class="ticket-secret-content">
+                        <span class="coupon-emoji" id="coupon-emoji-1">🫂</span>
+                        <h3 class="coupon-title" id="coupon-title-1">Unlimited Free Hugs</h3>
+                        <p class="coupon-text" id="coupon-desc-1">Valid 24/7 for whenever you need a listening ear or comforting warm hug!</p>
+                        <span class="coupon-code">CODE: BESTIE-FOR-LIFE</span>
+                    </div>
+                    <canvas class="scratch-canvas" id="scratch-canvas-1" width="300" height="190"></canvas>
+                    <div class="scratch-status" id="scratch-status-1">Scratch to reveal ✨</div>
+                </div>
+
+                <!-- Coupon 2 -->
+                <div class="coupon-ticket">
+                    <div class="ticket-cutout left"></div>
+                    <div class="ticket-cutout right"></div>
+                    <div class="ticket-secret-content">
+                        <span class="coupon-emoji" id="coupon-emoji-2">☕🍰</span>
+                        <h3 class="coupon-title" id="coupon-title-2">Midnight Food & Cafe Date</h3>
+                        <p class="coupon-text" id="coupon-desc-2">All coffee, pastries & late night street food on me, anywhere you choose!</p>
+                        <span class="coupon-code">CODE: TREAT-ON-ME</span>
+                    </div>
+                    <canvas class="scratch-canvas" id="scratch-canvas-2" width="300" height="190"></canvas>
+                    <div class="scratch-status" id="scratch-status-2">Scratch to reveal ✨</div>
+                </div>
+
+                <!-- Coupon 3 (Golden Ticket) -->
+                <div class="coupon-ticket golden-ticket">
+                    <div class="ticket-cutout left"></div>
+                    <div class="ticket-cutout right"></div>
+                    <div class="ticket-secret-content">
+                        <span class="coupon-emoji" id="coupon-emoji-3">🧞‍♂️✨</span>
+                        <h3 class="coupon-title" id="coupon-title-3">The Universal Wish Pass</h3>
+                        <p class="coupon-text" id="coupon-desc-3">Ask me for anything — a roadtrip, a movie binge, or a secret favor — no questions asked!</p>
+                        <span class="coupon-code">CODE: WISH-GRANTED-100</span>
+                    </div>
+                    <canvas class="scratch-canvas" id="scratch-canvas-3" width="300" height="190"></canvas>
+                    <div class="scratch-status" id="scratch-status-3">Scratch to reveal ✨</div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 5. HEARTFELT UNFOLDING LETTER -->
+        <section class="section-container letter-section" id="heartfelt-letter-section">
+            <div class="section-header">
+                <span class="section-tag">Words From The Heart</span>
+                <h2 class="section-title">A Special Letter For You 💌</h2>
+                <p class="section-desc">Click the wax seal to unfold the handwritten note.</p>
+            </div>
+
+            <div class="letter-interaction-wrapper">
+                <div class="parchment-letter-card folded" id="parchment-letter">
+                    <div class="letter-top-fold"></div>
+                    
+                    <div class="letter-seal-button" id="open-letter-button">
+                        <div class="mini-wax-seal">
+                            <span>Open ✉️</span>
+                        </div>
+                    </div>
+
+                    <div class="parchment-paper-content">
+                        <div class="letter-date" id="letter-current-date">Today & Always</div>
+                        <h3 class="letter-salutation">Dearest <span class="recipient-name-display" id="letter-recipient-name">Ananya</span>,</h3>
+                        
+                        <div class="letter-body-text" id="typed-letter-content">
+                            <p>
+                                Happy Birthday to one of the most wonderfully authentic and radiant souls I know! 🌟
+                            </p>
+                            <p>
+                                Looking back at all the laughter we've shared, the late-night talks, and the quiet moments where no words were needed, I'm reminded of just how blessed everyone in your orbit is to have you. You bring warmth into rooms just by stepping into them.
+                            </p>
+                            <p>
+                                May this new chapter bring you boundless joy, wild adventures, big dreams fulfilled, and the deep peace of knowing how truly cherished you are. Don't ever dim your spark for anyone.
+                            </p>
+                            <p>
+                                Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind self!
+                            </p>
+                        </div>
+
+                        <div class="letter-signature">
+                            <p class="sign-off">With all my love & warmest wishes,</p>
+                            <p class="sender-name-display handwritten" id="letter-sender-name">Your Best Friend 💛</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. BALLOON POPPING & SKY LANTERN FINALE -->
+        <section class="section-container finale-section" id="balloons-finale-section">
+            <div class="section-header">
+                <span class="section-tag">Celebration Playground</span>
+                <h2 class="section-title">Pop Balloons & Release Sky Lanterns 🎈🏮</h2>
+                <p class="section-desc">Tap the rising balloons to pop them, or send your secret birthday wish into the starry sky!</p>
+            </div>
+
+            <div class="finale-interactive-stage" id="balloon-stage">
+                <!-- Floating Balloon Spawner Container -->
+                <div class="balloon-sky" id="balloon-sky-container"></div>
+
+                <!-- Control Bar -->
+                <div class="interactive-controls-row">
+                    <div class="counter-pill">
+                        <span>🎈 Popped:</span>
+                        <strong id="popped-count">0</strong>
+                    </div>
+
+                    <button class="action-btn lantern-trigger-btn" id="release-lantern-btn">
+                        <span>🏮 Release a Sky Lantern Wish</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="app-footer">
+            <p>Made with all the love in the universe for <span class="recipient-name-display">Ananya</span> ✨</p>
+            <p class="creator-credit">Create your own customized surprise anytime using the Surprise Studio above!</p>
+        </footer>
+
+    </main>
+
+    <!-- ==============================================
+         SURPRISE STUDIO MULTI-TAB MODAL (VIRAL CREATOR ENGINE)
+         ============================================== -->
+    <div class="customizer-modal-backdrop hidden" id="customizer-modal">
+        <div class="customizer-modal-window wide-studio">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <span class="modal-badge">✨ Birthday Surprise Studio</span>
+                    <h3>Customize & Share With Your Partner</h3>
+                </div>
+                <button class="close-modal-btn" id="close-customizer-btn" aria-label="Close modal">✕</button>
+            </div>
+
+            <!-- Studio Navigation Tabs -->
+            <div class="studio-tabs-bar">
+                <button class="studio-tab-btn active" data-tab="tab-basics">👤 Basics & Date</button>
+                <button class="studio-tab-btn" data-tab="tab-photos">📸 4 Photos & Memories</button>
+                <button class="studio-tab-btn" data-tab="tab-letter">💌 Love Letter</button>
+                <button class="studio-tab-btn" data-tab="tab-share">🚀 Share Link</button>
+            </div>
+
+            <div class="modal-body studio-modal-body">
+
+                <!-- TAB 1: BASICS & BIRTHDAY DATE -->
+                <div class="studio-tab-pane active" id="tab-basics">
+                    <div class="form-row-2">
+                        <!-- Recipient Name -->
+                        <div class="form-group">
+                            <label for="input-recipient-name">Partner / Recipient's Name *</label>
+                            <input type="text" id="input-recipient-name" value="Ananya" placeholder="e.g. Priya, Aarav, Sarah" required>
+                        </div>
+
+                        <!-- Milestone / Age -->
+                        <div class="form-group">
+                            <label for="input-milestone">Birthday Milestone / Age *</label>
+                            <input type="text" id="input-milestone" value="Level 21" placeholder="e.g. Chapter 22, Forever 18, Sweet 16">
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <!-- Birthday Date Picker -->
+                        <div class="form-group">
+                            <label for="input-birthdate">🎂 Birthday Date (For Countdown) *</label>
+                            <input type="date" id="input-birthdate" required>
+                            <span class="input-helper-text">Select their exact birthdate to display the live countdown timer!</span>
+                        </div>
+
+                        <!-- Sender Name -->
+                        <div class="form-group">
+                            <label for="input-sender-name">Your Name / Title *</label>
+                            <input type="text" id="input-sender-name" value="Your Best Friend 💛" placeholder="e.g. Rahul, Your Soulmate, Always Yours">
+                        </div>
+                    </div>
+
+                    <!-- Theme Preset Selection -->
+                    <div class="form-group">
+                        <label>Choose Color Aesthetic</label>
+                        <div class="theme-select-grid">
+                            <label class="theme-radio-label">
+                                <input type="radio" name="modal-theme" value="theme-rosegold" checked>
+                                <span class="radio-card rosegold-theme-card">
+                                    <span class="color-dot" style="background: #e07a8b;"></span>
+                                    <span>Rose Gold</span>
+                                </span>
+                            </label>
+                            <label class="theme-radio-label">
+                                <input type="radio" name="modal-theme" value="theme-midnight">
+                                <span class="radio-card midnight-theme-card">
+                                    <span class="color-dot" style="background: #7a5af8;"></span>
+                                    <span>Midnight</span>
+                                </span>
+                            </label>
+                            <label class="theme-radio-label">
+                                <input type="radio" name="modal-theme" value="theme-sunset">
+                                <span class="radio-card sunset-theme-card">
+                                    <span class="color-dot" style="background: #f79009;"></span>
+                                    <span>Sunset Gold</span>
+                                </span>
+                            </label>
+                            <label class="theme-radio-label">
+                                <input type="radio" name="modal-theme" value="theme-matcha">
+                                <span class="radio-card matcha-theme-card">
+                                    <span class="color-dot" style="background: #12b76a;"></span>
+                                    <span>Matcha Sage</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-primary tab-next-btn" data-next="tab-photos">Next: 📸 Upload Photos →</button>
+                </div>
+
+                <!-- TAB 2: POLAROID PHOTOS UPLOADER -->
+                <div class="studio-tab-pane" id="tab-photos">
+                    <div class="photos-instruction-banner">
+                        <span>📸 Upload 4 special photos from your phone or PC. They will be compressed automatically and displayed on the hanging clothesline!</span>
+                    </div>
+
+                    <div class="photos-uploader-grid">
+                        
+                        <!-- Photo 1 Card -->
+                        <div class="photo-upload-card" data-idx="1">
+                            <div class="photo-preview-box">
+                                <img src="assets/photo1.jpg" alt="Preview 1" class="studio-preview-thumb" id="thumb-prev-1">
+                                <label class="upload-file-label">
+                                    <span>📁 Upload Photo 1</span>
+                                    <input type="file" accept="image/*" class="photo-file-input" data-idx="1">
+                                </label>
+                            </div>
+                            <div class="photo-fields">
+                                <input type="text" class="studio-caption-input" id="input-caption-1" placeholder="Front Caption (e.g. Golden Hour Beach ✨)" value="Golden Hour Beach '23 ✨">
+                                <textarea class="studio-note-input" id="input-note-1" rows="2" placeholder="Secret Note on Back of Polaroid...">"That evening we ran toward the waves with sparklers in our hands, laughing so hard our ribs ached. Always keep that radiant laughter alive!"</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Photo 2 Card -->
+                        <div class="photo-upload-card" data-idx="2">
+                            <div class="photo-preview-box">
+                                <img src="assets/photo2.jpg" alt="Preview 2" class="studio-preview-thumb" id="thumb-prev-2">
+                                <label class="upload-file-label">
+                                    <span>📁 Upload Photo 2</span>
+                                    <input type="file" accept="image/*" class="photo-file-input" data-idx="2">
+                                </label>
+                            </div>
+                            <div class="photo-fields">
+                                <input type="text" class="studio-caption-input" id="input-caption-2" placeholder="Front Caption (e.g. Cute Cafe Date ☕)" value="Celebrate & Joy ☕🧁">
+                                <textarea class="studio-note-input" id="input-note-2" rows="2" placeholder="Secret Note on Back of Polaroid...">"Our endless cafe conversations over iced matcha and cupcakes. Thank you for always being my safe space and biggest cheerleader."</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Photo 3 Card -->
+                        <div class="photo-upload-card" data-idx="3">
+                            <div class="photo-preview-box">
+                                <img src="assets/photo3.jpg" alt="Preview 3" class="studio-preview-thumb" id="thumb-prev-3">
+                                <label class="upload-file-label">
+                                    <span>📁 Upload Photo 3</span>
+                                    <input type="file" accept="image/*" class="photo-file-input" data-idx="3">
+                                </label>
+                            </div>
+                            <div class="photo-fields">
+                                <input type="text" class="studio-caption-input" id="input-caption-3" placeholder="Front Caption (e.g. Pure Chaos 🥳)" value="Pure Chaos & Confetti 🥳">
+                                <textarea class="studio-note-input" id="input-note-3" rows="2" placeholder="Secret Note on Back of Polaroid...">"Party hats, confetti in our hair, and zero regrets! No one brings energy and pure fun into a room like you do."</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Photo 4 Card -->
+                        <div class="photo-upload-card" data-idx="4">
+                            <div class="photo-preview-box">
+                                <img src="assets/photo4.jpg" alt="Preview 4" class="studio-preview-thumb" id="thumb-prev-4">
+                                <label class="upload-file-label">
+                                    <span>📁 Upload Photo 4</span>
+                                    <input type="file" accept="image/*" class="photo-file-input" data-idx="4">
+                                </label>
+                            </div>
+                            <div class="photo-fields">
+                                <input type="text" class="studio-caption-input" id="input-caption-4" placeholder="Front Caption (e.g. Summer Sunshine 🌼)" value="Summer Days & Daisies 🌼">
+                                <textarea class="studio-note-input" id="input-note-4" rows="2" placeholder="Secret Note on Back of Polaroid...">"Under the warm sun with pastel balloons and wild daisies. Grateful for every single season of life spent together."</textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button type="button" class="btn-primary tab-next-btn" data-next="tab-letter">Next: 💌 Write Personal Letter →</button>
+                </div>
+
+                <!-- TAB 3: PERSONAL LETTER -->
+                <div class="studio-tab-pane" id="tab-letter">
+                    <div class="form-group">
+                        <label for="input-letter-msg">Personal Heartfelt Letter (Displayed inside the 3D unfolding wax-sealed letter)</label>
+                        <textarea id="input-letter-msg" rows="7" placeholder="Write your heartfelt note here..."></textarea>
+                    </div>
+
+                    <button type="button" class="btn-primary tab-next-btn" data-next="tab-share">Next: 🚀 Preview & Generate Link →</button>
+                </div>
+
+                <!-- TAB 4: SHARE LINK & PREVIEW -->
+                <div class="studio-tab-pane" id="tab-share">
+                    <div class="share-actions-card">
+                        <h4>🎉 Your Custom Birthday Website is Ready!</h4>
+                        <p>Apply your custom photos and details live, then generate the shareable link to send to your partner!</p>
+
+                        <div class="modal-actions-wrap">
+                            <button type="button" class="btn-primary" id="apply-changes-btn">
+                                <span>💾 Apply & Preview Live On Screen</span>
+                            </button>
+                            <button type="button" class="btn-accent" id="copy-share-link-btn">
+                                <span>🔗 Copy Shareable Link for Partner</span>
+                            </button>
+                            <button type="button" class="btn-whatsapp" id="share-whatsapp-btn">
+                                <span>💬 Send Directly on WhatsApp</span>
+                            </button>
+                            <button type="button" class="btn-secondary" id="download-html-btn">
+                                <span>📥 Download Standalone HTML File</span>
+                            </button>
+                        </div>
+
+                        <!-- Result output box -->
+                        <div class="share-link-result hidden" id="share-link-box">
+                            <label>Shareable Link (Compressed with all your photos & messages):</label>
+                            <textarea id="share-url-input" rows="3" readonly></textarea>
+                            <span class="copy-success-tag" id="copy-success-msg">Copied link to clipboard! Ready to send on WhatsApp ✨</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Sky Lantern Wish Popup Modal -->
+    <div class="lantern-modal-backdrop hidden" id="lantern-wish-modal">
+        <div class="lantern-dialog">
+            <span class="lantern-icon">🏮</span>
+            <h3>Make a Wish to the Cosmos</h3>
+            <p>Write your heartfelt birthday wish. When released, it will float into the night sky among the stars.</p>
+            <input type="text" id="lantern-wish-input" placeholder="e.g. May this year bring endless happiness and adventures...">
+            <div class="lantern-buttons">
+                <button class="btn-secondary" id="cancel-lantern-btn">Cancel</button>
+                <button class="btn-primary" id="send-lantern-btn">✨ Release Lantern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="audio.js"></script>
+    <script src="lz-string.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
