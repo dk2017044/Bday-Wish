@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const defaultBirthdate = '2007-10-19';
 
     const DEFAULT_STATE = {
-        recipientName: 'Ananya',
+        recipientName: 'Dilip',
         milestone: 'Chapter 18',
         birthdate: '2007-10-19',
         senderName: 'Yours, Mine ❤️',
@@ -1528,7 +1528,7 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
     inputRecipient.addEventListener('input', () => {
         state.recipientName = inputRecipient.value.trim() || 'Bestie';
         document.querySelectorAll('.recipient-name-display').forEach(el => el.textContent = state.recipientName);
-        const firstLetter = state.recipientName.charAt(0).toUpperCase() || 'A';
+        const firstLetter = state.recipientName.charAt(0).toUpperCase() || 'D';
         const seal = document.getElementById('seal-letter-text');
         if (seal) seal.textContent = firstLetter;
         saveStateToLocalStorage();
@@ -1599,7 +1599,7 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
             el.textContent = state.recipientName;
         });
 
-        const firstLetter = state.recipientName.charAt(0).toUpperCase() || 'A';
+        const firstLetter = state.recipientName.charAt(0).toUpperCase() || 'D';
         const sealEl = document.getElementById('seal-letter-text');
         if (sealEl) sealEl.textContent = firstLetter;
 
