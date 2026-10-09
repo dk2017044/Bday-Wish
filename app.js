@@ -1,7 +1,7 @@
 /* ==========================================================================
    ULTIMATE BIRTHDAY EXPERIENCE - JAVASCRIPT LOGIC
    Microphone Blow Detection, 3D Polaroids, Canvas Scratchers, Multi-Tab Studio,
-   Customizable Birthday Wishes & Scratch Passes, LZ-String URL Compression
+   Customizable Birthday Wishes & Scratch Passes, Gemini AI Text Enhancer
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -51,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
-    // Presets for Scratch Coupons
     const couponPresets = {
         couple: [
             { emoji: '❤️', code: 'CODE: FOREVER-YOURS', title: '1000 Kisses & Cozy Cuddles', desc: 'Redeemable anytime you need warmth, romantic cuddles, and tight embraces!' },
@@ -70,10 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
-    const state = {
+    const upcomingDate = new Date();
+    upcomingDate.setDate(upcomingDate.getDate() + 7);
+    const defaultBirthdate = upcomingDate.toISOString().split('T')[0];
+
+    const DEFAULT_STATE = {
         recipientName: 'Ananya',
         milestone: 'Level 21',
-        birthdate: '',
+        birthdate: defaultBirthdate,
         senderName: 'Your Best Friend 💛',
         heroWish: 'May your day be filled with endless magic, radiant smiles, and unforgettable moments!',
         coupons: JSON.parse(JSON.stringify(defaultCoupons)),
@@ -93,10 +96,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         poppedBalloons: 0
     };
 
-    // Default birthday to 7 days from now if empty
-    const upcomingDate = new Date();
-    upcomingDate.setDate(upcomingDate.getDate() + 7);
-    state.birthdate = upcomingDate.toISOString().split('T')[0];
+    const state = JSON.parse(JSON.stringify(DEFAULT_STATE));
 
     // --- DOM REFERENCES ---
     const body = document.getElementById('main-body');
@@ -115,6 +115,13 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     const themeDropdown = document.getElementById('theme-dropdown-menu');
     const currentThemeLabel = document.getElementById('current-theme-name');
     const openCustomizerBtn = document.getElementById('open-customizer-btn');
+    const resealEnvelopeBtn = document.getElementById('reseal-envelope-btn');
+    const gateOpenStudioBtn = document.getElementById('gate-open-studio-btn');
+    const gateCreatorBadgeBtn = document.getElementById('gate-creator-badge-btn');
+    const saveSealGateBtn = document.getElementById('save-seal-gate-btn');
+    const btnStudioReset = document.getElementById('btn-studio-reset');
+    const btnTab5Reset = document.getElementById('btn-tab5-reset');
+    const btnStartFresh = document.getElementById('btn-start-fresh');
 
     // Cake & Candle
     const candleElement = document.getElementById('cake-candle');
@@ -122,8 +129,6 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     const smokeElement = document.getElementById('smoke-element');
     const blowCandleBtn = document.getElementById('blow-candle-btn');
     const cutCakeBtn = document.getElementById('cut-cake-btn');
-    const cakeSliceDisplay = document.getElementById('cake-slice-display');
-    const wishBanner = document.getElementById('wish-banner');
     const toggleMicBtn = document.getElementById('toggle-mic-btn');
     const micMeterWrapper = document.getElementById('mic-meter-wrapper');
     const micMeterFill = document.getElementById('mic-meter-fill');
@@ -182,7 +187,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     const celCtx = celebrationCanvas.getContext('2d');
 
     // ==========================================
-    // 1. CANVASES RESIZING & AMBIENT STAR PARTICLES
+    // 1. CANVASES RESIZING & AMBIENT PARTICLES
     // ==========================================
     function resizeCanvases() {
         ambientCanvas.width = window.innerWidth;
@@ -195,15 +200,17 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
 
     const ambientParticles = [];
     for (let i = 0; i < 55; i++) {
+        const isHeart = Math.random() < 0.28;
         ambientParticles.push({
             x: Math.random() * window.innerWidth,
             y: Math.random() * window.innerHeight,
-            radius: Math.random() * 2 + 0.6,
-            color: Math.random() > 0.4 ? 'rgba(255, 230, 180,' : 'rgba(255, 182, 193,',
+            radius: isHeart ? (Math.random() * 2 + 1.8) : (Math.random() * 2 + 0.6),
+            color: Math.random() > 0.4 ? 'rgba(255, 182, 193,' : 'rgba(255, 105, 180,',
             alpha: Math.random() * 0.7 + 0.2,
-            speedY: Math.random() * 0.3 + 0.1,
-            speedX: (Math.random() - 0.5) * 0.2,
-            pulseSpeed: Math.random() * 0.02 + 0.01
+            speedY: Math.random() * 0.35 + 0.12,
+            speedX: (Math.random() - 0.5) * 0.25,
+            pulseSpeed: Math.random() * 0.02 + 0.01,
+            isHeart
         });
     }
 
@@ -214,16 +221,28 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
             p.x += p.speedX;
             p.alpha += Math.sin(Date.now() * p.pulseSpeed * 0.05) * 0.005;
 
-            if (p.y < -10) p.y = ambientCanvas.height + 10;
-            if (p.x < -10) p.x = ambientCanvas.width + 10;
-            if (p.x > ambientCanvas.width + 10) p.x = -10;
+            if (p.y < -15) p.y = ambientCanvas.height + 15;
+            if (p.x < -15) p.x = ambientCanvas.width + 15;
+            if (p.x > ambientCanvas.width + 15) p.x = -15;
 
-            ambientCtx.beginPath();
-            ambientCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ambientCtx.fillStyle = `${p.color}${Math.max(0.1, Math.min(0.9, p.alpha))})`;
-            ambientCtx.shadowBlur = 8;
-            ambientCtx.shadowColor = 'rgba(255, 230, 180, 0.4)';
-            ambientCtx.fill();
+            if (p.isHeart) {
+                ambientCtx.save();
+                ambientCtx.font = `${Math.round(p.radius * 4.2)}px sans-serif`;
+                ambientCtx.textAlign = 'center';
+                ambientCtx.textBaseline = 'middle';
+                ambientCtx.fillStyle = `rgba(255, 120, 170, ${Math.max(0.15, Math.min(0.85, p.alpha))})`;
+                ambientCtx.shadowBlur = 10;
+                ambientCtx.shadowColor = 'rgba(255, 77, 141, 0.5)';
+                ambientCtx.fillText('♥', p.x, p.y);
+                ambientCtx.restore();
+            } else {
+                ambientCtx.beginPath();
+                ambientCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ambientCtx.fillStyle = `${p.color}${Math.max(0.1, Math.min(0.9, p.alpha))})`;
+                ambientCtx.shadowBlur = 8;
+                ambientCtx.shadowColor = 'rgba(255, 230, 180, 0.4)';
+                ambientCtx.fill();
+            }
         });
         requestAnimationFrame(renderAmbientParticles);
     }
@@ -335,19 +354,49 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         createConfettiBurst(120, window.innerWidth / 2, window.innerHeight / 2);
 
         setTimeout(() => {
-            surpriseGate.classList.add('fade-out');
-            mainFlow.classList.remove('hidden');
+            document.body.classList.add('gate-unwrapped');
+            if (surpriseGate) {
+                surpriseGate.classList.add('fade-out');
+                surpriseGate.style.pointerEvents = 'none';
+            }
+            if (mainFlow) {
+                mainFlow.classList.remove('hidden');
+                mainFlow.style.display = 'block';
+                mainFlow.style.pointerEvents = 'auto';
+            }
 
             setTimeout(() => {
-                surpriseGate.classList.add('hidden');
+                if (surpriseGate) {
+                    surpriseGate.classList.add('hidden');
+                    surpriseGate.style.display = 'none';
+                    surpriseGate.style.pointerEvents = 'none';
+                    surpriseGate.style.visibility = 'hidden';
+                    surpriseGate.style.zIndex = '-99999';
+                }
                 createConfettiBurst(80, window.innerWidth * 0.3, window.innerHeight * 0.4);
                 createConfettiBurst(80, window.innerWidth * 0.7, window.innerHeight * 0.4);
             }, 800);
         }, 900);
     }
 
+    function resealEnvelope() {
+        document.body.classList.remove('gate-unwrapped');
+        if (waxSealBtn) waxSealBtn.classList.remove('broken');
+        if (envelope) envelope.classList.remove('open-anim');
+        if (surpriseGate) {
+            surpriseGate.classList.remove('hidden', 'fade-out');
+        }
+        if (mainFlow) {
+            mainFlow.classList.add('hidden');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     waxSealBtn.addEventListener('click', unwrapSurprise);
     openSurpriseBtn.addEventListener('click', unwrapSurprise);
+    if (resealEnvelopeBtn) {
+        resealEnvelopeBtn.addEventListener('click', resealEnvelope);
+    }
 
     // ==========================================
     // 5. BIRTHDAY DATE & LIVE COUNTDOWN TIMER
@@ -407,6 +456,8 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         countdownInterval = setInterval(updateTimer, 1000);
     }
 
+    // Birthdate input is handled via real-time studio sync below
+
     // ==========================================
     // 6. CAKE & CANDLE BLOWING
     // ==========================================
@@ -424,9 +475,9 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
 
         blowCandleBtn.classList.add('hidden');
         cutCakeBtn.classList.remove('hidden');
-        wishBanner.classList.remove('hidden');
 
         stopMicDetection();
+        showToast('🎂 Candle blown! Now slice the birthday cake! 🔪');
     }
 
     flameElement.addEventListener('click', blowOutCandle);
@@ -434,16 +485,17 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     blowCandleBtn.addEventListener('click', blowOutCandle);
 
     cutCakeBtn.addEventListener('click', () => {
-        if (state.isCakeCut) return;
         state.isCakeCut = true;
 
         if (window.birthdayAudio) window.birthdayAudio.playCakeCut();
 
-        cakeSliceDisplay.classList.remove('hidden');
-        createConfettiBurst(90, window.innerWidth / 2, window.innerHeight * 0.6);
-        cutCakeBtn.textContent = '🎉 Cake Enjoyed!';
+        createConfettiBurst(120, window.innerWidth / 2, window.innerHeight * 0.5);
+        cutCakeBtn.textContent = '🎂 Cake Celebrated! 🎉';
         cutCakeBtn.style.background = 'rgba(255,255,255,0.15)';
         cutCakeBtn.style.color = '#fff';
+
+        // Trigger the cinematic Happy Birthday celebration modal
+        setTimeout(openCelebrationModal, 350);
     });
 
     // ==========================================
@@ -500,7 +552,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
 
         } catch (err) {
             console.warn('Microphone access unavailable or denied:', err);
-            alert('Microphone access was denied or is not supported. You can tap the candle or button to blow it out!');
+            showToast('🎙️ Mic access not available. Tap candle to blow it out! 💨');
             stopMicDetection();
         }
     }
@@ -707,7 +759,8 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         balloon.style.background = balloonColors[Math.floor(Math.random() * balloonColors.length)];
         balloon.style.setProperty('--duration', `${Math.random() * 4 + 7}s`);
 
-        balloon.addEventListener('click', () => {
+        const popBalloon = (e) => {
+            if (e && e.cancelable && e.type !== 'click') e.preventDefault();
             state.poppedBalloons++;
             poppedCountDisplay.textContent = state.poppedBalloons;
             if (window.birthdayAudio) window.birthdayAudio.playBalloonPop();
@@ -715,7 +768,9 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
             const rect = balloon.getBoundingClientRect();
             createConfettiBurst(25, rect.left + rect.width / 2, rect.top + rect.height / 2);
             balloon.remove();
-        });
+        };
+
+        balloon.addEventListener('pointerdown', popBalloon);
 
         balloonSky.appendChild(balloon);
 
@@ -742,7 +797,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         if (window.birthdayAudio) window.birthdayAudio.playChime();
         createConfettiBurst(70, window.innerWidth / 2, window.innerHeight * 0.5);
 
-        alert(`✨ Your wish "${wishText}" is now floating among the stars! May it all come true! ✨`);
+        showToast(`🏮 Your wish "${wishText}" is floating among the stars! May it all come true! ✨`, 4500);
         lanternWishInput.value = '';
 
         setTimeout(() => {
@@ -778,10 +833,10 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         });
 
         const nameMap = {
-            'theme-rosegold': 'Rose Gold',
-            'theme-midnight': 'Midnight',
-            'theme-sunset': 'Sunset Gold',
-            'theme-matcha': 'Matcha Sage'
+            'theme-rosegold': 'Cupid Pink 💖',
+            'theme-midnight': 'Midnight 🌙',
+            'theme-sunset': 'Sunset Gold 🌅',
+            'theme-matcha': 'Matcha Sage 🍵'
         };
         currentThemeLabel.textContent = nameMap[themeClass] || 'Theme';
 
@@ -865,10 +920,11 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 const liveImg = document.getElementById(`polaroid-img-${idx + 1}`);
                 if (liveImg) liveImg.src = compressedDataUrl;
 
+                saveStateToLocalStorage();
                 if (window.birthdayAudio) window.birthdayAudio.playChime();
             } catch (err) {
                 console.error('Image compression error:', err);
-                alert('Could not process this image. Please try another photo.');
+                showToast('⚠️ Could not process this image. Please try another photo.');
             }
         });
     });
@@ -883,6 +939,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 state.photos[i - 1].caption = capInput.value;
                 const liveCap = document.getElementById(`caption-${i}`);
                 if (liveCap) liveCap.textContent = capInput.value;
+                saveStateToLocalStorage();
             });
         }
 
@@ -891,6 +948,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 state.photos[i - 1].note = noteInput.value;
                 const liveNote = document.getElementById(`note-${i}`);
                 if (liveNote) liveNote.textContent = noteInput.value;
+                saveStateToLocalStorage();
             });
         }
     }
@@ -904,21 +962,23 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
 
         state.coupons = JSON.parse(JSON.stringify(preset));
 
-        // Sync inputs in modal
         for (let i = 1; i <= 3; i++) {
             const c = state.coupons[i - 1];
             const emojiInp = document.getElementById(`input-coupon-emoji-${i}`);
+            const glyphEl = document.getElementById(`coupon-icon-glyph-${i}`);
             const codeInp = document.getElementById(`input-coupon-code-${i}`);
             const titleInp = document.getElementById(`input-coupon-title-${i}`);
             const descInp = document.getElementById(`input-coupon-desc-${i}`);
 
             if (emojiInp) emojiInp.value = c.emoji;
+            if (glyphEl) glyphEl.textContent = c.emoji;
             if (codeInp) codeInp.value = c.code;
             if (titleInp) titleInp.value = c.title;
             if (descInp) descInp.value = c.desc;
         }
 
         renderCouponsInDOM();
+        saveStateToLocalStorage();
         if (window.birthdayAudio) window.birthdayAudio.playChime();
     }
 
@@ -945,81 +1005,535 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         }
     }
 
-    // Real-time coupon inputs
+    // ==========================================
+    // AUTOMATIC INTERNAL AI ICON MATCHING ENGINE
+    // Automatically detects and updates the icon internally as the user types
+    // No manual popover, clicks, or buttons needed from the user
+    // ==========================================
+    const couponTitleDebounce = {};
+
+    function setCouponEmoji(idx, emojiVal, animate = true) {
+        if (!emojiVal) return;
+        state.coupons[idx - 1].emoji = emojiVal;
+
+        const emojiInp = document.getElementById(`input-coupon-emoji-${idx}`);
+        const glyphEl = document.getElementById(`coupon-icon-glyph-${idx}`);
+        const liveEmoji = document.getElementById(`coupon-emoji-${idx}`);
+        const badgeBox = document.getElementById(`coupon-icon-btn-${idx}`);
+
+        if (emojiInp) emojiInp.value = emojiVal;
+        if (glyphEl) glyphEl.textContent = emojiVal;
+        if (liveEmoji) liveEmoji.textContent = emojiVal;
+
+        if (animate && badgeBox) {
+            badgeBox.classList.remove('ai-pop');
+            void badgeBox.offsetWidth; // re-trigger animation
+            badgeBox.classList.add('ai-pop');
+        }
+
+        saveStateToLocalStorage();
+    }
+
+    async function autoMatchCouponIconInternally(idx, titleText) {
+        if (!titleText || !titleText.trim()) {
+            setCouponEmoji(idx, '🎟️', false);
+            return;
+        }
+
+        const trimmed = titleText.trim();
+
+        // 1. Instant 0ms Semantic & Keyword Match (Immediate responsive feedback)
+        let matchedEmoji = '🎟️';
+        if (window.geminiAssistant && typeof window.geminiAssistant.matchEmojiSemantically === 'function') {
+            matchedEmoji = window.geminiAssistant.matchEmojiSemantically(trimmed);
+            if (matchedEmoji && matchedEmoji !== '🎟️✨') {
+                setCouponEmoji(idx, matchedEmoji, true);
+            }
+        }
+
+        // 2. Intelligent Gemini AI in the background for deeper context-aware matching
+        if (window.geminiAssistant && typeof window.geminiAssistant.suggestEmojiForTitle === 'function' && trimmed.length >= 3) {
+            try {
+                const aiEmoji = await window.geminiAssistant.suggestEmojiForTitle(trimmed);
+                if (aiEmoji && aiEmoji !== matchedEmoji) {
+                    setCouponEmoji(idx, aiEmoji, true);
+                }
+            } catch (err) {
+                // Silently keep the semantic match
+            }
+        }
+    }
+
+    // Setup automatic inputs for each coupon (1 to 3)
     for (let i = 1; i <= 3; i++) {
         const emojiInp = document.getElementById(`input-coupon-emoji-${i}`);
         const codeInp = document.getElementById(`input-coupon-code-${i}`);
         const titleInp = document.getElementById(`input-coupon-title-${i}`);
         const descInp = document.getElementById(`input-coupon-desc-${i}`);
 
+        // Hidden input event listener (for presets/compatibility)
         if (emojiInp) {
             emojiInp.addEventListener('input', () => {
-                state.coupons[i - 1].emoji = emojiInp.value;
-                const el = document.getElementById(`coupon-emoji-${i}`);
-                if (el) el.textContent = emojiInp.value;
+                setCouponEmoji(i, emojiInp.value, false);
             });
         }
+
+        // Code input listener
         if (codeInp) {
             codeInp.addEventListener('input', () => {
                 state.coupons[i - 1].code = codeInp.value;
                 const el = document.getElementById(`coupon-code-${i}`);
                 if (el) el.textContent = codeInp.value;
+                saveStateToLocalStorage();
             });
         }
+
+        // Title input with 100% automatic internal AI icon matching
         if (titleInp) {
             titleInp.addEventListener('input', () => {
                 state.coupons[i - 1].title = titleInp.value;
                 const el = document.getElementById(`coupon-title-${i}`);
                 if (el) el.textContent = titleInp.value;
+                saveStateToLocalStorage();
+
+                // Automatically match icon internally in real time (debounced 350ms)
+                clearTimeout(couponTitleDebounce[i]);
+                couponTitleDebounce[i] = setTimeout(() => {
+                    autoMatchCouponIconInternally(i, titleInp.value);
+                }, 350);
+            });
+
+            titleInp.addEventListener('change', () => {
+                autoMatchCouponIconInternally(i, titleInp.value);
+            });
+
+            titleInp.addEventListener('blur', () => {
+                autoMatchCouponIconInternally(i, titleInp.value);
             });
         }
+
+        // Description input listener
         if (descInp) {
             descInp.addEventListener('input', () => {
                 state.coupons[i - 1].desc = descInp.value;
                 const el = document.getElementById(`coupon-desc-${i}`);
                 if (el) el.textContent = descInp.value;
+                saveStateToLocalStorage();
             });
         }
     }
 
     // ==========================================
-    // 16. APPLY ALL CUSTOMIZATIONS TO DOM
+    // 16. GEMINI AI TEXT ENHANCEMENT ACTION HANDLERS
     // ==========================================
-    function applyCustomizations() {
+    const toneChips = document.querySelectorAll('.tone-chip');
+    toneChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            toneChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            const chosenTone = chip.getAttribute('data-tone');
+            if (window.geminiAssistant) {
+                window.geminiAssistant.setTone(chosenTone);
+            }
+        });
+    });
+
+    async function triggerAiPolish(button) {
+        const targetId = button.getAttribute('data-target');
+        const contextType = button.getAttribute('data-context') || 'Birthday Wish';
+        const targetElement = document.getElementById(targetId);
+
+        if (!targetElement) return;
+        const currentText = targetElement.value || targetElement.textContent || '';
+
+        if (button.classList.contains('loading')) return;
+
+        if (!currentText.trim()) {
+            showToast('✏️ Please type some text first so AI can polish it! ✨');
+            return;
+        }
+
+        const originalBtnHtml = button.innerHTML;
+        button.classList.add('loading');
+        button.innerHTML = '<span>⏳ Polishing with Gemini AI...</span>';
+
+        const safetyTimer = setTimeout(() => {
+            if (button.classList.contains('loading')) {
+                button.innerHTML = originalBtnHtml;
+                button.classList.remove('loading');
+                showToast('⚠️ AI request timed out. Please try again.');
+            }
+        }, 8000);
+
+        try {
+            const polished = await window.geminiAssistant.enhanceText(currentText, contextType);
+            clearTimeout(safetyTimer);
+            targetElement.value = polished;
+
+            // Trigger input event to update live preview immediately
+            targetElement.dispatchEvent(new Event('input', { bubbles: true }));
+
+            button.innerHTML = '<span>🎉 Polished & Emojis Added!</span>';
+            if (window.birthdayAudio) window.birthdayAudio.playChime();
+            createConfettiBurst(40, window.innerWidth / 2, window.innerHeight / 2);
+
+            setTimeout(() => {
+                button.innerHTML = originalBtnHtml;
+                button.classList.remove('loading');
+            }, 3000);
+        } catch (err) {
+            clearTimeout(safetyTimer);
+            console.error('Gemini Polish Error:', err);
+            showToast('⚠️ Could not connect to AI. Please try again.');
+            button.innerHTML = originalBtnHtml;
+            button.classList.remove('loading');
+        }
+    }
+
+    // Bind text-only AI polish buttons
+    document.querySelectorAll('.btn-ai-polish, .mini-ai-btn').forEach(btn => {
+        btn.addEventListener('click', () => triggerAiPolish(btn));
+    });
+
+    // ==========================================
+    // 16B. FULL PASS AUTO-GENERATION ENGINE (TITLE -> ICON + REWARD + CODE)
+    // ==========================================
+    async function autoGeneratePassWithAi(idx, button) {
+        const titleInp = document.getElementById(`input-coupon-title-${idx}`);
+        const descInp = document.getElementById(`input-coupon-desc-${idx}`);
+        const codeInp = document.getElementById(`input-coupon-code-${idx}`);
+
+        let currentTitle = titleInp ? titleInp.value.trim() : '';
+        if (!currentTitle) {
+            const defaultTitles = [
+                'Midnight Long Drive & Chai',
+                'Cozy Cafe Coffee & Dessert Date',
+                'The Universal Golden Wish Pass'
+            ];
+            currentTitle = defaultTitles[idx - 1] || 'Special Surprise Date';
+            if (titleInp) {
+                titleInp.value = currentTitle;
+                state.coupons[idx - 1].title = currentTitle;
+                const liveTitle = document.getElementById(`coupon-title-${idx}`);
+                if (liveTitle) liveTitle.textContent = currentTitle;
+            }
+        }
+
+        if (button.classList.contains('loading')) return;
+
+        const originalBtnHtml = button.innerHTML;
+        button.classList.add('loading');
+        button.innerHTML = '<span>⏳ Generating Pass...</span>';
+
+        const safetyTimer = setTimeout(() => {
+            if (button.classList.contains('loading')) {
+                button.innerHTML = originalBtnHtml;
+                button.classList.remove('loading');
+                showToast('⚠️ AI response timed out. Using smart local template! ✨');
+            }
+        }, 7000);
+
+        try {
+            let generated = null;
+            if (window.geminiAssistant && typeof window.geminiAssistant.generateCompletePass === 'function') {
+                generated = await window.geminiAssistant.generateCompletePass(currentTitle);
+            } else {
+                generated = {
+                    emoji: '🎟️✨',
+                    desc: `Valid 24/7! One unconditional pass for ${currentTitle} whenever you want! No excuses allowed! 💕`,
+                    code: `CODE: ${currentTitle.toUpperCase().replace(/[^A-Z0-9]/g, '-').slice(0, 12)}-VIP`
+                };
+            }
+
+            clearTimeout(safetyTimer);
+
+            if (generated) {
+                // 1. Matching Icon / Emoji
+                if (generated.emoji) {
+                    setCouponEmoji(idx, generated.emoji, true);
+                }
+
+                // 2. Secret Reward Message
+                if (generated.desc && descInp) {
+                    descInp.value = generated.desc;
+                    state.coupons[idx - 1].desc = generated.desc;
+                    const liveDesc = document.getElementById(`coupon-desc-${idx}`);
+                    if (liveDesc) liveDesc.textContent = generated.desc;
+                }
+
+                // 3. Secret Code
+                if (generated.code && codeInp) {
+                    codeInp.value = generated.code;
+                    state.coupons[idx - 1].code = generated.code;
+                    const liveCode = document.getElementById(`coupon-code-${idx}`);
+                    if (liveCode) liveCode.textContent = generated.code;
+                }
+
+                saveStateToLocalStorage();
+                if (window.birthdayAudio) window.birthdayAudio.playChime();
+                createConfettiBurst(40, window.innerWidth / 2, window.innerHeight / 2);
+                showToast(`✨ Pass #${idx} icon, secret reward & code generated! 🎉`);
+
+                button.innerHTML = '<span>✅ Pass Generated!</span>';
+                setTimeout(() => {
+                    button.innerHTML = originalBtnHtml;
+                    button.classList.remove('loading');
+                }, 2500);
+            }
+        } catch (err) {
+            clearTimeout(safetyTimer);
+            console.error('Pass generation error:', err);
+            button.innerHTML = originalBtnHtml;
+            button.classList.remove('loading');
+            showToast('⚠️ Could not generate pass. Please try again.');
+        }
+    }
+
+    // Bind all Scratch Pass Auto-Generate buttons
+    document.querySelectorAll('.btn-coupon-ai').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const idx = parseInt(btn.getAttribute('data-idx'), 10) || 1;
+            autoGeneratePassWithAi(idx, btn);
+        });
+    });
+
+    // ==========================================
+    // 17. PERSISTENCE ENGINE & AUTO-SAVE (LOCALSTORAGE)
+    // ==========================================
+    const STORAGE_KEY = 'birthday_surprise_custom_data_v1';
+    const GATE_KEY = 'birthday_surprise_gate_opened_v1';
+
+    let autoSaveDebounceTimer = null;
+    function saveStateToLocalStorage() {
+        clearTimeout(autoSaveDebounceTimer);
+        autoSaveDebounceTimer = setTimeout(() => {
+            try {
+                const payload = {
+                    recipientName: state.recipientName,
+                    milestone: state.milestone,
+                    birthdate: state.birthdate,
+                    senderName: state.senderName,
+                    heroWish: state.heroWish,
+                    letterText: state.letterText,
+                    currentTheme: state.currentTheme,
+                    coupons: state.coupons,
+                    photos: state.photos
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+            } catch (e) {
+                console.warn('LocalStorage save failed:', e);
+            }
+        }, 150);
+    }
+
+    function loadStateFromLocalStorage() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return false;
+            const data = JSON.parse(raw);
+            if (data) {
+                if (data.recipientName) state.recipientName = data.recipientName;
+                if (data.milestone) state.milestone = data.milestone;
+                if (data.birthdate) state.birthdate = data.birthdate;
+                if (data.senderName) state.senderName = data.senderName;
+                if (data.heroWish) state.heroWish = data.heroWish;
+                if (data.letterText) state.letterText = data.letterText;
+                if (data.currentTheme) state.currentTheme = data.currentTheme;
+                if (Array.isArray(data.coupons)) state.coupons = data.coupons;
+                if (Array.isArray(data.photos)) {
+                    data.photos.forEach((p, idx) => {
+                        if (idx < 4 && state.photos[idx]) {
+                            state.photos[idx] = {
+                                img: p.img || state.photos[idx].img,
+                                caption: p.caption || state.photos[idx].caption,
+                                note: p.note || state.photos[idx].note
+                            };
+                        }
+                    });
+                }
+                return true;
+            }
+        } catch (e) {
+            console.warn('LocalStorage load failed:', e);
+        }
+        return false;
+    }
+
+    function resetToOriginalTemplate(showToastMsg = true) {
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(GATE_KEY);
+        } catch (e) {}
+
+        Object.assign(state, JSON.parse(JSON.stringify(DEFAULT_STATE)));
+        syncInputsFromState();
+        applyCustomizations(false, false);
+        resealEnvelope();
+
+        if (showToastMsg) {
+            showToast('🔄 Reset to original template! Fresh start ready ✨');
+            createConfettiBurst(60, window.innerWidth / 2, window.innerHeight * 0.4);
+        }
+    }
+
+    function startFreshForNewPerson() {
+        state.recipientName = '';
+        state.milestone = 'Birthday';
+        state.senderName = '';
+        state.heroWish = 'Wishing you a magical birthday filled with radiant smiles, endless laughter, and sweet surprises! ✨';
+        state.letterText = `Dearest,\n\nHappy Birthday! May this special chapter bring you boundless joy, exciting adventures, and all the happiness in the world.\n\nWith all my love,\n`;
+
+        inputRecipient.value = '';
+        inputMilestone.value = 'Birthday';
+        inputSender.value = '';
+        inputHeroWishes.value = state.heroWish;
+        inputLetterMsg.value = state.letterText;
+
+        applyCustomizations(false, false);
+        showToast('✨ Cleared demo details! Type your partner\'s name above 💖');
+        inputRecipient.focus();
+    }
+
+    function syncInputsFromState() {
+        inputRecipient.value = state.recipientName;
+        inputMilestone.value = state.milestone;
+        inputBirthdate.value = state.birthdate || '';
+        inputSender.value = state.senderName;
+        inputHeroWishes.value = state.heroWish;
+        inputLetterMsg.value = state.letterText;
+
+        for (let i = 1; i <= 3; i++) {
+            const c = state.coupons[i - 1];
+            const emojiInp = document.getElementById(`input-coupon-emoji-${i}`);
+            const glyphEl = document.getElementById(`coupon-icon-glyph-${i}`);
+            const codeInp = document.getElementById(`input-coupon-code-${i}`);
+            const titleInp = document.getElementById(`input-coupon-title-${i}`);
+            const descInp = document.getElementById(`input-coupon-desc-${i}`);
+
+            if (emojiInp && c) emojiInp.value = c.emoji;
+            if (glyphEl && c) glyphEl.textContent = c.emoji;
+            if (codeInp && c) codeInp.value = c.code;
+            if (titleInp && c) titleInp.value = c.title;
+            if (descInp && c) descInp.value = c.desc;
+        }
+
+        for (let i = 1; i <= 4; i++) {
+            const p = state.photos[i - 1];
+            const capInput = document.getElementById(`input-caption-${i}`);
+            const noteInput = document.getElementById(`input-note-${i}`);
+            const thumb = document.getElementById(`thumb-prev-${i}`);
+            if (capInput && p) capInput.value = p.caption;
+            if (noteInput && p) noteInput.value = p.note;
+            if (thumb && p && p.img) thumb.src = p.img;
+        }
+
+        const radio = document.querySelector(`input[name="modal-theme"][value="${state.currentTheme}"]`);
+        if (radio) radio.checked = true;
+    }
+
+    // Real-time two-way input synchronization
+    inputRecipient.addEventListener('input', () => {
         state.recipientName = inputRecipient.value.trim() || 'Bestie';
+        document.querySelectorAll('.recipient-name-display').forEach(el => el.textContent = state.recipientName);
+        const firstLetter = state.recipientName.charAt(0).toUpperCase() || 'A';
+        const seal = document.getElementById('seal-letter-text');
+        if (seal) seal.textContent = firstLetter;
+        saveStateToLocalStorage();
+    });
+
+    inputMilestone.addEventListener('input', () => {
         state.milestone = inputMilestone.value.trim() || 'Level 21';
-        state.birthdate = inputBirthdate.value || state.birthdate;
+        const badge = document.getElementById('milestone-badge-text');
+        if (badge) badge.textContent = `Celebrating ${state.milestone}`;
+        saveStateToLocalStorage();
+    });
+
+    inputBirthdate.addEventListener('input', () => {
+        state.birthdate = inputBirthdate.value;
+        startBirthdayCountdown();
+        saveStateToLocalStorage();
+    });
+
+    inputSender.addEventListener('input', () => {
         state.senderName = inputSender.value.trim() || 'Your Friend';
+        const sender = document.getElementById('letter-sender-name');
+        if (sender) sender.textContent = state.senderName;
+        saveStateToLocalStorage();
+    });
 
-        const customHeroWish = inputHeroWishes.value.trim();
-        if (customHeroWish) {
-            state.heroWish = customHeroWish;
-            const heroSubtitle = document.getElementById('hero-tagline-text');
-            if (heroSubtitle) heroSubtitle.textContent = customHeroWish;
-        }
+    inputHeroWishes.addEventListener('input', () => {
+        state.heroWish = inputHeroWishes.value.trim();
+        const heroSubtitle = document.getElementById('hero-tagline-text');
+        if (heroSubtitle) heroSubtitle.textContent = state.heroWish;
+        saveStateToLocalStorage();
+    });
 
-        const customLetter = inputLetterMsg.value.trim();
-        if (customLetter) {
-            state.letterText = customLetter;
-            document.getElementById('typed-letter-content').innerHTML = `<p>${customLetter.replace(/\n/g, '<br>')}</p>`;
-        }
+    inputLetterMsg.addEventListener('input', () => {
+        state.letterText = inputLetterMsg.value.trim();
+        const letter = document.getElementById('typed-letter-content');
+        if (letter) letter.innerHTML = `<p>${state.letterText.replace(/\n/g, '<br>')}</p>`;
+        saveStateToLocalStorage();
+    });
 
-        // Recipient Name in DOM
+    document.querySelectorAll('input[name="modal-theme"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            applyTheme(radio.value);
+            saveStateToLocalStorage();
+        });
+    });
+
+    // Prevent Enter key from triggering accidental submission
+    document.querySelectorAll('#customizer-modal input[type="text"]').forEach(inp => {
+        inp.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') e.preventDefault();
+        });
+    });
+
+    // ==========================================
+    // 18. APPLY ALL CUSTOMIZATIONS TO DOM
+    // ==========================================
+    function applyCustomizations(triggerConfetti = false, persist = false) {
+        // Fallbacks from inputs if present
+        if (inputRecipient.value.trim()) state.recipientName = inputRecipient.value.trim();
+        if (inputMilestone.value.trim()) state.milestone = inputMilestone.value.trim();
+        if (inputBirthdate.value) state.birthdate = inputBirthdate.value;
+        if (inputSender.value.trim()) state.senderName = inputSender.value.trim();
+        if (inputHeroWishes.value.trim()) state.heroWish = inputHeroWishes.value.trim();
+        if (inputLetterMsg.value.trim()) state.letterText = inputLetterMsg.value.trim();
+
+        // Update DOM elements
         document.querySelectorAll('.recipient-name-display').forEach(el => {
             el.textContent = state.recipientName;
         });
 
-        // Wax Seal Initial
         const firstLetter = state.recipientName.charAt(0).toUpperCase() || 'A';
-        document.getElementById('seal-letter-text').textContent = firstLetter;
+        const sealEl = document.getElementById('seal-letter-text');
+        if (sealEl) sealEl.textContent = firstLetter;
 
-        // Milestone badge
-        document.getElementById('milestone-badge-text').textContent = `Celebrating ${state.milestone}`;
+        const gateBdayTag = document.getElementById('gate-bday-tag');
+        if (gateBdayTag && state.birthdate) {
+            try {
+                const parts = state.birthdate.split('-');
+                if (parts.length === 3) {
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const mName = months[parseInt(parts[1], 10) - 1] || '';
+                    gateBdayTag.textContent = `🎂 Special Celebration Day • ${parseInt(parts[2], 10)} ${mName}`;
+                }
+            } catch (e) {}
+        }
 
-        // Sender name
-        document.getElementById('letter-sender-name').textContent = state.senderName;
+        const badgeEl = document.getElementById('milestone-badge-text');
+        if (badgeEl) badgeEl.textContent = `Celebrating ${state.milestone}`;
 
-        // Polaroids in DOM
+        const senderEl = document.getElementById('letter-sender-name');
+        if (senderEl) senderEl.textContent = state.senderName;
+
+        const heroSubtitle = document.getElementById('hero-tagline-text');
+        if (heroSubtitle) heroSubtitle.textContent = state.heroWish;
+
+        const letterEl = document.getElementById('typed-letter-content');
+        if (letterEl) letterEl.innerHTML = `<p>${state.letterText.replace(/\n/g, '<br>')}</p>`;
+
         for (let i = 0; i < 4; i++) {
             const p = state.photos[i];
             const imgEl = document.getElementById(`polaroid-img-${i + 1}`);
@@ -1031,57 +1545,120 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
             if (noteEl && p.note) noteEl.textContent = p.note;
         }
 
-        // Scratch Coupons in DOM
         renderCouponsInDOM();
-
-        // Theme
-        const checkedRadio = document.querySelector('input[name="modal-theme"]:checked');
-        if (checkedRadio) applyTheme(checkedRadio.value);
-
-        // Restart countdown with new birthdate
+        applyTheme(state.currentTheme);
         startBirthdayCountdown();
 
-        createConfettiBurst(80, window.innerWidth / 2, window.innerHeight / 2);
-    }
-
-    openCustomizerBtn.addEventListener('click', () => {
-        inputRecipient.value = state.recipientName;
-        inputMilestone.value = state.milestone;
-        inputBirthdate.value = state.birthdate;
-        inputSender.value = state.senderName;
-        inputHeroWishes.value = state.heroWish;
-        inputLetterMsg.value = state.letterText;
-
-        // Sync coupons inputs
-        for (let i = 1; i <= 3; i++) {
-            const c = state.coupons[i - 1];
-            const emojiInp = document.getElementById(`input-coupon-emoji-${i}`);
-            const codeInp = document.getElementById(`input-coupon-code-${i}`);
-            const titleInp = document.getElementById(`input-coupon-title-${i}`);
-            const descInp = document.getElementById(`input-coupon-desc-${i}`);
-
-            if (emojiInp) emojiInp.value = c.emoji;
-            if (codeInp) codeInp.value = c.code;
-            if (titleInp) titleInp.value = c.title;
-            if (descInp) descInp.value = c.desc;
+        // Only persist to localStorage when explicitly instructed by user action
+        if (persist) {
+            saveStateToLocalStorage();
         }
 
-        customizerModal.classList.remove('hidden');
-    });
+        if (triggerConfetti) {
+            createConfettiBurst(80, window.innerWidth / 2, window.innerHeight / 2);
+        }
+    }
 
-    closeCustomizerBtn.addEventListener('click', () => customizerModal.classList.add('hidden'));
+    function openCustomizerModal() {
+        syncInputsFromState();
+        customizerModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+    }
+
+    if (openCustomizerBtn) openCustomizerBtn.addEventListener('click', openCustomizerModal);
+    if (gateOpenStudioBtn) gateOpenStudioBtn.addEventListener('click', openCustomizerModal);
+    if (gateCreatorBadgeBtn) gateCreatorBadgeBtn.addEventListener('click', openCustomizerModal);
+
+    if (btnStudioReset) btnStudioReset.addEventListener('click', () => resetToOriginalTemplate());
+    if (btnTab5Reset) btnTab5Reset.addEventListener('click', () => resetToOriginalTemplate());
+    if (btnStartFresh) btnStartFresh.addEventListener('click', () => startFreshForNewPerson());
+
+    function closeCustomizer() {
+        applyCustomizations(false, false);
+        customizerModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
+    }
+
+    closeCustomizerBtn.addEventListener('click', closeCustomizer);
 
     customizerModal.addEventListener('click', (e) => {
-        if (e.target === customizerModal) customizerModal.classList.add('hidden');
+        if (e.target === customizerModal) closeCustomizer();
     });
 
     applyChangesBtn.addEventListener('click', () => {
-        applyCustomizations();
+        applyCustomizations(true, true);
         customizerModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
+        // If gate screen is currently active, unwrap it smoothly to preview on home screen
+        if (surpriseGate && !surpriseGate.classList.contains('hidden')) {
+            unwrapSurprise();
+        }
     });
 
+    if (saveSealGateBtn) {
+        saveSealGateBtn.addEventListener('click', () => {
+            applyCustomizations(false, true);
+            customizerModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+            resealEnvelope();
+            createConfettiBurst(50, window.innerWidth / 2, window.innerHeight * 0.4);
+        });
+    }
+
     // ==========================================
-    // 17. LZ-STRING COMPRESSED SHARING URL
+    // CINEMATIC HAPPY BIRTHDAY CELEBRATION POPUP MODAL
+    // ==========================================
+    const celebrationModal = document.getElementById('birthday-celebration-modal');
+    const celebrationWishText = document.getElementById('celebration-modal-wish');
+    const closeCelebrationBtn = document.getElementById('close-celebration-btn');
+    const claimCelebrationBtn = document.getElementById('claim-celebration-btn');
+
+    function openCelebrationModal() {
+        if (!celebrationModal) return;
+        if (celebrationWishText) celebrationWishText.textContent = state.heroWish;
+        celebrationModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+        createConfettiBurst(120, window.innerWidth / 2, window.innerHeight * 0.45);
+        if (window.birthdayAudio) window.birthdayAudio.playChime();
+    }
+
+    function closeCelebrationModal() {
+        if (!celebrationModal) return;
+        celebrationModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
+    }
+
+    if (closeCelebrationBtn) closeCelebrationBtn.addEventListener('click', closeCelebrationModal);
+    if (claimCelebrationBtn) {
+        claimCelebrationBtn.addEventListener('click', () => {
+            closeCelebrationModal();
+            const polaroids = document.getElementById('polaroid-gallery-section');
+            if (polaroids) polaroids.scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+    if (celebrationModal) {
+        celebrationModal.addEventListener('click', (e) => {
+            if (e.target === celebrationModal) closeCelebrationModal();
+        });
+    }
+
+    // Luxury Toast Notification Engine
+    function showToast(message, duration = 3500) {
+        const container = document.getElementById('luxury-toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'luxury-toast';
+        toast.innerHTML = `<span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 15);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }, duration);
+    }
+
+    // ==========================================
+    // 19. LZ-STRING COMPRESSED SHARING URL
     // ==========================================
     function generateShareUrl() {
         applyCustomizations();
@@ -1137,39 +1714,714 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     });
 
     // ==========================================
-    // 18. DOWNLOAD STANDALONE HTML FILE
+    // 19. DOWNLOAD 100% SELF-CONTAINED STANDALONE SURPRISE HTML BUNDLE
+    // Zero external dependencies - all CSS, Audio Synth, and Recipient Scripts fully embedded!
+    // Opens directly at Scene 0 (The Mystery Wax-Sealed Envelope Gate) for the recipient!
     // ==========================================
-    downloadHtmlBtn.addEventListener('click', () => {
-        applyCustomizations();
+    async function generateStandaloneSurpriseBundle() {
+        // 1. Synchronize latest values to state and DOM
+        applyCustomizations(false, false);
 
-        let fullHtml = document.documentElement.outerHTML;
+        // 2. Load embedded CSS and Audio
+        let cssText = (window.__STANDALONE_CSS__ || '').trim();
+        let audioText = (window.__STANDALONE_AUDIO__ || '').trim();
 
-        const stateInjection = `
-        <script>
-            window.__INITIAL_STATE__ = ${JSON.stringify(state)};
-        </script>
+        try {
+            if (!cssText) {
+                const r = await fetch('style.css');
+                if (r.ok) cssText = await r.text();
+            }
+            if (!audioText) {
+                const r = await fetch('audio.js');
+                if (r.ok) audioText = await r.text();
+            }
+        } catch (e) {
+            console.warn('Fetch fallback to embedded assets:', e);
+        }
+
+        // 3. Clone document to prepare pristine recipient view
+        const cloneDoc = document.documentElement.cloneNode(true);
+
+        // Strip external css link tags
+        cloneDoc.querySelectorAll('link[rel="stylesheet"][href="style.css"], link[href*="style.css"]').forEach(el => el.remove());
+
+        // Inject inlined stylesheet
+        const inlinedStyle = document.createElement('style');
+        inlinedStyle.id = 'standalone-surprise-styles';
+        inlinedStyle.textContent = cssText + `
+        /* Standalone Recipient Mode Polish */
+        body.standalone-recipient-view .gate-creator-badge,
+        body.standalone-recipient-view .gate-studio-btn,
+        body.standalone-recipient-view #open-customizer-btn,
+        body.standalone-recipient-view #reseal-envelope-btn,
+        body.standalone-recipient-view #customizer-modal,
+        body.standalone-recipient-view .floating-edit-btn,
+        body.standalone-recipient-view .btn-coupon-ai,
+        body.standalone-recipient-view .mini-ai-btn,
+        body.standalone-recipient-view .creator-credit {
+            display: none !important;
+        }
+        /* Completely hide top header on mobile & desktop until recipient unseals the envelope */
+        body.standalone-recipient-view:not(.gate-unwrapped) .floating-header,
+        body.standalone-recipient-view:has(#surprise-gate-screen:not(.hidden):not(.fade-out)) .floating-header {
+            display: none !important;
+        }
+        body.standalone-recipient-view #surprise-gate-screen {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            z-index: 9999 !important;
+        }
+        body.standalone-recipient-view #surprise-gate-screen.fade-out {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: opacity 0.8s ease-out !important;
+        }
+        body.standalone-recipient-view.gate-unwrapped #surprise-gate-screen,
+        body.standalone-recipient-view #surprise-gate-screen.hidden,
+        body.standalone-recipient-view .gate-overlay.hidden {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            z-index: -99999 !important;
+        }
+        body.standalone-recipient-view #main-content-flow.hidden {
+            display: none !important;
+        }
+        body.standalone-recipient-view.gate-unwrapped #main-content-flow {
+            display: block !important;
+            pointer-events: auto !important;
+            touch-action: pan-y !important;
+            -webkit-overflow-scrolling: touch !important;
+            overflow: visible !important;
+        }
+        /* Mobile Viewport Smooth Touch Scrolling Guarantee for iPhone and Android */
+        html {
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            overscroll-behavior-y: auto !important;
+            height: auto !important;
+            min-height: 100% !important;
+        }
+        body.standalone-recipient-view {
+            overflow-x: hidden !important;
+            overflow-x: clip !important;
+            overflow-y: visible !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important;
+            min-height: 100% !important;
+            height: auto !important;
+            overscroll-behavior-y: auto !important;
+        }
+        body.standalone-recipient-view:not(.modal-open) {
+            overflow-y: visible !important;
+            touch-action: pan-y !important;
+        }
         `;
-        fullHtml = fullHtml.replace('</head>', `${stateInjection}\n</head>`);
+        cloneDoc.querySelector('head').appendChild(inlinedStyle);
 
-        const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `${state.recipientName.replace(/\s+/g, '_')}_Birthday_Surprise.html`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(a.href);
+        // Prepare body in pristine recipient mode
+        const cloneBody = cloneDoc.querySelector('body');
+        cloneBody.classList.remove('modal-open');
+        cloneBody.className = `${state.currentTheme || 'theme-rosegold'} standalone-recipient-view`;
 
-        alert(`✨ ${state.recipientName}'s Birthday Website has been downloaded as a standalone HTML file! You can directly send this file to them on WhatsApp! ✨`);
+        // Ensure Surprise Gate screen is active and pristine
+        const gateScreen = cloneDoc.querySelector('#surprise-gate-screen');
+        if (gateScreen) {
+            gateScreen.classList.remove('hidden', 'fade-out');
+            gateScreen.removeAttribute('style');
+        }
+
+        const envelopeEl = cloneDoc.querySelector('#envelope-interactive');
+        if (envelopeEl) envelopeEl.classList.remove('open-anim');
+
+        const waxSealEl = cloneDoc.querySelector('#wax-seal-button');
+        if (waxSealEl) waxSealEl.classList.remove('broken');
+
+        // Hide main content until envelope is unsealed
+        const mainFlowEl = cloneDoc.querySelector('#main-content-flow');
+        if (mainFlowEl) mainFlowEl.classList.add('hidden');
+
+        // Remove studio editor modal so recipient has clean gift experience
+        const customizerModalEl = cloneDoc.querySelector('#customizer-modal');
+        if (customizerModalEl) customizerModalEl.remove();
+
+        const celebModalEl = cloneDoc.querySelector('#birthday-celebration-modal');
+        if (celebModalEl) celebModalEl.classList.add('hidden');
+
+        const lanternModalEl = cloneDoc.querySelector('#lantern-wish-modal');
+        if (lanternModalEl) lanternModalEl.classList.add('hidden');
+
+        // Reset candle to lit state
+        const flameEl = cloneDoc.querySelector('#flame-element');
+        if (flameEl) flameEl.style.opacity = '1';
+        const smokeEl = cloneDoc.querySelector('#smoke-element');
+        if (smokeEl) smokeEl.classList.add('hidden');
+        const cutBtnEl = cloneDoc.querySelector('#cut-cake-btn');
+        if (cutBtnEl) cutBtnEl.classList.add('hidden');
+        const blowBtnEl = cloneDoc.querySelector('#blow-candle-btn');
+        if (blowBtnEl) blowBtnEl.classList.remove('hidden');
+
+        // Reset letter to folded
+        const letterEl = cloneDoc.querySelector('#parchment-letter');
+        if (letterEl) letterEl.classList.add('folded');
+
+        // Reset scratch statuses
+        for (let s = 1; s <= 3; s++) {
+            const stEl = cloneDoc.querySelector(`#scratch-status-${s}`);
+            if (stEl) {
+                stEl.textContent = '✦ Scratch with mouse or finger ✦';
+                stEl.style.color = '';
+            }
+        }
+
+        // Remove old external scripts
+        cloneDoc.querySelectorAll('script').forEach(s => s.remove());
+
+        // Build self-contained recipient interactive runtime script
+        const sanitizedStateJson = JSON.stringify(state).replace(/<\/script>/gi, '<\\/script>');
+        const sanitizedAudioText = audioText.replace(/<\/script>/gi, '<\\/script>');
+
+        const standaloneJs = `
+        // 1. EMBEDDED WEB AUDIO API SYNTH ENGINE
+        ${sanitizedAudioText}
+
+        // 2. STANDALONE RECIPIENT SURPRISE RUNTIME
+        (function() {
+            const state = ${sanitizedStateJson};
+            let audioEngine = null;
+            try {
+                audioEngine = new BirthdayAudioEngine();
+                window.birthdayAudio = audioEngine;
+            } catch (e) {
+                console.warn('AudioEngine init error:', e);
+            }
+
+            const body = document.getElementById('main-body');
+            const surpriseGate = document.getElementById('surprise-gate-screen');
+            const envelope = document.getElementById('envelope-interactive');
+            const waxSealBtn = document.getElementById('wax-seal-button');
+            const openSurpriseBtn = document.getElementById('open-surprise-btn');
+            const mainFlow = document.getElementById('main-content-flow');
+            const vinylDisc = document.getElementById('vinyl-disc');
+            const playPauseBtn = document.getElementById('play-pause-btn');
+            const playIcon = document.getElementById('play-icon');
+            const audioEqualizer = document.getElementById('audio-equalizer');
+
+            // Canvases
+            const ambientCanvas = document.getElementById('ambient-canvas');
+            const celebrationCanvas = document.getElementById('celebration-canvas');
+            const ambientCtx = ambientCanvas ? ambientCanvas.getContext('2d') : null;
+            const celCtx = celebrationCanvas ? celebrationCanvas.getContext('2d') : null;
+
+            function resizeCanvases() {
+                if (ambientCanvas) {
+                    ambientCanvas.width = window.innerWidth;
+                    ambientCanvas.height = window.innerHeight;
+                }
+                if (celebrationCanvas) {
+                    celebrationCanvas.width = window.innerWidth;
+                    celebrationCanvas.height = window.innerHeight;
+                }
+            }
+            window.addEventListener('resize', resizeCanvases);
+            resizeCanvases();
+
+            // Ambient shimmering particles & romantic floating hearts
+            const ambientParticles = [];
+            if (ambientCanvas) {
+                for (let i = 0; i < 55; i++) {
+                    const isHeart = Math.random() < 0.28;
+                    ambientParticles.push({
+                        x: Math.random() * window.innerWidth,
+                        y: Math.random() * window.innerHeight,
+                        radius: isHeart ? (Math.random() * 2 + 1.8) : (Math.random() * 2 + 0.6),
+                        color: Math.random() > 0.4 ? 'rgba(255, 182, 193,' : 'rgba(255, 105, 180,',
+                        alpha: Math.random() * 0.7 + 0.2,
+                        speedY: Math.random() * 0.35 + 0.12,
+                        speedX: (Math.random() - 0.5) * 0.25,
+                        pulseSpeed: Math.random() * 0.02 + 0.01,
+                        isHeart
+                    });
+                }
+                function renderAmbient() {
+                    ambientCtx.clearRect(0, 0, ambientCanvas.width, ambientCanvas.height);
+                    ambientParticles.forEach(p => {
+                        p.y -= p.speedY;
+                        p.x += p.speedX;
+                        p.alpha += Math.sin(Date.now() * p.pulseSpeed * 0.05) * 0.005;
+                        if (p.y < -15) p.y = ambientCanvas.height + 15;
+                        if (p.x < -15) p.x = ambientCanvas.width + 15;
+                        if (p.x > ambientCanvas.width + 15) p.x = -15;
+
+                        if (p.isHeart) {
+                            ambientCtx.save();
+                            ambientCtx.font = Math.round(p.radius * 4.2) + 'px sans-serif';
+                            ambientCtx.textAlign = 'center';
+                            ambientCtx.textBaseline = 'middle';
+                            ambientCtx.fillStyle = 'rgba(255, 120, 170, ' + Math.max(0.15, Math.min(0.85, p.alpha)) + ')';
+                            ambientCtx.shadowBlur = 10;
+                            ambientCtx.shadowColor = 'rgba(255, 77, 141, 0.5)';
+                            ambientCtx.fillText('♥', p.x, p.y);
+                            ambientCtx.restore();
+                        } else {
+                            ambientCtx.beginPath();
+                            ambientCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                            ambientCtx.fillStyle = p.color + Math.max(0.1, Math.min(0.9, p.alpha)) + ')';
+                            ambientCtx.shadowBlur = 8;
+                            ambientCtx.shadowColor = 'rgba(255, 230, 180, 0.4)';
+                            ambientCtx.fill();
+                        }
+                    });
+                    requestAnimationFrame(renderAmbient);
+                }
+                renderAmbient();
+            }
+
+            // Celebration Confetti
+            let confettiList = [];
+            const confettiColors = ['#f43f5e', '#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#facc15', '#ffffff'];
+            function createConfettiBurst(count = 80, originX = window.innerWidth / 2, originY = window.innerHeight / 2) {
+                if (audioEngine) audioEngine.playChime();
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = Math.random() * 12 + 4;
+                    confettiList.push({
+                        x: originX,
+                        y: originY,
+                        vx: Math.cos(angle) * velocity,
+                        vy: Math.sin(angle) * velocity - 3,
+                        size: Math.random() * 9 + 5,
+                        color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+                        rotation: Math.random() * 360,
+                        rotationSpeed: (Math.random() - 0.5) * 15,
+                        gravity: 0.25,
+                        drag: 0.96,
+                        shape: Math.random() > 0.4 ? 'rect' : 'circle',
+                        alpha: 1,
+                        decay: Math.random() * 0.012 + 0.008
+                    });
+                }
+            }
+            function renderCelebration() {
+                if (!celCtx) return;
+                celCtx.clearRect(0, 0, celebrationCanvas.width, celebrationCanvas.height);
+                for (let i = confettiList.length - 1; i >= 0; i--) {
+                    const c = confettiList[i];
+                    c.x += c.vx; c.y += c.vy; c.vy += c.gravity; c.vx *= c.drag; c.vy *= c.drag;
+                    c.rotation += c.rotationSpeed; c.alpha -= c.decay;
+                    if (c.alpha <= 0 || c.y > celebrationCanvas.height + 20) {
+                        confettiList.splice(i, 1);
+                        continue;
+                    }
+                    celCtx.save();
+                    celCtx.translate(c.x, c.y);
+                    celCtx.rotate((c.rotation * Math.PI) / 180);
+                    celCtx.globalAlpha = Math.max(0, c.alpha);
+                    celCtx.fillStyle = c.color;
+                    if (c.shape === 'rect') {
+                        celCtx.fillRect(-c.size / 2, -c.size / 4, c.size, c.size / 2);
+                    } else {
+                        celCtx.beginPath();
+                        celCtx.arc(0, 0, c.size / 2.5, 0, Math.PI * 2);
+                        celCtx.fill();
+                    }
+                    celCtx.restore();
+                }
+                requestAnimationFrame(renderCelebration);
+            }
+            if (celebrationCanvas) renderCelebration();
+
+            // Music controls
+            let isMusicPlaying = false;
+            function setMusicState(playing) {
+                isMusicPlaying = playing;
+                if (vinylDisc) vinylDisc.classList.toggle('spinning', playing);
+                if (audioEqualizer) audioEqualizer.classList.toggle('active', playing);
+                if (playIcon) playIcon.textContent = playing ? '⏸' : '▶';
+            }
+            function toggleMusic() {
+                if (!audioEngine) return;
+                const nowPlaying = audioEngine.toggleMusic();
+                setMusicState(nowPlaying);
+            }
+            if (vinylDisc) vinylDisc.addEventListener('click', toggleMusic);
+            if (playPauseBtn) playPauseBtn.addEventListener('click', toggleMusic);
+
+            // Envelope unwrapping
+            function unwrapSurprise() {
+                if (waxSealBtn) waxSealBtn.classList.add('broken');
+                if (envelope) envelope.classList.add('open-anim');
+                if (audioEngine) {
+                    audioEngine.playChime();
+                    audioEngine.startMusic();
+                    setMusicState(true);
+                }
+                createConfettiBurst(120, window.innerWidth / 2, window.innerHeight / 2);
+
+                setTimeout(() => {
+                    document.body.classList.add('gate-unwrapped');
+                    if (surpriseGate) {
+                        surpriseGate.classList.add('fade-out');
+                        surpriseGate.style.pointerEvents = 'none';
+                    }
+                    if (mainFlow) {
+                        mainFlow.classList.remove('hidden');
+                        mainFlow.style.display = 'block';
+                        mainFlow.style.pointerEvents = 'auto';
+                    }
+
+                    setTimeout(() => {
+                        if (surpriseGate) {
+                            surpriseGate.classList.add('hidden');
+                            surpriseGate.style.display = 'none';
+                            surpriseGate.style.pointerEvents = 'none';
+                            surpriseGate.style.visibility = 'hidden';
+                            surpriseGate.style.zIndex = '-99999';
+                        }
+                        createConfettiBurst(80, window.innerWidth * 0.3, window.innerHeight * 0.4);
+                        createConfettiBurst(80, window.innerWidth * 0.7, window.innerHeight * 0.4);
+                    }, 800);
+                }, 650);
+            }
+            if (waxSealBtn) waxSealBtn.addEventListener('click', unwrapSurprise);
+            if (openSurpriseBtn) openSurpriseBtn.addEventListener('click', unwrapSurprise);
+
+            // Cake & Candle
+            const flame = document.getElementById('flame-element');
+            const candle = document.getElementById('cake-candle');
+            const smoke = document.getElementById('smoke-element');
+            const blowBtn = document.getElementById('blow-candle-btn');
+            const cutBtn = document.getElementById('cut-cake-btn');
+            const celebrationModal = document.getElementById('birthday-celebration-modal');
+
+            function blowCandle() {
+                if (flame) flame.style.opacity = '0';
+                if (smoke) smoke.classList.remove('hidden');
+                if (blowBtn) blowBtn.classList.add('hidden');
+                if (cutBtn) cutBtn.classList.remove('hidden');
+                if (audioEngine) audioEngine.playCandleBlow();
+                createConfettiBurst(80, window.innerWidth / 2, window.innerHeight * 0.45);
+            }
+            if (flame) flame.addEventListener('click', blowCandle);
+            if (candle) candle.addEventListener('click', blowCandle);
+            if (blowBtn) blowBtn.addEventListener('click', blowCandle);
+
+            if (cutBtn) {
+                cutBtn.addEventListener('click', () => {
+                    if (audioEngine) audioEngine.playCakeCut();
+                    createConfettiBurst(120, window.innerWidth / 2, window.innerHeight * 0.5);
+                    cutBtn.textContent = '🎂 Cake Celebrated! 🎉';
+                    cutBtn.style.background = 'rgba(255,255,255,0.2)';
+                    if (celebrationModal) {
+                        setTimeout(() => {
+                            celebrationModal.classList.remove('hidden');
+                            document.body.classList.add('modal-open');
+                            createConfettiBurst(100, window.innerWidth / 2, window.innerHeight * 0.4);
+                        }, 400);
+                    }
+                });
+            }
+            const closeCelebBtn = document.getElementById('close-celebration-btn');
+            const claimCelebBtn = document.getElementById('claim-celebration-btn');
+            function closeCeleb() {
+                if (celebrationModal) celebrationModal.classList.add('hidden');
+                document.body.classList.remove('modal-open');
+            }
+            if (closeCelebBtn) closeCelebBtn.addEventListener('click', closeCeleb);
+            if (claimCelebBtn) {
+                claimCelebBtn.addEventListener('click', () => {
+                    closeCeleb();
+                    const polaroids = document.getElementById('polaroid-gallery-section');
+                    if (polaroids) polaroids.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+            if (celebrationModal) {
+                celebrationModal.addEventListener('click', (e) => {
+                    if (e.target === celebrationModal) closeCeleb();
+                });
+            }
+
+            // Polaroid 3D Tilt & Flip
+            document.querySelectorAll('.polaroid-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('is-flipped');
+                    if (audioEngine) audioEngine.playChime();
+                });
+                card.addEventListener('mousemove', (e) => {
+                    if (card.classList.contains('is-flipped')) return;
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    card.style.transform = 'perspective(1000px) rotateX(' + (-(y / rect.height) * 18) + 'deg) rotateY(' + ((x / rect.width) * 18) + 'deg) scale3d(1.04, 1.04, 1.04)';
+                });
+                card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+            });
+
+            // Scratch cards
+            function initScratch(canvasId, statusId, isGolden) {
+                const canvas = document.getElementById(canvasId);
+                const status = document.getElementById(statusId);
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const w = canvas.width;
+                const h = canvas.height;
+                let finished = false;
+                let drawing = false;
+
+                const grad = ctx.createLinearGradient(0, 0, w, h);
+                if (isGolden) {
+                    grad.addColorStop(0, '#fef08a'); grad.addColorStop(0.5, '#d97706'); grad.addColorStop(1, '#b45309');
+                } else {
+                    grad.addColorStop(0, '#e2e8f0'); grad.addColorStop(0.5, '#94a3b8'); grad.addColorStop(1, '#475569');
+                }
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = isGolden ? '#451a03' : '#1e293b';
+                ctx.font = 'bold 15px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('✨ SCRATCH WITH MOUSE / FINGER ✨', w / 2, h / 2 + 5);
+
+                function scratch(x, y) {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 22, 0, Math.PI * 2);
+                    ctx.fill();
+                    if (audioEngine) audioEngine.playScratch();
+
+                    if (!finished) {
+                        const data = ctx.getImageData(0, 0, w, h).data;
+                        let cleared = 0;
+                        for (let i = 3; i < data.length; i += 16) {
+                            if (data[i] === 0) cleared++;
+                        }
+                        if ((cleared / (data.length / 16)) > 0.45) {
+                            finished = true;
+                            ctx.clearRect(0, 0, w, h);
+                            canvas.style.pointerEvents = 'none';
+                            if (status) {
+                                status.textContent = '🎉 Pass Unlocked! Congratulations!';
+                                status.style.color = '#4ade80';
+                            }
+                            if (audioEngine) audioEngine.playChime();
+                            createConfettiBurst(50, window.innerWidth / 2, window.innerHeight * 0.6);
+                        }
+                    }
+                }
+
+                canvas.addEventListener('mousedown', (e) => { drawing = true; scratch(e.offsetX, e.offsetY); });
+                canvas.addEventListener('mousemove', (e) => { if (drawing) scratch(e.offsetX, e.offsetY); });
+                window.addEventListener('mouseup', () => { drawing = false; });
+
+                canvas.addEventListener('touchstart', (e) => {
+                    drawing = true;
+                    const r = canvas.getBoundingClientRect();
+                    const t = e.touches[0];
+                    scratch((t.clientX - r.left) * (w / r.width), (t.clientY - r.top) * (h / r.height));
+                    e.preventDefault();
+                }, { passive: false });
+                canvas.addEventListener('touchmove', (e) => {
+                    if (!drawing) return;
+                    const r = canvas.getBoundingClientRect();
+                    const t = e.touches[0];
+                    scratch((t.clientX - r.left) * (w / r.width), (t.clientY - r.top) * (h / r.height));
+                    e.preventDefault();
+                }, { passive: false });
+                canvas.addEventListener('touchend', () => { drawing = false; });
+            }
+            initScratch('scratch-canvas-1', 'scratch-status-1', false);
+            initScratch('scratch-canvas-2', 'scratch-status-2', false);
+            initScratch('scratch-canvas-3', 'scratch-status-3', true);
+
+            // Letter unfolding
+            const letter = document.getElementById('parchment-letter');
+            const openLetterBtn = document.getElementById('open-letter-button');
+            function unfoldLetter() {
+                if (letter && letter.classList.contains('folded')) {
+                    letter.classList.remove('folded');
+                    if (audioEngine) audioEngine.playChime();
+                    createConfettiBurst(60, window.innerWidth / 2, window.innerHeight * 0.7);
+                }
+            }
+            if (openLetterBtn) openLetterBtn.addEventListener('click', unfoldLetter);
+            if (letter) letter.addEventListener('click', () => { if (letter.classList.contains('folded')) unfoldLetter(); });
+
+            // Balloons
+            const balloonSky = document.getElementById('balloon-sky-container');
+            const poppedDisplay = document.getElementById('popped-count');
+            let popped = 0;
+            const bColors = ['linear-gradient(135deg, #f43f5e, #fda4af)', 'linear-gradient(135deg, #a855f7, #d8b4fe)', 'linear-gradient(135deg, #38bdf8, #bae6fd)', 'linear-gradient(135deg, #fb923c, #fed7aa)', 'linear-gradient(135deg, #34d399, #a7f3d0)'];
+            function spawnBalloon() {
+                if (!balloonSky) return;
+                const b = document.createElement('div');
+                b.className = 'interactive-balloon';
+                b.style.left = (Math.random() * 85 + 5) + '%';
+                b.style.background = bColors[Math.floor(Math.random() * bColors.length)];
+                b.style.setProperty('--duration', (Math.random() * 4 + 7) + 's');
+                b.addEventListener('pointerdown', (e) => {
+                    if (e && e.cancelable && e.type !== 'click') e.preventDefault();
+                    popped++;
+                    if (poppedDisplay) poppedDisplay.textContent = popped;
+                    if (audioEngine) audioEngine.playBalloonPop();
+                    const rect = b.getBoundingClientRect();
+                    createConfettiBurst(25, rect.left + rect.width / 2, rect.top + rect.height / 2);
+                    b.remove();
+                });
+                balloonSky.appendChild(b);
+                setTimeout(() => { if (b.parentNode) b.remove(); }, 12000);
+            }
+            setInterval(spawnBalloon, 2000);
+            for (let i = 0; i < 4; i++) spawnBalloon();
+
+            // Sky Lantern
+            const releaseLanternBtn = document.getElementById('release-lantern-btn');
+            const lanternModal = document.getElementById('lantern-wish-modal');
+            const sendLanternBtn = document.getElementById('send-lantern-btn');
+            const cancelLanternBtn = document.getElementById('cancel-lantern-btn');
+            const lanternWishInput = document.getElementById('lantern-wish-input');
+            if (releaseLanternBtn) releaseLanternBtn.addEventListener('click', () => {
+                lanternModal.classList.remove('hidden');
+                document.body.classList.add('modal-open');
+            });
+            function closeLanternModal() {
+                lanternModal.classList.add('hidden');
+                document.body.classList.remove('modal-open');
+            }
+            if (cancelLanternBtn) cancelLanternBtn.addEventListener('click', closeLanternModal);
+            if (lanternModal) {
+                lanternModal.addEventListener('click', (e) => {
+                    if (e.target === lanternModal) closeLanternModal();
+                });
+            }
+            if (sendLanternBtn) {
+                sendLanternBtn.addEventListener('click', () => {
+                    closeLanternModal();
+                    const wishText = lanternWishInput.value.trim() || 'A beautiful birthday wish';
+                    const lantern = document.createElement('div');
+                    lantern.className = 'sky-lantern-item';
+                    lantern.style.left = (Math.random() * 60 + 20) + '%';
+                    if (balloonSky) balloonSky.appendChild(lantern);
+                    if (audioEngine) audioEngine.playChime();
+                    createConfettiBurst(70, window.innerWidth / 2, window.innerHeight * 0.5);
+                    lanternWishInput.value = '';
+                    setTimeout(() => { if (lantern.parentNode) lantern.remove(); }, 15000);
+                });
+            }
+
+            // Theme Switcher
+            const themeBtn = document.getElementById('theme-menu-btn');
+            const themeDropdown = document.getElementById('theme-dropdown-menu');
+            const themeLabel = document.getElementById('current-theme-name');
+            if (themeBtn && themeDropdown) {
+                themeBtn.addEventListener('click', (e) => { e.stopPropagation(); themeDropdown.classList.toggle('hidden'); });
+                document.addEventListener('click', () => themeDropdown.classList.add('hidden'));
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.addEventListener('click', () => {
+                        const chosen = opt.getAttribute('data-theme');
+                        document.body.className = chosen + ' standalone-recipient-view';
+                        document.querySelectorAll('.theme-option').forEach(o => o.classList.toggle('active', o.getAttribute('data-theme') === chosen));
+                        const map = { 'theme-rosegold': 'Cupid Pink 💖', 'theme-midnight': 'Midnight 🌙', 'theme-sunset': 'Sunset Gold 🌅', 'theme-matcha': 'Matcha Sage 🍵' };
+                        if (themeLabel) themeLabel.textContent = map[chosen] || 'Theme';
+                    });
+                });
+            }
+
+            // Countdown timer
+            function updateCountdown() {
+                const bdate = state.birthdate;
+                if (!bdate) return;
+                const now = new Date();
+                const parts = bdate.split('-');
+                if (parts.length !== 3) return;
+                const bYear = now.getFullYear();
+                let target = new Date(bYear, parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0);
+                if (now.getTime() > target.getTime() + (24 * 60 * 60 * 1000)) {
+                    target = new Date(bYear + 1, parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0);
+                }
+                const isToday = now.getMonth() === target.getMonth() && now.getDate() === target.getDate();
+                const wrapper = document.getElementById('bday-countdown-widget');
+                const dEl = document.querySelector('#unit-days strong');
+                const hEl = document.querySelector('#unit-hours strong');
+                const mEl = document.querySelector('#unit-mins strong');
+                const sEl = document.querySelector('#unit-secs strong');
+                const noteEl = document.getElementById('countdown-status-note');
+                if (isToday) {
+                    if (wrapper) wrapper.classList.add('its-birthday-today');
+                    if (dEl) dEl.textContent = '🎉';
+                    if (hEl) hEl.textContent = "IT'S";
+                    if (mEl) mEl.textContent = 'YOUR';
+                    if (sEl) sEl.textContent = 'DAY!';
+                    if (noteEl) noteEl.textContent = '✨ TODAY IS THE BIG DAY! HAPPY BIRTHDAY! 🎂';
+                    return;
+                }
+                const diff = target - now;
+                if (diff > 0) {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                    const mins = Math.floor((diff / (1000 * 60)) % 60);
+                    const secs = Math.floor((diff / 1000) % 60);
+                    if (dEl) dEl.textContent = days;
+                    if (hEl) hEl.textContent = hours;
+                    if (mEl) mEl.textContent = mins;
+                    if (sEl) sEl.textContent = secs;
+                    if (noteEl) noteEl.textContent = '⏳ ' + days + ' days until your midnight celebration! ✨';
+                }
+            }
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        })();
+        `;
+
+        const scriptTag = document.createElement('script');
+        scriptTag.id = 'standalone-surprise-runtime';
+        scriptTag.textContent = standaloneJs;
+        cloneBody.appendChild(scriptTag);
+
+        return '<!DOCTYPE html>\n' + cloneDoc.outerHTML;
+    }
+
+    downloadHtmlBtn.addEventListener('click', async () => {
+        const originalBtnHtml = downloadHtmlBtn.innerHTML;
+        downloadHtmlBtn.innerHTML = '<span>⏳ Packaging Offline Surprise...</span>';
+        downloadHtmlBtn.disabled = true;
+
+        try {
+            const standaloneHtml = await generateStandaloneSurpriseBundle();
+            const blob = new Blob([standaloneHtml], { type: 'text/html;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${state.recipientName.replace(/\s+/g, '_')}_Birthday_Surprise.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+
+            downloadHtmlBtn.innerHTML = '<span>✅ Surprise Downloaded!</span>';
+            showToast(`💌 ${state.recipientName}'s standalone surprise downloaded! When they open it, it begins directly at the sealed wax envelope with full music & animations! ✨`, 5500);
+
+            setTimeout(() => {
+                downloadHtmlBtn.innerHTML = originalBtnHtml;
+                downloadHtmlBtn.disabled = false;
+            }, 3000);
+        } catch (err) {
+            console.error('Download HTML error:', err);
+            downloadHtmlBtn.innerHTML = originalBtnHtml;
+            downloadHtmlBtn.disabled = false;
+            showToast('⚠️ Could not bundle surprise file. Please try again.');
+        }
     });
 
     // ==========================================
-    // 19. UNPACK SHARED URL DATA ON LOAD
+    // 21. UNPACK SHARED URL DATA OR RESTORE LOCALSTORAGE ON LOAD
     // ==========================================
     function unpackSharedData() {
         if (window.__INITIAL_STATE__) {
             Object.assign(state, window.__INITIAL_STATE__);
-            applyCustomizations();
+            syncInputsFromState();
+            applyCustomizations(false);
             return;
         }
 
@@ -1210,7 +2462,8 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                         });
                     }
 
-                    applyCustomizations();
+                    syncInputsFromState();
+                    applyCustomizations(false, false);
                     return;
                 }
             } catch (err) {
@@ -1218,20 +2471,62 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
             }
         }
 
-        // Fallback: URL Search Params
         const params = new URLSearchParams(window.location.search);
-        if (params.has('name')) state.recipientName = params.get('name');
-        if (params.has('milestone')) state.milestone = params.get('milestone');
-        if (params.has('bday')) state.birthdate = params.get('bday');
-        if (params.has('from')) state.senderName = params.get('from');
-        if (params.has('theme')) state.currentTheme = params.get('theme');
-        if (params.has('wish')) state.heroWish = params.get('wish');
+        let hasQueryParams = false;
+        if (params.has('name')) { state.recipientName = params.get('name'); hasQueryParams = true; }
+        if (params.has('milestone')) { state.milestone = params.get('milestone'); hasQueryParams = true; }
+        if (params.has('bday')) { state.birthdate = params.get('bday'); hasQueryParams = true; }
+        if (params.has('from')) { state.senderName = params.get('from'); hasQueryParams = true; }
+        if (params.has('theme')) { state.currentTheme = params.get('theme'); hasQueryParams = true; }
+        if (params.has('wish')) { state.heroWish = params.get('wish'); hasQueryParams = true; }
         if (params.has('msg')) {
+            hasQueryParams = true;
             try { state.letterText = decodeURIComponent(params.get('msg')); }
             catch (e) { state.letterText = params.get('msg'); }
         }
 
-        applyCustomizations();
+        if (hasQueryParams) {
+            // View-only shared surprise: do NOT pollute visitor's localStorage!
+            syncInputsFromState();
+            applyCustomizations(false, false);
+            return;
+        }
+
+        // Restore from LocalStorage ONLY if user previously customized
+        loadStateFromLocalStorage();
+        syncInputsFromState();
+        applyCustomizations(false, false);
+    }
+
+    // Handle reset / fresh URL parameter (?reset=1 or ?fresh=1 or ?clear=1)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('reset') || urlParams.has('clear') || urlParams.has('fresh')) {
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(GATE_KEY);
+        } catch (e) {}
+        Object.assign(state, JSON.parse(JSON.stringify(DEFAULT_STATE)));
+    }
+
+    // Clean old bypass flag from localStorage so visits always start at Envelope
+    try {
+        localStorage.removeItem('birthday_surprise_gate_opened_v1');
+    } catch (e) {}
+
+    // Respect explicit direct view parameter if provided (?view=home)
+    if (urlParams.get('view') === 'home') {
+        if (surpriseGate) surpriseGate.classList.add('hidden');
+        if (mainFlow) mainFlow.classList.remove('hidden');
+    } else {
+        if (surpriseGate) surpriseGate.classList.remove('hidden', 'fade-out');
+        if (mainFlow) mainFlow.classList.add('hidden');
+    }
+
+    // Auto-open Surprise Studio if creator requested via URL (?studio=1 or ?edit=1)
+    if (urlParams.has('studio') || urlParams.has('edit')) {
+        setTimeout(() => {
+            openCustomizerModal();
+        }, 300);
     }
 
     unpackSharedData();

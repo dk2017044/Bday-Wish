@@ -1,0 +1,17 @@
+# Dependencies and system files
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+
+# IDE & AI internal workspaces
+.gemini/
+.agent/
+.agents/
+.gsd/
+adapters/
+scripts/
+GSD-STYLE.md
+PROJECT_RULES.md
+model_capabilities.yaml
+VERSION

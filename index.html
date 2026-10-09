@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0e070c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Happy Birthday! ✨ A Special Surprise Just For You</title>
     <meta name="description" content="An interactive, cinematic birthday website experience featuring candle blowing, custom polaroid memories, scratch cards, and heartfelt wishes.">
     
@@ -33,7 +37,7 @@
                 <div class="music-info">
                     <span class="track-title" id="track-name">Happy Birthday Lo-Fi 🎶</span>
                     <div class="music-controls">
-                        <button class="icon-btn" id="play-pause-btn" aria-label="Play or Pause Music">
+                        <button type="button" class="icon-btn" id="play-pause-btn" aria-label="Play or Pause Music">
                             <span id="play-icon">▶</span>
                         </button>
                         <div class="equalizer-bars" id="audio-equalizer">
@@ -50,30 +54,34 @@
         <div class="header-right">
             <!-- Theme Selector Dropdown -->
             <div class="theme-picker-container">
-                <button class="pill-btn theme-toggle-btn" id="theme-menu-btn">
+                <button type="button" class="pill-btn theme-toggle-btn" id="theme-menu-btn">
                     <span class="theme-icon">🎨</span>
-                    <span class="theme-label" id="current-theme-name">Rose Gold</span>
+                    <span class="theme-label" id="current-theme-name">Cupid Pink 💖</span>
                     <span class="chevron">▾</span>
                 </button>
                 <div class="theme-dropdown hidden" id="theme-dropdown-menu">
-                    <button class="theme-option active" data-theme="theme-rosegold">
-                        <span class="swatch rosegold-swatch"></span> Rose Gold Velvet
+                    <button type="button" class="theme-option active" data-theme="theme-rosegold">
+                        <span class="swatch rosegold-swatch"></span> 💖 Cupid Pink (Romantic)
                     </button>
-                    <button class="theme-option" data-theme="theme-midnight">
+                    <button type="button" class="theme-option" data-theme="theme-midnight">
                         <span class="swatch midnight-swatch"></span> Midnight Stardust
                     </button>
-                    <button class="theme-option" data-theme="theme-sunset">
+                    <button type="button" class="theme-option" data-theme="theme-sunset">
                         <span class="swatch sunset-swatch"></span> Golden Sunset
                     </button>
-                    <button class="theme-option" data-theme="theme-matcha">
+                    <button type="button" class="theme-option" data-theme="theme-matcha">
                         <span class="swatch matcha-swatch"></span> Matcha Dream
                     </button>
                 </div>
             </div>
 
             <!-- Customize Button -->
-            <button class="pill-btn highlight-btn" id="open-customizer-btn">
+            <button type="button" class="pill-btn highlight-btn" id="open-customizer-btn">
                 <span>✨ Surprise Studio</span>
+            </button>
+            <!-- Re-seal Envelope Button -->
+            <button type="button" class="pill-btn outline-btn" id="reseal-envelope-btn" title="View Sealed Envelope Gate">
+                <span>💌 Envelope</span>
             </button>
         </div>
     </header>
@@ -82,6 +90,13 @@
          SCENE 0: THE MYSTERY ENVELOPE GATE (UNWRAPPING)
          ============================================== -->
     <section class="gate-overlay" id="surprise-gate-screen">
+        <!-- Top bar for Creator Mode -->
+        <div class="gate-top-bar">
+            <button type="button" class="gate-creator-badge" id="gate-creator-badge-btn" title="Open Surprise Studio to personalize">
+                <span>✨ Customize Surprise</span>
+            </button>
+        </div>
+
         <div class="gate-content">
             <div class="gift-box-wrapper">
                 <div class="floating-badge">💌 Special Delivery for You</div>
@@ -108,9 +123,14 @@
                     <strong>Tap the Golden Wax Seal</strong> to unwrap your surprise
                     <span class="sparkle-pulse">✨</span>
                 </p>
-                <button class="unlock-btn" id="open-surprise-btn">
-                    <span>Unwrap My Surprise 🎁</span>
-                </button>
+                <div class="gate-actions-row">
+                    <button type="button" class="unlock-btn" id="open-surprise-btn">
+                        <span>Unwrap My Surprise 🎁</span>
+                    </button>
+                    <button type="button" class="pill-btn gate-studio-btn" id="gate-open-studio-btn">
+                        <span>✨ Customize in Surprise Studio</span>
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -170,7 +190,7 @@
             <div class="cake-stage-container">
                 <!-- Microphone blowing status bar -->
                 <div class="mic-status-bar" id="mic-status-container">
-                    <button class="mic-btn" id="toggle-mic-btn" title="Enable microphone blow detection">
+                    <button type="button" class="mic-btn" id="toggle-mic-btn" title="Enable microphone blow detection">
                         <span id="mic-icon">🎙️</span>
                         <span id="mic-label">Enable Mic to Blow</span>
                     </button>
@@ -182,7 +202,6 @@
 
                 <!-- 3D Layered Birthday Cake -->
                 <div class="cake-display" id="birthday-cake-wrapper">
-                    <!-- Plate -->
                     <div class="cake-plate"></div>
 
                     <!-- Candle -->
@@ -233,23 +252,13 @@
                         <div class="ribbon-band"></div>
                     </div>
 
-                    <!-- Cut Slice Effect -->
-                    <div class="cake-slice-cut hidden" id="cake-slice-display">
-                        <div class="slice-inner">🍰 Slice for You!</div>
-                    </div>
-                </div>
-
-                <!-- Action Buttons for Cake -->
                 <div class="cake-action-buttons">
-                    <button class="action-btn blow-btn" id="blow-candle-btn">
+                    <button type="button" class="action-btn blow-btn" id="blow-candle-btn">
                         <span>💨 Tap to Blow Candle</span>
                     </button>
-                    <button class="action-btn cut-btn hidden" id="cut-cake-btn">
-                        <span>🔪 Cut the Cake!</span>
+                    <button type="button" class="action-btn cut-btn hidden" id="cut-cake-btn">
+                        <span>🔪 Cut the Birthday Cake! 🎂</span>
                     </button>
-                    <div class="wish-granted-banner hidden" id="wish-banner">
-                        <span id="wish-banner-text">✨ Your Birthday Wish Has Been Sent to the Stars! ✨</span>
-                    </div>
                 </div>
             </div>
         </section>
@@ -262,7 +271,6 @@
                 <p class="section-desc">Hover to tilt, drag to swing, or click any polaroid to flip and view the secret note!</p>
             </div>
 
-            <!-- Clothesline String with Fairy Lights -->
             <div class="clothesline-container">
                 <div class="twinkle-lights">
                     <span class="light-bulb b1"></span>
@@ -276,7 +284,6 @@
                 </div>
                 <div class="line-wire"></div>
 
-                <!-- Polaroids Grid / Hanging Row -->
                 <div class="polaroid-board" id="polaroid-cards-board">
                     
                     <!-- Polaroid 1 -->
@@ -505,17 +512,15 @@
             </div>
 
             <div class="finale-interactive-stage" id="balloon-stage">
-                <!-- Floating Balloon Spawner Container -->
                 <div class="balloon-sky" id="balloon-sky-container"></div>
 
-                <!-- Control Bar -->
                 <div class="interactive-controls-row">
                     <div class="counter-pill">
                         <span>🎈 Popped:</span>
                         <strong id="popped-count">0</strong>
                     </div>
 
-                    <button class="action-btn lantern-trigger-btn" id="release-lantern-btn">
+                    <button type="button" class="action-btn lantern-trigger-btn" id="release-lantern-btn">
                         <span>🏮 Release a Sky Lantern Wish</span>
                     </button>
                 </div>
@@ -531,31 +536,44 @@
     </main>
 
     <!-- ==============================================
-         SURPRISE STUDIO MULTI-TAB MODAL (VIRAL CREATOR ENGINE)
+         SURPRISE STUDIO MULTI-TAB MODAL WITH GEMINI AI
          ============================================== -->
     <div class="customizer-modal-backdrop hidden" id="customizer-modal">
         <div class="customizer-modal-window wide-studio">
             <div class="modal-header">
                 <div class="modal-title-wrap">
-                    <span class="modal-badge">✨ Birthday Surprise Studio</span>
-                    <h3>Customize & Share With Your Partner</h3>
+                    <h3>Customize Surprise ✨</h3>
                 </div>
-                <button class="close-modal-btn" id="close-customizer-btn" aria-label="Close modal">✕</button>
+                <div class="modal-header-actions">
+                    <button type="button" class="btn-studio-reset" id="btn-studio-reset" title="Reset all changes back to original template">
+                        <span>🔄 Reset to Original</span>
+                    </button>
+                    <button type="button" class="close-modal-btn" id="close-customizer-btn" aria-label="Close modal">✕</button>
+                </div>
             </div>
 
             <!-- Studio Navigation Tabs -->
             <div class="studio-tabs-bar">
-                <button class="studio-tab-btn active" data-tab="tab-basics">👤 Basics & Wishes</button>
-                <button class="studio-tab-btn" data-tab="tab-photos">📸 4 Photos</button>
-                <button class="studio-tab-btn" data-tab="tab-scratch">🎟️ 3 Scratch Passes</button>
-                <button class="studio-tab-btn" data-tab="tab-letter">💌 Love Letter</button>
-                <button class="studio-tab-btn" data-tab="tab-share">🚀 Share Link</button>
+                <button type="button" class="studio-tab-btn active" data-tab="tab-basics">👤 Basics</button>
+                <button type="button" class="studio-tab-btn" data-tab="tab-photos">📸 Photos</button>
+                <button type="button" class="studio-tab-btn" data-tab="tab-scratch">🎟️ Passes</button>
+                <button type="button" class="studio-tab-btn" data-tab="tab-letter">💌 Letter</button>
+                <button type="button" class="studio-tab-btn" data-tab="tab-share">🚀 Share</button>
             </div>
 
             <div class="modal-body studio-modal-body">
 
                 <!-- TAB 1: BASICS & BIRTHDAY DATE & WISHES -->
                 <div class="studio-tab-pane active" id="tab-basics">
+                    <div class="quick-starter-banner">
+                        <div class="starter-info">
+                            <span class="starter-badge">💡 Tip</span>
+                            <span>Making this for your own person? Click to clear demo details and start fresh!</span>
+                        </div>
+                        <button type="button" class="btn-start-fresh" id="btn-start-fresh" title="Clear demo text for your partner">
+                            <span>✨ Start Fresh (Clear Demo)</span>
+                        </button>
+                    </div>
                     <div class="form-row-2">
                         <!-- Recipient Name -->
                         <div class="form-group">
@@ -573,9 +591,8 @@
                     <div class="form-row-2">
                         <!-- Birthday Date Picker -->
                         <div class="form-group">
-                            <label for="input-birthdate">🎂 Birthday Date (For Countdown) *</label>
+                            <label for="input-birthdate">🎂 Birthday Date *</label>
                             <input type="date" id="input-birthdate" required>
-                            <span class="input-helper-text">Select their exact birthdate to display the live countdown timer!</span>
                         </div>
 
                         <!-- Sender Name -->
@@ -585,11 +602,26 @@
                         </div>
                     </div>
 
-                    <!-- Main Birthday Wish / Subtitle Tagline Customizer -->
+                    <!-- Main Birthday Wish / Tagline Customizer with AI Polish -->
                     <div class="form-group">
                         <label for="input-hero-wishes">🌟 Main Birthday Wish / Tagline (Under their name)</label>
-                        <textarea id="input-hero-wishes" rows="2" placeholder="e.g. May your day be filled with endless magic, radiant smiles, and unforgettable moments!">May your day be filled with endless magic, radiant smiles, and unforgettable moments!</textarea>
-                        <span class="input-helper-text">This will be highlighted right under their name in the hero celebration section.</span>
+                        <textarea id="input-hero-wishes" rows="2" placeholder="Write in Hindi, English, or Hinglish (e.g. meri pyari priya happy bday hamesha hasti reh)...">May your day be filled with endless magic, radiant smiles, and unforgettable moments!</textarea>
+                        
+                        <!-- AI Polish Toolbar -->
+                        <div class="ai-enhance-bar">
+                            <div class="ai-bar-header">
+                                <span class="ai-sparkle-label">✨ Gemini AI Polish:</span>
+                                <div class="ai-tone-chips">
+                                    <button type="button" class="tone-chip active" data-tone="Romantic">💕 Romantic</button>
+                                    <button type="button" class="tone-chip" data-tone="Bestie">😂 Bestie</button>
+                                    <button type="button" class="tone-chip" data-tone="Warm">🌸 Warm</button>
+                                    <button type="button" class="tone-chip" data-tone="Poetic">✨ Poetic</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-ai-polish" data-target="input-hero-wishes" data-context="Birthday Celebration Tagline">
+                                <span>✨ AI Fix Spelling, Phrasing & Add Emojis</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Theme Preset Selection -->
@@ -599,8 +631,8 @@
                             <label class="theme-radio-label">
                                 <input type="radio" name="modal-theme" value="theme-rosegold" checked>
                                 <span class="radio-card rosegold-theme-card">
-                                    <span class="color-dot" style="background: #e07a8b;"></span>
-                                    <span>Rose Gold</span>
+                                    <span class="color-dot" style="background: #ff4081;"></span>
+                                    <span>💖 Cupid Pink (Romantic)</span>
                                 </span>
                             </label>
                             <label class="theme-radio-label">
@@ -632,9 +664,7 @@
 
                 <!-- TAB 2: POLAROID PHOTOS UPLOADER -->
                 <div class="studio-tab-pane" id="tab-photos">
-                    <div class="photos-instruction-banner">
-                        <span>📸 Upload 4 special photos from your phone or PC. They will be compressed automatically and displayed on the hanging clothesline!</span>
-                    </div>
+
 
                     <div class="photos-uploader-grid">
                         
@@ -648,8 +678,14 @@
                                 </label>
                             </div>
                             <div class="photo-fields">
-                                <input type="text" class="studio-caption-input" id="input-caption-1" placeholder="Front Caption" value="Golden Hour Beach '23 ✨">
-                                <textarea class="studio-note-input" id="input-note-1" rows="2" placeholder="Secret Note on Back of Polaroid...">"That evening we ran toward the waves with sparklers in our hands, laughing so hard our ribs ached. Always keep that radiant laughter alive!"</textarea>
+                                <div class="field-with-ai">
+                                    <input type="text" class="studio-caption-input" id="input-caption-1" placeholder="Front Caption" value="Golden Hour Beach '23 ✨">
+                                    <button type="button" class="mini-ai-btn" data-target="input-caption-1" data-context="Photo Front Caption" title="AI Fix & Emoji">✨ AI</button>
+                                </div>
+                                <div class="field-with-ai">
+                                    <textarea class="studio-note-input" id="input-note-1" rows="2" placeholder="Secret Note on Back of Polaroid...">"That evening we ran toward the waves with sparklers in our hands, laughing so hard our ribs ached. Always keep that radiant laughter alive!"</textarea>
+                                    <button type="button" class="mini-ai-btn" data-target="input-note-1" data-context="Secret Memory Note on Back of Polaroid" title="AI Fix & Emoji">✨ AI</button>
+                                </div>
                             </div>
                         </div>
 
@@ -663,8 +699,14 @@
                                 </label>
                             </div>
                             <div class="photo-fields">
-                                <input type="text" class="studio-caption-input" id="input-caption-2" placeholder="Front Caption" value="Celebrate & Joy ☕🧁">
-                                <textarea class="studio-note-input" id="input-note-2" rows="2" placeholder="Secret Note on Back of Polaroid...">"Our endless cafe conversations over iced matcha and cupcakes. Thank you for always being my safe space and biggest cheerleader."</textarea>
+                                <div class="field-with-ai">
+                                    <input type="text" class="studio-caption-input" id="input-caption-2" placeholder="Front Caption" value="Celebrate & Joy ☕🧁">
+                                    <button type="button" class="mini-ai-btn" data-target="input-caption-2" data-context="Photo Front Caption" title="AI Fix & Emoji">✨ AI</button>
+                                </div>
+                                <div class="field-with-ai">
+                                    <textarea class="studio-note-input" id="input-note-2" rows="2" placeholder="Secret Note on Back of Polaroid...">"Our endless cafe conversations over iced matcha and cupcakes. Thank you for always being my safe space and biggest cheerleader."</textarea>
+                                    <button type="button" class="mini-ai-btn" data-target="input-note-2" data-context="Secret Memory Note on Back of Polaroid" title="AI Fix & Emoji">✨ AI</button>
+                                </div>
                             </div>
                         </div>
 
@@ -678,8 +720,14 @@
                                 </label>
                             </div>
                             <div class="photo-fields">
-                                <input type="text" class="studio-caption-input" id="input-caption-3" placeholder="Front Caption" value="Pure Chaos & Confetti 🥳">
-                                <textarea class="studio-note-input" id="input-note-3" rows="2" placeholder="Secret Note on Back of Polaroid...">"Party hats, confetti in our hair, and zero regrets! No one brings energy and pure fun into a room like you do."</textarea>
+                                <div class="field-with-ai">
+                                    <input type="text" class="studio-caption-input" id="input-caption-3" placeholder="Front Caption" value="Pure Chaos & Confetti 🥳">
+                                    <button type="button" class="mini-ai-btn" data-target="input-caption-3" data-context="Photo Front Caption" title="AI Fix & Emoji">✨ AI</button>
+                                </div>
+                                <div class="field-with-ai">
+                                    <textarea class="studio-note-input" id="input-note-3" rows="2" placeholder="Secret Note on Back of Polaroid...">"Party hats, confetti in our hair, and zero regrets! No one brings energy and pure fun into a room like you do."</textarea>
+                                    <button type="button" class="mini-ai-btn" data-target="input-note-3" data-context="Secret Memory Note on Back of Polaroid" title="AI Fix & Emoji">✨ AI</button>
+                                </div>
                             </div>
                         </div>
 
@@ -693,8 +741,14 @@
                                 </label>
                             </div>
                             <div class="photo-fields">
-                                <input type="text" class="studio-caption-input" id="input-caption-4" placeholder="Front Caption" value="Summer Days & Daisies 🌼">
-                                <textarea class="studio-note-input" id="input-note-4" rows="2" placeholder="Secret Note on Back of Polaroid...">"Under the warm sun with pastel balloons and wild daisies. Grateful for every single season of life spent together."</textarea>
+                                <div class="field-with-ai">
+                                    <input type="text" class="studio-caption-input" id="input-caption-4" placeholder="Front Caption" value="Summer Days & Daisies 🌼">
+                                    <button type="button" class="mini-ai-btn" data-target="input-caption-4" data-context="Photo Front Caption" title="AI Fix & Emoji">✨ AI</button>
+                                </div>
+                                <div class="field-with-ai">
+                                    <textarea class="studio-note-input" id="input-note-4" rows="2" placeholder="Secret Note on Back of Polaroid...">"Under the warm sun with pastel balloons and wild daisies. Grateful for every single season of life spent together."</textarea>
+                                    <button type="button" class="mini-ai-btn" data-target="input-note-4" data-context="Secret Memory Note on Back of Polaroid" title="AI Fix & Emoji">✨ AI</button>
+                                </div>
                             </div>
                         </div>
 
@@ -705,94 +759,112 @@
 
                 <!-- TAB 3: CUSTOMIZABLE SCRATCH PASSES -->
                 <div class="studio-tab-pane" id="tab-scratch">
-                    <div class="photos-instruction-banner">
-                        <span>🎟️ Customize the 3 secret scratch coupons that your partner scratches with their finger to reveal!</span>
-                    </div>
 
-                    <!-- Preset Quick Pickers -->
+
                     <div class="scratch-presets-wrap">
                         <span class="preset-label">Quick 1-Click Presets:</span>
                         <div class="preset-pills-row">
-                            <button type="button" class="preset-pill-btn" id="preset-couple-btn">❤️ Romantic Partner</button>
-                            <button type="button" class="preset-pill-btn" id="preset-bestie-btn">👯 Best Friend Chaos</button>
-                            <button type="button" class="preset-pill-btn" id="preset-sweet-btn">🍰 Sweet & Cozy</button>
+                            <button type="button" class="preset-pill-btn" id="preset-couple-btn">❤️ Couple</button>
+                            <button type="button" class="preset-pill-btn" id="preset-bestie-btn">👯 Bestie</button>
+                            <button type="button" class="preset-pill-btn" id="preset-sweet-btn">🍰 Cozy</button>
                         </div>
                     </div>
 
                     <div class="scratch-coupons-editor-grid">
                         
                         <!-- Coupon 1 Edit Card -->
-                        <div class="coupon-edit-card">
-                            <div class="coupon-card-top-tag">
-                                <span class="tag-number">Pass #1</span>
+                        <div class="coupon-edit-card" id="coupon-edit-card-1">
+                            <div class="coupon-card-header">
+                                <span class="tag-number">🎟️ Pass #1</span>
+                                <button type="button" class="btn-coupon-ai" data-idx="1" title="AI automatically matches icon, generates secret reward & code from title">
+                                    <span>✨ AI Auto-Generate Pass</span>
+                                </button>
                             </div>
-                            <div class="form-row-2">
-                                <div class="form-group">
-                                    <label>Emoji Icon</label>
-                                    <input type="text" id="input-coupon-emoji-1" value="🫂" maxlength="4">
+                            <div class="coupon-title-row modern-pass-row">
+                                <div class="coupon-emoji-col">
+                                    <label class="coupon-field-label">Icon</label>
+                                    <div class="coupon-icon-auto-badge" id="coupon-icon-btn-1" title="Automatically matched by AI">
+                                        <span class="coupon-icon-glyph" id="coupon-icon-glyph-1">🫂</span>
+                                        <span class="auto-sparkle-dot" title="Auto AI Matched">✨</span>
+                                    </div>
+                                    <input type="hidden" id="input-coupon-emoji-1" value="🫂">
                                 </div>
-                                <div class="form-group">
-                                    <label>Coupon Code Tag</label>
-                                    <input type="text" id="input-coupon-code-1" value="CODE: BESTIE-FOR-LIFE">
+                                <div class="coupon-title-col">
+                                    <label for="input-coupon-title-1">Pass Title</label>
+                                    <input type="text" id="input-coupon-title-1" class="coupon-title-input" value="Unlimited Free Hugs" placeholder="e.g. Midnight Ice Cream Run">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Pass Title</label>
-                                <input type="text" id="input-coupon-title-1" value="Unlimited Free Hugs">
-                            </div>
-                            <div class="form-group">
-                                <label>Pass Secret Message / Reward</label>
+                                <label for="input-coupon-desc-1">Secret Reward Message</label>
                                 <textarea id="input-coupon-desc-1" rows="2">Valid 24/7 for whenever you need a listening ear or comforting warm hug!</textarea>
+                            </div>
+                            <div class="coupon-code-row">
+                                <label for="input-coupon-code-1">Code:</label>
+                                <input type="text" id="input-coupon-code-1" value="CODE: BESTIE-FOR-LIFE">
                             </div>
                         </div>
 
                         <!-- Coupon 2 Edit Card -->
-                        <div class="coupon-edit-card">
-                            <div class="coupon-card-top-tag">
-                                <span class="tag-number">Pass #2</span>
+                        <div class="coupon-edit-card" id="coupon-edit-card-2">
+                            <div class="coupon-card-header">
+                                <span class="tag-number">🎟️ Pass #2</span>
+                                <button type="button" class="btn-coupon-ai" data-idx="2" title="AI automatically matches icon, generates secret reward & code from title">
+                                    <span>✨ AI Auto-Generate Pass</span>
+                                </button>
                             </div>
-                            <div class="form-row-2">
-                                <div class="form-group">
-                                    <label>Emoji Icon</label>
-                                    <input type="text" id="input-coupon-emoji-2" value="☕🍰" maxlength="4">
+                            <div class="coupon-title-row modern-pass-row">
+                                <div class="coupon-emoji-col">
+                                    <label class="coupon-field-label">Icon</label>
+                                    <div class="coupon-icon-auto-badge" id="coupon-icon-btn-2" title="Automatically matched by AI">
+                                        <span class="coupon-icon-glyph" id="coupon-icon-glyph-2">☕🍰</span>
+                                        <span class="auto-sparkle-dot" title="Auto AI Matched">✨</span>
+                                    </div>
+                                    <input type="hidden" id="input-coupon-emoji-2" value="☕🍰">
                                 </div>
-                                <div class="form-group">
-                                    <label>Coupon Code Tag</label>
-                                    <input type="text" id="input-coupon-code-2" value="CODE: TREAT-ON-ME">
+                                <div class="coupon-title-col">
+                                    <label for="input-coupon-title-2">Pass Title</label>
+                                    <input type="text" id="input-coupon-title-2" class="coupon-title-input" value="Midnight Food & Cafe Date" placeholder="e.g. Midnight Food & Cafe Date">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Pass Title</label>
-                                <input type="text" id="input-coupon-title-2" value="Midnight Food & Cafe Date">
-                            </div>
-                            <div class="form-group">
-                                <label>Pass Secret Message / Reward</label>
+                                <label for="input-coupon-desc-2">Secret Reward Message</label>
                                 <textarea id="input-coupon-desc-2" rows="2">All coffee, pastries & late night street food on me, anywhere you choose!</textarea>
+                            </div>
+                            <div class="coupon-code-row">
+                                <label for="input-coupon-code-2">Code:</label>
+                                <input type="text" id="input-coupon-code-2" value="CODE: TREAT-ON-ME">
                             </div>
                         </div>
 
                         <!-- Coupon 3 Edit Card (Golden Ticket) -->
-                        <div class="coupon-edit-card golden-edit-card">
-                            <div class="coupon-card-top-tag">
-                                <span class="tag-number">Pass #3 (🌟 Golden Ticket)</span>
+                        <div class="coupon-edit-card golden-edit-card" id="coupon-edit-card-3">
+                            <div class="coupon-card-header">
+                                <span class="tag-number">🌟 Pass #3 (Golden Ticket)</span>
+                                <button type="button" class="btn-coupon-ai" data-idx="3" title="AI automatically matches icon, generates secret reward & code from title">
+                                    <span>✨ AI Auto-Generate Pass</span>
+                                </button>
                             </div>
-                            <div class="form-row-2">
-                                <div class="form-group">
-                                    <label>Emoji Icon</label>
-                                    <input type="text" id="input-coupon-emoji-3" value="🧞‍♂️✨" maxlength="4">
+                            <div class="coupon-title-row modern-pass-row">
+                                <div class="coupon-emoji-col">
+                                    <label class="coupon-field-label">Icon</label>
+                                    <div class="coupon-icon-auto-badge golden-badge-box" id="coupon-icon-btn-3" title="Automatically matched by AI">
+                                        <span class="coupon-icon-glyph" id="coupon-icon-glyph-3">🧞‍♂️✨</span>
+                                        <span class="auto-sparkle-dot golden-dot" title="Auto AI Matched">✨</span>
+                                    </div>
+                                    <input type="hidden" id="input-coupon-emoji-3" value="🧞‍♂️✨">
                                 </div>
-                                <div class="form-group">
-                                    <label>Coupon Code Tag</label>
-                                    <input type="text" id="input-coupon-code-3" value="CODE: WISH-GRANTED-100">
+                                <div class="coupon-title-col">
+                                    <label for="input-coupon-title-3">Pass Title</label>
+                                    <input type="text" id="input-coupon-title-3" class="coupon-title-input" value="The Universal Wish Pass" placeholder="e.g. The Universal Wish Pass">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Pass Title</label>
-                                <input type="text" id="input-coupon-title-3" value="The Universal Wish Pass">
-                            </div>
-                            <div class="form-group">
-                                <label>Pass Secret Message / Reward</label>
+                                <label for="input-coupon-desc-3">Secret Reward Message</label>
                                 <textarea id="input-coupon-desc-3" rows="2">Ask me for anything — a roadtrip, a movie binge, or a secret favor — no questions asked!</textarea>
+                            </div>
+                            <div class="coupon-code-row">
+                                <label for="input-coupon-code-3">Code:</label>
+                                <input type="text" id="input-coupon-code-3" value="CODE: WISH-GRANTED-100">
                             </div>
                         </div>
 
@@ -801,11 +873,18 @@
                     <button type="button" class="btn-primary tab-next-btn" data-next="tab-letter">Next: 💌 Write Personal Letter →</button>
                 </div>
 
-                <!-- TAB 4: PERSONAL LETTER -->
+                <!-- TAB 4: PERSONAL LETTER WITH AI POLISH -->
                 <div class="studio-tab-pane" id="tab-letter">
                     <div class="form-group">
                         <label for="input-letter-msg">Personal Heartfelt Letter (Displayed inside the 3D unfolding wax-sealed letter)</label>
                         <textarea id="input-letter-msg" rows="7" placeholder="Write your heartfelt note here..."></textarea>
+                        
+                        <!-- AI Polish Toolbar for Letter -->
+                        <div class="ai-enhance-bar">
+                            <button type="button" class="btn-ai-polish full-width" data-target="input-letter-msg" data-context="Heartfelt Birthday Letter">
+                                <span>✨ AI Polish Entire Letter (Fix Grammar, Enhance Depth & Add Emojis)</span>
+                            </button>
+                        </div>
                     </div>
 
                     <button type="button" class="btn-primary tab-next-btn" data-next="tab-share">Next: 🚀 Preview & Generate Link →</button>
@@ -815,11 +894,17 @@
                 <div class="studio-tab-pane" id="tab-share">
                     <div class="share-actions-card">
                         <h4>🎉 Your Custom Birthday Website is Ready!</h4>
-                        <p>Apply your custom photos, wishes, and scratch passes live, then generate the shareable link to send to your partner!</p>
+                        <p>Apply your custom photos, AI-polished wishes, and scratch passes live, then generate the shareable link to send to your partner!</p>
 
                         <div class="modal-actions-wrap">
                             <button type="button" class="btn-primary" id="apply-changes-btn">
                                 <span>💾 Apply & Preview Live On Screen</span>
+                            </button>
+                            <button type="button" class="btn-secondary" id="save-seal-gate-btn">
+                                <span>💌 Save & Keep Envelope Sealed</span>
+                            </button>
+                            <button type="button" class="btn-reset-danger" id="btn-tab5-reset" title="Purge saved customizations and restore original template">
+                                <span>🔄 Reset to Original Template</span>
                             </button>
                             <button type="button" class="btn-accent" id="copy-share-link-btn">
                                 <span>🔗 Copy Shareable Link for Partner</span>
@@ -853,15 +938,49 @@
             <p>Write your heartfelt birthday wish. When released, it will float into the night sky among the stars.</p>
             <input type="text" id="lantern-wish-input" placeholder="e.g. May this year bring endless happiness and adventures...">
             <div class="lantern-buttons">
-                <button class="btn-secondary" id="cancel-lantern-btn">Cancel</button>
-                <button class="btn-primary" id="send-lantern-btn">✨ Release Lantern</button>
+                <button type="button" class="btn-secondary" id="cancel-lantern-btn">Cancel</button>
+                <button type="button" class="btn-primary" id="send-lantern-btn">✨ Release Lantern</button>
             </div>
         </div>
     </div>
 
+    <!-- ==============================================
+         CINEMATIC HAPPY BIRTHDAY CELEBRATION POPUP MODAL
+         ============================================== -->
+    <div class="celebration-modal-backdrop hidden" id="birthday-celebration-modal">
+        <div class="celebration-modal-card">
+            <button type="button" class="close-celebration-btn" id="close-celebration-btn" aria-label="Close celebration popup">✕</button>
+            <div class="celebration-icon-wrap">
+                <span class="celebration-sparkle left">✨</span>
+                <div class="celebration-cake-icon">🎂</div>
+                <span class="celebration-sparkle right">🎉</span>
+            </div>
+            <div class="celebration-badge-pill">✦ OFFICIAL BIRTHDAY CELEBRATION ✦</div>
+            <h2 class="celebration-headline">
+                Happy Birthday, <span class="gradient-text recipient-name-display">Ananya</span>! 🥳
+            </h2>
+            <p class="celebration-wish-text" id="celebration-modal-wish">
+                May your day be filled with endless magic, radiant smiles, and unforgettable moments!
+            </p>
+            <div class="celebration-perks-row">
+                <span class="perk-chip">✨ Wish Sent to Stars</span>
+                <span class="perk-chip">🍰 Cake Celebrated</span>
+                <span class="perk-chip">💖 Forever Cherished</span>
+            </div>
+            <button type="button" class="celebration-action-btn" id="claim-celebration-btn">
+                <span>Party Time! Continue Celebration 🥂</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Luxury Toast Notification Container -->
+    <div class="luxury-toast-container" id="luxury-toast-container"></div>
+
     <!-- Scripts -->
+    <script src="embedded-assets.js"></script>
     <script src="audio.js"></script>
     <script src="lz-string.js"></script>
+    <script src="gemini-ai.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

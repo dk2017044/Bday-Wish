@@ -44,7 +44,7 @@ Inspired by trending **21st.dev** components, GitHub viral birthday repositories
    - Write your secret birthday wish and launch a glowing sky lantern into space.
 
 8. **🎨 4 Aesthetic Color Palettes**
-   - 🌹 **Rose Gold Velvet**: Romantic luxury with champagne gold.
+   - 💖 **Cupid Pink & Romantic Rose**: Romantic love aesthetic with glowing floating micro-hearts, blush peony tones, and ruby-pink wax seal.
    - 🌌 **Midnight Stardust**: 21st.dev dark cosmic glow with indigo & violet.
    - 🌅 **Golden Sunset**: Warm amber twilight and peach.
    - 🌿 **Matcha Dream**: Modern Pinterest sage & mocha.
