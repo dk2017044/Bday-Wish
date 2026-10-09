@@ -9,45 +9,45 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DEFAULT ASSETS & CONFIGURATION ---
     const defaultPhotos = [
         {
-            img: 'assets/photo1.jpg',
-            caption: "Golden Hour Beach '23 ✨",
-            note: '"That evening we ran toward the waves with sparklers in our hands, laughing so hard our ribs ached. Always keep that radiant laughter alive!"'
+            img: 'assets/IMG_1.jpeg',
+            caption: 'Golden Hour Thoughts 🌅',
+            note: '"Standing by the quiet waters as dusk settles, lost in thoughts and quiet dreams. You have a calmness in your eyes that makes the world feel peaceful."'
         },
         {
-            img: 'assets/photo2.jpg',
-            caption: "Celebrate & Joy ☕🧁",
-            note: '"Our endless cafe conversations over iced matcha and cupcakes. Thank you for always being my safe space and biggest cheerleader."'
+            img: 'assets/IMG_2.jpeg',
+            caption: 'Classy Smiles & Pure Charm 🖤',
+            note: '"Dressed in black with that effortless radiant smile that can light up any room. Keep smiling always, your happiness means everything to me."'
         },
         {
-            img: 'assets/photo3.jpg',
-            caption: "Pure Chaos & Confetti 🥳",
-            note: '"Party hats, confetti in our hair, and zero regrets! No one brings energy and pure fun into a room like you do."'
+            img: 'assets/IMG_3.jpeg',
+            caption: 'Chasing Blue Skies & Big Dreams 🕶️✨',
+            note: '"Sun-drenched, stylish, and looking up at endless horizons. Never stop aiming high and conquering every ambition you set your heart on."'
         },
         {
-            img: 'assets/photo4.jpg',
-            caption: "Summer Days & Daisies 🌼",
-            note: '"Under the warm sun with pastel balloons and wild daisies. Grateful for every single season of life spent together."'
+            img: 'assets/IMG_4.jpeg',
+            caption: 'Riverside Glow & Sweet Moments 🌸',
+            note: '"Candid smiles by the riverside, gentle breeze and soft sunlight. These simple, pure moments with you are my absolute favorites."'
         }
     ];
 
     const defaultCoupons = [
         {
-            emoji: '🫂',
-            code: 'CODE: BESTIE-FOR-LIFE',
-            title: 'Unlimited Free Hugs',
-            desc: 'Valid 24/7 for whenever you need a listening ear or comforting warm hug!'
+            emoji: '🫂❤️',
+            code: 'CODE: FOREVER-YOURS',
+            title: 'Unlimited Warm Hugs & Cuddles',
+            desc: 'Valid 24/7 whenever you feel tired, low, or just need a tight, comforting warm embrace!'
         },
         {
-            emoji: '☕🍰',
-            code: 'CODE: TREAT-ON-ME',
-            title: 'Midnight Food & Cafe Date',
-            desc: 'All coffee, pastries & late night street food on me, anywhere you choose!'
+            emoji: '🚗🌙',
+            code: 'CODE: MIDNIGHT-RIDE',
+            title: 'Late Night Long Drive & Stargazing',
+            desc: 'Midnight breeze, our favorite songs playing on loop, and endless talks under the starry sky!'
         },
         {
             emoji: '🧞‍♂️✨',
-            code: 'CODE: WISH-GRANTED-100',
-            title: 'The Universal Wish Pass',
-            desc: 'Ask me for anything — a roadtrip, a movie binge, or a secret favor — no questions asked!'
+            code: 'CODE: SOULMATE-WISH',
+            title: 'The Golden Secret Wish Pass',
+            desc: '1 unconditional wish or favor granted anytime — ask for literally anything, zero questions asked!'
         }
     ];
 
@@ -69,24 +69,24 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
-    const upcomingDate = new Date();
-    upcomingDate.setDate(upcomingDate.getDate() + 7);
-    const defaultBirthdate = upcomingDate.toISOString().split('T')[0];
+    const defaultBirthdate = '2007-10-19';
 
     const DEFAULT_STATE = {
         recipientName: 'Ananya',
-        milestone: 'Level 21',
-        birthdate: defaultBirthdate,
-        senderName: 'Your Best Friend 💛',
-        heroWish: 'May your day be filled with endless magic, radiant smiles, and unforgettable moments!',
+        milestone: 'Chapter 18',
+        birthdate: '2007-10-19',
+        senderName: 'Yours, Mine ❤️',
+        heroWish: 'May your 18th chapter bring you endless laughter, wildest dreams come true, and all the love you deserve!',
         coupons: JSON.parse(JSON.stringify(defaultCoupons)),
-        letterText: `Happy Birthday to one of the most wonderfully authentic and radiant souls I know! 🌟
+        letterText: `Happy 18th Birthday to the most special person in my universe! 🌟
 
-Looking back at all the laughter we've shared, the late-night talks, and the quiet moments where no words were needed, I'm reminded of just how blessed everyone in your orbit is to have you. You bring warmth into rooms just by stepping into them.
+Turning 18 is the start of an extraordinary new chapter. Looking back at all our unforgettable moments, late-night conversations, and quiet shared glances, I'm constantly reminded of how incredibly lucky I am to have you in my life.
 
-May this new chapter bring you boundless joy, wild adventures, big dreams fulfilled, and the deep peace of knowing how truly cherished you are. Don't ever dim your spark for anyone.
+You carry a rare kind of warmth, effortless charm, and genuine goodness that makes everyone around you smile brighter. As you step into adulthood today, promise me you'll never lose that playful spark in your eyes, that infectious laugh, and the big, bold dreams in your heart.
 
-Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind self!`,
+May this year be filled with thrilling adventures, triumphs, good health, and the constant reassurance that no matter where life takes you, I will always be right here cheering for you.
+
+Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
         currentTheme: 'theme-rosegold',
         photos: JSON.parse(JSON.stringify(defaultPhotos)),
         isMusicPlaying: false,
@@ -949,6 +949,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 isScratchedCompleted = true;
                 ctx.clearRect(0, 0, width, height);
                 canvas.style.pointerEvents = 'none';
+                status.classList.add('unlocked');
                 status.textContent = '🎉 Pass Unlocked! Congratulations!';
                 status.style.color = '#4ade80';
 
@@ -956,6 +957,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 createConfettiBurst(50, rect.left + rect.width / 2, rect.top + rect.height / 2);
                 if (window.birthdayAudio) window.birthdayAudio.playChime();
             } else if (!isScratchedCompleted) {
+                status.classList.remove('unlocked');
                 status.textContent = `${percent}% Revealed... keep scratching!`;
             }
         }
@@ -2556,6 +2558,7 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                             ctx.clearRect(0, 0, w, h);
                             canvas.style.pointerEvents = 'none';
                             if (status) {
+                                status.classList.add('unlocked');
                                 status.textContent = '🎉 Pass Unlocked! Congratulations!';
                                 status.style.color = '#4ade80';
                             }
