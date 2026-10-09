@@ -410,17 +410,7 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
     }
 
     function tryUnwrapSurprise(e) {
-        if (isAdvanceLocked) {
-            if (e) e.preventDefault();
-            if (waxSealBtn) {
-                waxSealBtn.classList.remove('shake-lock');
-                void waxSealBtn.offsetWidth;
-                waxSealBtn.classList.add('shake-lock');
-            }
-            if (window.birthdayAudio) window.birthdayAudio.playLocked();
-            showStatusFeedback('🔒 Shhh! Happy Birthday in Advance! Yeh surprise 12:00 AM Midnight par hi unlock hoga! 😉✨', 'warning');
-            return;
-        }
+        if (e) e.preventDefault();
         unwrapSurprise();
     }
 
@@ -640,30 +630,20 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
 
             const diff = target.getTime() - now.getTime();
 
-            // Determine Advance Lock condition
-            const isAdvance = (forcedAdvanceMode !== null) ? forcedAdvanceMode : (diff > 5000);
+            const totalSecs = Math.max(0, Math.floor(diff / 1000));
+            const days = Math.floor(totalSecs / (3600 * 24));
+            const hours = Math.floor((totalSecs % (3600 * 24)) / 3600);
+            const mins = Math.floor((totalSecs % 3600) / 60);
+            const secs = totalSecs % 60;
 
-            if (isAdvance) {
-                wasCheckedBeforeMidnight = true;
-                const totalSecs = Math.max(0, Math.floor(diff / 1000));
-                const days = Math.floor(totalSecs / (3600 * 24));
-                const hours = Math.floor((totalSecs % (3600 * 24)) / 3600);
-                const mins = Math.floor((totalSecs % 3600) / 60);
-                const secs = totalSecs % 60;
-                const pad = n => String(n).padStart(2, '0');
-                const timeStr = (days > 0 ? days + 'd ' : '') + pad(hours) + 'h ' + pad(mins) + 'm ' + pad(secs) + 's';
+            if (unitDays) unitDays.textContent = days;
+            if (unitHours) unitHours.textContent = hours;
+            if (unitMins) unitMins.textContent = mins;
+            if (unitSecs) unitSecs.textContent = secs;
+            if (countdownStatusNote) countdownStatusNote.textContent = days > 0 ? `⏳ ${days} days until birthday celebration! ✨` : '✨ Countdown to midnight celebration! ✨';
 
-                setGateAdvanceLockState(true, timeStr);
-
-                countdownWrapper.classList.remove('its-birthday-today');
-                countdownWrapper.classList.remove('midnight-strike');
-                unitDays.textContent = days;
-                unitHours.textContent = hours;
-                unitMins.textContent = mins;
-                unitSecs.textContent = secs;
-                countdownStatusNote.textContent = `⏳ ${days} days until your midnight celebration! ✨`;
-                return;
-            }
+            // On the main web app: Keep gate unlocked so creator can test & unwrap anytime!
+            setGateAdvanceLockState(false);
 
             // Final 5-second countdown detection (diff <= 5000 && diff > 0)
             if (diff <= 5000 && diff > 0 && forcedAdvanceMode === null) {
@@ -891,6 +871,10 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
         const height = canvas.height;
         let isScratchedCompleted = false;
         let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let lastSoundTime = 0;
+        let pointsDrawnSinceCheck = 0;
 
         function drawFoil() {
             ctx.globalCompositeOperation = 'source-over';
@@ -915,84 +899,152 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
             }
 
             ctx.fillStyle = isGolden ? '#451a03' : '#1e293b';
-            ctx.font = 'bold 15px Outfit, sans-serif';
+            ctx.font = 'bold 14px Outfit, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('✨ SCRATCH WITH MOUSE / FINGER ✨', width / 2, height / 2 + 5);
         }
 
         drawFoil();
 
-        function scratch(x, y) {
+        function getPos(e) {
+            const r = canvas.getBoundingClientRect();
+            const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+            const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
+            const scaleX = width / (r.width || width);
+            const scaleY = height / (r.height || height);
+            return {
+                x: (clientX - r.left) * scaleX,
+                y: (clientY - r.top) * scaleY
+            };
+        }
+
+        function playScratchSfx() {
+            const now = Date.now();
+            if (now - lastSoundTime > 130) {
+                lastSoundTime = now;
+                try {
+                    if (window.birthdayAudio && typeof window.birthdayAudio.playScratch === 'function') {
+                        window.birthdayAudio.playScratch();
+                    }
+                } catch (err) {}
+            }
+        }
+
+        function erasePoint(x, y) {
             ctx.globalCompositeOperation = 'destination-out';
             ctx.beginPath();
             ctx.arc(x, y, 22, 0, Math.PI * 2);
             ctx.fill();
+            playScratchSfx();
+            pointsDrawnSinceCheck++;
+            if (pointsDrawnSinceCheck > 10) {
+                pointsDrawnSinceCheck = 0;
+                checkPercent();
+            }
+        }
 
-            if (window.birthdayAudio) window.birthdayAudio.playScratch();
-            checkPercent();
+        function eraseLine(x1, y1, x2, y2) {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.lineWidth = 44;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            playScratchSfx();
+            pointsDrawnSinceCheck += 2;
+            if (pointsDrawnSinceCheck > 10) {
+                pointsDrawnSinceCheck = 0;
+                checkPercent();
+            }
         }
 
         function checkPercent() {
             if (isScratchedCompleted) return;
-            const imageData = ctx.getImageData(0, 0, width, height);
-            const pixels = imageData.data;
-            let transparentCount = 0;
+            try {
+                const imageData = ctx.getImageData(0, 0, width, height);
+                const pixels = imageData.data;
+                let transparentCount = 0;
 
-            for (let i = 3; i < pixels.length; i += 16) {
-                if (pixels[i] === 0) transparentCount++;
-            }
+                for (let i = 3; i < pixels.length; i += 16) {
+                    if (pixels[i] === 0) transparentCount++;
+                }
 
-            const totalSampled = pixels.length / 16;
-            const percent = Math.round((transparentCount / totalSampled) * 100);
+                const totalSampled = pixels.length / 16;
+                const percent = Math.round((transparentCount / totalSampled) * 100);
 
-            if (percent > 45 && !isScratchedCompleted) {
-                isScratchedCompleted = true;
-                ctx.clearRect(0, 0, width, height);
-                canvas.style.pointerEvents = 'none';
-                status.classList.add('unlocked');
-                status.textContent = '🎉 Pass Unlocked! Congratulations!';
-                status.style.color = '#4ade80';
+                if (percent > 40 && !isScratchedCompleted) {
+                    isScratchedCompleted = true;
+                    ctx.clearRect(0, 0, width, height);
+                    canvas.style.pointerEvents = 'none';
+                    if (status) {
+                        status.classList.add('unlocked');
+                        status.textContent = '🎉 Pass Unlocked! Congratulations!';
+                        status.style.color = '#4ade80';
+                    }
 
-                const rect = canvas.getBoundingClientRect();
-                createConfettiBurst(50, rect.left + rect.width / 2, rect.top + rect.height / 2);
-                if (window.birthdayAudio) window.birthdayAudio.playChime();
-            } else if (!isScratchedCompleted) {
-                status.classList.remove('unlocked');
-                status.textContent = `${percent}% Revealed... keep scratching!`;
-            }
+                    const rect = canvas.getBoundingClientRect();
+                    createConfettiBurst(50, rect.left + rect.width / 2, rect.top + rect.height / 2);
+                    try {
+                        if (window.birthdayAudio && typeof window.birthdayAudio.playChime === 'function') {
+                            window.birthdayAudio.playChime();
+                        }
+                    } catch (e) {}
+                } else if (!isScratchedCompleted && status) {
+                    status.classList.remove('unlocked');
+                    status.textContent = `${percent}% Revealed... keep scratching!`;
+                }
+            } catch (err) {}
         }
 
         canvas.addEventListener('mousedown', (e) => {
             isDrawing = true;
-            const r = canvas.getBoundingClientRect();
-            scratch((e.clientX - r.left) * (canvas.width / r.width), (e.clientY - r.top) * (canvas.height / r.height));
+            const pos = getPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+            erasePoint(pos.x, pos.y);
         });
 
-        window.addEventListener('mouseup', () => { isDrawing = false; });
+        window.addEventListener('mouseup', () => {
+            if (isDrawing) {
+                isDrawing = false;
+                checkPercent();
+            }
+        });
 
         canvas.addEventListener('mousemove', (e) => {
             if (!isDrawing) return;
-            const r = canvas.getBoundingClientRect();
-            scratch((e.clientX - r.left) * (canvas.width / r.width), (e.clientY - r.top) * (canvas.height / r.height));
+            const pos = getPos(e);
+            eraseLine(lastX, lastY, pos.x, pos.y);
+            lastX = pos.x;
+            lastY = pos.y;
         });
 
         canvas.addEventListener('touchstart', (e) => {
             isDrawing = true;
-            const t = e.touches[0];
-            const r = canvas.getBoundingClientRect();
-            scratch((t.clientX - r.left) * (canvas.width / r.width), (t.clientY - r.top) * (canvas.height / r.height));
-            e.preventDefault();
+            const pos = getPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+            erasePoint(pos.x, pos.y);
+            if (e.cancelable) e.preventDefault();
         }, { passive: false });
 
         canvas.addEventListener('touchmove', (e) => {
             if (!isDrawing) return;
-            const t = e.touches[0];
-            const r = canvas.getBoundingClientRect();
-            scratch((t.clientX - r.left) * (canvas.width / r.width), (t.clientY - r.top) * (canvas.height / r.height));
-            e.preventDefault();
+            const pos = getPos(e);
+            eraseLine(lastX, lastY, pos.x, pos.y);
+            lastX = pos.x;
+            lastY = pos.y;
+            if (e.cancelable) e.preventDefault();
         }, { passive: false });
 
-        canvas.addEventListener('touchend', () => { isDrawing = false; });
+        canvas.addEventListener('touchend', () => {
+            if (isDrawing) {
+                isDrawing = false;
+                checkPercent();
+            }
+        });
     }
 
     setupScratchCard('scratch-canvas-1', 'scratch-status-1', false);
@@ -2526,6 +2578,10 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
                 const h = canvas.height;
                 let finished = false;
                 let drawing = false;
+                let lastX = 0;
+                let lastY = 0;
+                let lastSound = 0;
+                let pointsCount = 0;
 
                 const grad = ctx.createLinearGradient(0, 0, w, h);
                 if (isGolden) {
@@ -2536,24 +2592,62 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, 0, w, h);
                 ctx.fillStyle = isGolden ? '#451a03' : '#1e293b';
-                ctx.font = 'bold 15px sans-serif';
+                ctx.font = 'bold 14px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText('✨ SCRATCH WITH MOUSE / FINGER ✨', w / 2, h / 2 + 5);
 
-                function scratch(x, y) {
+                function getCoords(e) {
+                    const r = canvas.getBoundingClientRect();
+                    const cx = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+                    const cy = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
+                    return {
+                        x: (cx - r.left) * (w / (r.width || w)),
+                        y: (cy - r.top) * (h / (r.height || h))
+                    };
+                }
+
+                function playSound() {
+                    const now = Date.now();
+                    if (now - lastSound > 130) {
+                        lastSound = now;
+                        try { if (audioEngine) audioEngine.playScratch(); } catch(e) {}
+                    }
+                }
+
+                function erasePoint(x, y) {
                     ctx.globalCompositeOperation = 'destination-out';
                     ctx.beginPath();
                     ctx.arc(x, y, 22, 0, Math.PI * 2);
                     ctx.fill();
-                    if (audioEngine) audioEngine.playScratch();
+                    playSound();
+                    pointsCount++;
+                    if (pointsCount > 10) { pointsCount = 0; checkDone(); }
+                }
 
-                    if (!finished) {
+                function eraseLine(x1, y1, x2, y2) {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.lineWidth = 44;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                    playSound();
+                    pointsCount += 2;
+                    if (pointsCount > 10) { pointsCount = 0; checkDone(); }
+                }
+
+                function checkDone() {
+                    if (finished) return;
+                    try {
                         const data = ctx.getImageData(0, 0, w, h).data;
                         let cleared = 0;
                         for (let i = 3; i < data.length; i += 16) {
                             if (data[i] === 0) cleared++;
                         }
-                        if ((cleared / (data.length / 16)) > 0.45) {
+                        const pct = cleared / (data.length / 16);
+                        if (pct > 0.40) {
                             finished = true;
                             ctx.clearRect(0, 0, w, h);
                             canvas.style.pointerEvents = 'none';
@@ -2564,29 +2658,46 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
                             }
                             if (audioEngine) audioEngine.playChime();
                             createConfettiBurst(50, window.innerWidth / 2, window.innerHeight * 0.6);
+                        } else if (status) {
+                            status.classList.remove('unlocked');
+                            status.textContent = Math.round(pct * 100) + '% Revealed... keep scratching!';
                         }
-                    }
+                    } catch(err) {}
                 }
 
-                canvas.addEventListener('mousedown', (e) => { drawing = true; scratch(e.offsetX, e.offsetY); });
-                canvas.addEventListener('mousemove', (e) => { if (drawing) scratch(e.offsetX, e.offsetY); });
-                window.addEventListener('mouseup', () => { drawing = false; });
+                canvas.addEventListener('mousedown', (e) => {
+                    drawing = true;
+                    const p = getCoords(e);
+                    lastX = p.x; lastY = p.y;
+                    erasePoint(p.x, p.y);
+                });
+                canvas.addEventListener('mousemove', (e) => {
+                    if (!drawing) return;
+                    const p = getCoords(e);
+                    eraseLine(lastX, lastY, p.x, p.y);
+                    lastX = p.x; lastY = p.y;
+                });
+                window.addEventListener('mouseup', () => {
+                    if (drawing) { drawing = false; checkDone(); }
+                });
 
                 canvas.addEventListener('touchstart', (e) => {
                     drawing = true;
-                    const r = canvas.getBoundingClientRect();
-                    const t = e.touches[0];
-                    scratch((t.clientX - r.left) * (w / r.width), (t.clientY - r.top) * (h / r.height));
-                    e.preventDefault();
+                    const p = getCoords(e);
+                    lastX = p.x; lastY = p.y;
+                    erasePoint(p.x, p.y);
+                    if (e.cancelable) e.preventDefault();
                 }, { passive: false });
                 canvas.addEventListener('touchmove', (e) => {
                     if (!drawing) return;
-                    const r = canvas.getBoundingClientRect();
-                    const t = e.touches[0];
-                    scratch((t.clientX - r.left) * (w / r.width), (t.clientY - r.top) * (h / r.height));
-                    e.preventDefault();
+                    const p = getCoords(e);
+                    eraseLine(lastX, lastY, p.x, p.y);
+                    lastX = p.x; lastY = p.y;
+                    if (e.cancelable) e.preventDefault();
                 }, { passive: false });
-                canvas.addEventListener('touchend', () => { drawing = false; });
+                canvas.addEventListener('touchend', () => {
+                    if (drawing) { drawing = false; checkDone(); }
+                });
             }
             initScratch('scratch-canvas-1', 'scratch-status-1', false);
             initScratch('scratch-canvas-2', 'scratch-status-2', false);
