@@ -465,8 +465,10 @@ body.gate-unwrapped #surprise-gate-screen {
     clip-path: polygon(0 0, 100% 0, 50% 100%);
     border-top: 1px solid rgba(255, 255, 255, 0.15);
     z-index: 2;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
     transform-origin: top center;
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 .envelope-card.open-anim .envelope-flap {
@@ -478,7 +480,7 @@ body.gate-unwrapped #surprise-gate-screen {
     position: absolute;
     top: 90px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
     width: 64px;
     height: 64px;
     background: radial-gradient(circle at 35% 35%, #ff7188, var(--wax-seal), #801228);
@@ -490,21 +492,23 @@ body.gate-unwrapped #surprise-gate-screen {
     justify-content: center;
     cursor: pointer;
     transition: transform var(--transition-bounce), filter var(--transition-fast);
+    will-change: transform, filter;
+    backface-visibility: hidden;
 }
 
 .wax-seal:hover {
-    transform: translateX(-50%) scale(1.14);
+    transform: translate3d(-50%, 0, 0) scale(1.14);
     filter: brightness(1.15);
 }
 
 .wax-seal.broken {
-    animation: breakSeal 0.6s forwards;
+    animation: breakSeal 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes breakSeal {
-    0% { transform: translateX(-50%) scale(1); }
-    50% { transform: translateX(-50%) scale(1.3) rotate(20deg); filter: blur(1px); }
-    100% { transform: translateX(-50%) scale(0) rotate(45deg); opacity: 0; }
+    0% { transform: translate3d(-50%, 0, 0) scale(1); }
+    50% { transform: translate3d(-50%, 0, 0) scale(1.24) rotate(15deg); filter: blur(0.5px); }
+    100% { transform: translate3d(-50%, 0, 0) scale(0) rotate(45deg); opacity: 0; }
 }
 
 .seal-inner {
@@ -841,14 +845,31 @@ body:has(#surprise-gate-screen:not(.fade-out):not(.hidden)) .floating-header,
 }
 
 .countdown-widget-wrapper.its-birthday-today {
-    background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(251, 191, 36, 0.2));
+    background: linear-gradient(135deg, rgba(244, 114, 182, 0.22), rgba(251, 191, 36, 0.22));
     border-color: var(--accent-gold);
-    animation: celebrationPulse 2s infinite alternate;
+    animation: celebrationPulse 2.2s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.countdown-widget-wrapper.midnight-strike {
+    animation: midnightGlowPulse 1.2s infinite alternate cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes midnightGlowPulse {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), 0 0 25px var(--accent-primary);
+        border-color: var(--accent-primary);
+    }
+    100% {
+        transform: translate3d(0, 0, 0) scale(1.035);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 50px var(--accent-gold);
+        border-color: var(--accent-gold);
+    }
 }
 
 @keyframes celebrationPulse {
-    from { transform: scale(1); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 25px var(--glow-color); }
-    to { transform: scale(1.02); box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 0 0 40px var(--accent-gold); }
+    from { transform: translate3d(0, 0, 0) scale(1); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), 0 0 20px var(--glow-color); }
+    to { transform: translate3d(0, 0, 0) scale(1.02); box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 0 0 35px var(--accent-gold); }
 }
 
 .scroll-prompt {
@@ -1099,8 +1120,11 @@ body:has(#surprise-gate-screen:not(.fade-out):not(.hidden)) .floating-header,
 }
 
 @keyframes flameFlicker {
-    0% { transform: scale(1) rotate(-1deg); }
-    100% { transform: scale(1.08, 0.95) rotate(2deg); }
+    0% { transform: translate3d(0, 0, 0) scale(1) rotate(-1.5deg); }
+    25% { transform: translate3d(0, -1px, 0) scale(1.06, 0.94) rotate(1deg); }
+    50% { transform: translate3d(0, 0, 0) scale(0.96, 1.05) rotate(-2deg); }
+    75% { transform: translate3d(0, -1px, 0) scale(1.04, 0.98) rotate(1.5deg); }
+    100% { transform: translate3d(0, 0, 0) scale(1) rotate(-1.5deg); }
 }
 
 .smoke-puff {
@@ -1232,13 +1256,16 @@ body:has(#surprise-gate-screen:not(.fade-out):not(.hidden)) .floating-header,
     flex-direction: column;
     align-items: center;
     transform: rotate(var(--rotation, 0deg));
+    transform-origin: top center;
     transition: transform var(--transition-smooth);
-    animation: hangSway 4s infinite alternate ease-in-out;
+    animation: hangSway 4.5s infinite alternate ease-in-out;
     animation-delay: var(--hang-delay, 0s);
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 .polaroid-wrapper:hover {
-    transform: rotate(0deg) translateY(-8px) scale(1.04);
+    transform: rotate(0deg) translate3d(0, -8px, 0) scale(1.04);
     z-index: 20;
 }
 
@@ -1654,9 +1681,11 @@ body:has(#surprise-gate-screen:not(.fade-out):not(.hidden)) .floating-header,
 }
 
 @keyframes riseUp {
-    0% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-220px) rotate(6deg); }
-    100% { transform: translateY(-520px) rotate(-6deg); }
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    25% { transform: translate3d(-8px, -140px, 0) rotate(-4deg); }
+    50% { transform: translate3d(10px, -300px, 0) rotate(5deg); }
+    75% { transform: translate3d(-6px, -460px, 0) rotate(-3deg); }
+    100% { transform: translate3d(4px, -640px, 0) rotate(2deg); }
 }
 
 .sky-lantern-item {
@@ -1668,12 +1697,14 @@ body:has(#surprise-gate-screen:not(.fade-out):not(.hidden)) .floating-header,
     border-radius: 8px 8px 4px 4px;
     box-shadow: 0 0 30px 8px rgba(249, 115, 22, 0.8);
     animation: floatToStars 14s ease-out forwards;
+    will-change: transform, opacity;
 }
 
 @keyframes floatToStars {
-    0% { transform: translateY(0) scale(1); opacity: 0.9; }
-    80% { opacity: 0.8; }
-    100% { transform: translateY(-700px) scale(0.3); opacity: 0; }
+    0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.95; }
+    30% { transform: translate3d(15px, -220px, 0) scale(0.85); opacity: 0.9; }
+    60% { transform: translate3d(-10px, -450px, 0) scale(0.65); opacity: 0.85; }
+    100% { transform: translate3d(20px, -780px, 0) scale(0.25); opacity: 0; }
 }
 
 .interactive-controls-row {
@@ -1892,6 +1923,13 @@ body:has(#surprise-gate-screen:not(.fade-out):not(.hidden)) .floating-header,
     color: #fbcfe8;
 }
 
+.starter-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .btn-start-fresh {
     padding: 7px 14px;
     background: rgba(255, 255, 255, 0.12);
@@ -1911,6 +1949,18 @@ body:has(#surprise-gate-screen:not(.fade-out):not(.hidden)) .floating-header,
     border-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-preview-midnight {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(236, 72, 153, 0.22));
+    border-color: rgba(251, 191, 36, 0.45);
+    color: #fef08a;
+}
+
+.btn-preview-midnight:hover {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.38), rgba(236, 72, 153, 0.38));
+    border-color: rgba(251, 191, 36, 0.8);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
 }
 
 .studio-tabs-bar {
@@ -3796,7 +3846,7 @@ input[type="date"]:focus {
     position: fixed;
     bottom: 28px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
     z-index: 9999;
     display: flex;
     flex-direction: column;
@@ -3807,7 +3857,7 @@ input[type="date"]:focus {
 }
 
 .luxury-toast {
-    background: rgba(20, 10, 20, 0.92);
+    background: rgba(20, 10, 20, 0.94);
     border: 1px solid rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -3818,14 +3868,99 @@ input[type="date"]:focus {
     font-size: 0.88rem;
     font-weight: 600;
     opacity: 0;
-    transform: translateY(20px) scale(0.94);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translate3d(0, 20px, 0) scale(0.94);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
     pointer-events: auto;
     text-align: center;
+    will-change: transform, opacity;
 }
 
 .luxury-toast.show {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* ==============================================
+   MIDNIGHT 12:00 AM CELEBRATION TOAST BANNER
+   ============================================== */
+.midnight-toast-banner {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translate3d(-50%, -120px, 0) scale(0.95);
+    z-index: 10000;
+    max-width: 92%;
+    width: 480px;
+    background: rgba(18, 18, 28, 0.94);
+    border: 1.5px solid var(--accent-gold);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(251, 191, 36, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+    will-change: transform, opacity;
+}
+
+.midnight-toast-banner.show {
+    transform: translate3d(-50%, 0, 0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.midnight-toast-content {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+}
+
+.midnight-toast-icon {
+    font-size: 2rem;
+    animation: bounceCake 1.8s infinite ease-in-out;
+    flex-shrink: 0;
+}
+
+.midnight-toast-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+}
+
+.midnight-toast-text strong {
+    font-family: var(--font-display);
+    font-size: 0.98rem;
+    color: var(--accent-gold);
+    letter-spacing: 0.5px;
+}
+
+.midnight-toast-text span {
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    line-height: 1.35;
+}
+
+.midnight-toast-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.midnight-toast-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
 }
 

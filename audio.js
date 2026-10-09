@@ -269,6 +269,16 @@ class BirthdayAudioEngine {
         });
     }
 
+    // Grand Midnight 12:00 AM Celebration Chime & Melodic Flourish
+    playCelebrationMelody() {
+        this.init();
+        if (!this.ctx) return;
+        this.playChime();
+        setTimeout(() => this.playChime(), 350);
+        setTimeout(() => this.playChime(), 720);
+        this.startMusic();
+    }
+
     // Scratch Card scratch sound
     playScratch() {
         this.init();

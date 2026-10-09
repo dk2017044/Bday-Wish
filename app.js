@@ -198,8 +198,10 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     window.addEventListener('resize', resizeCanvases);
     resizeCanvases();
 
+    const isMobileDevice = window.innerWidth < 768;
     const ambientParticles = [];
-    for (let i = 0; i < 55; i++) {
+    const ambientCount = isMobileDevice ? 28 : 50;
+    for (let i = 0; i < ambientCount; i++) {
         const isHeart = Math.random() < 0.28;
         ambientParticles.push({
             x: Math.random() * window.innerWidth,
@@ -231,16 +233,14 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 ambientCtx.textAlign = 'center';
                 ambientCtx.textBaseline = 'middle';
                 ambientCtx.fillStyle = `rgba(255, 120, 170, ${Math.max(0.15, Math.min(0.85, p.alpha))})`;
-                ambientCtx.shadowBlur = 10;
-                ambientCtx.shadowColor = 'rgba(255, 77, 141, 0.5)';
+                ambientCtx.shadowBlur = 8;
+                ambientCtx.shadowColor = 'rgba(255, 77, 141, 0.4)';
                 ambientCtx.fillText('♥', p.x, p.y);
                 ambientCtx.restore();
             } else {
                 ambientCtx.beginPath();
                 ambientCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 ambientCtx.fillStyle = `${p.color}${Math.max(0.1, Math.min(0.9, p.alpha))})`;
-                ambientCtx.shadowBlur = 8;
-                ambientCtx.shadowColor = 'rgba(255, 230, 180, 0.4)';
                 ambientCtx.fill();
             }
         });
@@ -249,10 +249,18 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     renderAmbientParticles();
 
     // ==========================================
-    // 2. CELEBRATION CONFETTI ENGINE
+    // 2. CELEBRATION CONFETTI ENGINE (HIGH FPS / SLEEPING LOOP)
     // ==========================================
     let confettiList = [];
+    let isCelebrationLoopActive = false;
     const confettiColors = ['#f43f5e', '#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#facc15', '#ffffff'];
+
+    function startCelebrationLoop() {
+        if (!isCelebrationLoopActive) {
+            isCelebrationLoopActive = true;
+            requestAnimationFrame(renderCelebration);
+        }
+    }
 
     function createConfettiBurst(count = 80, originX = window.innerWidth / 2, originY = window.innerHeight / 2) {
         if (window.birthdayAudio) window.birthdayAudio.playChime();
@@ -275,9 +283,16 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 decay: Math.random() * 0.012 + 0.008
             });
         }
+        startCelebrationLoop();
     }
 
     function renderCelebration() {
+        if (confettiList.length === 0) {
+            celCtx.clearRect(0, 0, celebrationCanvas.width, celebrationCanvas.height);
+            isCelebrationLoopActive = false;
+            return;
+        }
+
         celCtx.clearRect(0, 0, celebrationCanvas.width, celebrationCanvas.height);
         for (let i = confettiList.length - 1; i >= 0; i--) {
             const c = confettiList[i];
@@ -311,7 +326,6 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         }
         requestAnimationFrame(renderCelebration);
     }
-    renderCelebration();
 
     // ==========================================
     // 3. AUDIO CONTROLS
@@ -399,9 +413,84 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     }
 
     // ==========================================
-    // 5. BIRTHDAY DATE & LIVE COUNTDOWN TIMER
+    // 5. BIRTHDAY DATE & LIVE COUNTDOWN TIMER + 12:00 AM MIDNIGHT AUTO-WISH
     // ==========================================
     let countdownInterval = null;
+    let wasCheckedBeforeMidnight = false;
+    let hasTriggeredMidnightCelebration = false;
+
+    function showMidnightNotification() {
+        let toast = document.getElementById('midnight-toast-banner');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'midnight-toast-banner';
+            toast.className = 'midnight-toast-banner';
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = `
+            <div class="midnight-toast-content">
+                <span class="midnight-toast-icon">🕛✨🎂</span>
+                <div class="midnight-toast-text">
+                    <strong>MIDNIGHT 12:00 AM! HAPPY BIRTHDAY!</strong>
+                    <span>The wait is over! Today is your special day, may all your wishes come true! 💖</span>
+                </div>
+                <button class="midnight-toast-close" onclick="this.parentElement.parentElement.classList.remove('show')">✕</button>
+            </div>
+        `;
+        toast.classList.add('show');
+        setTimeout(() => { if (toast) toast.classList.remove('show'); }, 14000);
+    }
+
+    function triggerMidnightCelebration() {
+        // 1. Audio celebration
+        if (window.birthdayAudio) {
+            try {
+                if (typeof window.birthdayAudio.playCelebrationMelody === 'function') {
+                    window.birthdayAudio.playCelebrationMelody();
+                } else {
+                    window.birthdayAudio.playChime();
+                    window.birthdayAudio.startMusic();
+                }
+                setMusicState(true);
+            } catch (e) {
+                console.log('Audio autoplay note:', e);
+            }
+        }
+
+        // 2. Pulse countdown widget with golden midnight glow
+        if (countdownWrapper) {
+            countdownWrapper.classList.add('midnight-strike');
+            countdownWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // 3. Auto-unseal envelope if gate is still active
+        if (!document.body.classList.contains('gate-unwrapped')) {
+            unwrapSurprise();
+        }
+
+        // 4. Sequential celebratory confetti bursts across viewport
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        createConfettiBurst(120, w * 0.5, h * 0.4);
+        setTimeout(() => createConfettiBurst(80, w * 0.2, h * 0.5), 400);
+        setTimeout(() => createConfettiBurst(80, w * 0.8, h * 0.5), 800);
+        setTimeout(() => createConfettiBurst(100, w * 0.5, h * 0.3), 1300);
+        setTimeout(() => createConfettiBurst(70, w * 0.35, h * 0.6), 1800);
+        setTimeout(() => createConfettiBurst(70, w * 0.65, h * 0.6), 2300);
+
+        // 5. Grand floating notification
+        showMidnightNotification();
+
+        // 6. Reveal Happy Birthday celebration modal
+        setTimeout(() => {
+            const modal = document.getElementById('birthday-celebration-modal');
+            if (modal && modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                document.body.classList.add('modal-open');
+                createConfettiBurst(90, w * 0.5, h * 0.4);
+            }
+        }, 1200);
+    }
 
     function startBirthdayCountdown() {
         if (countdownInterval) clearInterval(countdownInterval);
@@ -433,12 +522,20 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 unitMins.textContent = 'YOUR';
                 unitSecs.textContent = 'DAY!';
                 countdownStatusNote.textContent = '✨ TODAY IS THE BIG DAY! HAPPY BIRTHDAY! 🎂';
+
+                // Automatically trigger live wish if user opened before midnight
+                if (!hasTriggeredMidnightCelebration && wasCheckedBeforeMidnight) {
+                    hasTriggeredMidnightCelebration = true;
+                    triggerMidnightCelebration();
+                }
                 return;
             }
 
             countdownWrapper.classList.remove('its-birthday-today');
+            countdownWrapper.classList.remove('midnight-strike');
             const diff = target - now;
             if (diff > 0) {
+                wasCheckedBeforeMidnight = true;
                 const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
                 const mins = Math.floor((diff / (1000 * 60)) % 60);
@@ -454,6 +551,15 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
 
         updateTimer();
         countdownInterval = setInterval(updateTimer, 1000);
+    }
+
+    // Connect Surprise Studio Preview Midnight button
+    const btnPreviewMidnight = document.getElementById('btn-preview-midnight');
+    if (btnPreviewMidnight) {
+        btnPreviewMidnight.addEventListener('click', () => {
+            triggerMidnightCelebration();
+            showStatusFeedback('🕛 Simulating 12:00 AM Midnight Celebration Wish!', 'success');
+        });
     }
 
     // Birthdate input is handled via real-time studio sync below
@@ -1981,10 +2087,22 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 renderAmbient();
             }
 
-            // Celebration Confetti
+            // Celebration Confetti (High Performance Sleeping Loop)
             let confettiList = [];
+            let isCelebrationLoopActive = false;
             const confettiColors = ['#f43f5e', '#ec4899', '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#facc15', '#ffffff'];
-            function createConfettiBurst(count = 80, originX = window.innerWidth / 2, originY = window.innerHeight / 2) {
+
+            function startCelebrationLoop() {
+                if (!isCelebrationLoopActive) {
+                    isCelebrationLoopActive = true;
+                    requestAnimationFrame(renderCelebration);
+                }
+            }
+
+            function createConfettiBurst(count, originX, originY) {
+                count = count || 80;
+                originX = originX !== undefined ? originX : window.innerWidth / 2;
+                originY = originY !== undefined ? originY : window.innerHeight / 2;
                 if (audioEngine) audioEngine.playChime();
                 for (let i = 0; i < count; i++) {
                     const angle = Math.random() * Math.PI * 2;
@@ -2005,9 +2123,16 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                         decay: Math.random() * 0.012 + 0.008
                     });
                 }
+                startCelebrationLoop();
             }
+
             function renderCelebration() {
                 if (!celCtx) return;
+                if (confettiList.length === 0) {
+                    celCtx.clearRect(0, 0, celebrationCanvas.width, celebrationCanvas.height);
+                    isCelebrationLoopActive = false;
+                    return;
+                }
                 celCtx.clearRect(0, 0, celebrationCanvas.width, celebrationCanvas.height);
                 for (let i = confettiList.length - 1; i >= 0; i--) {
                     const c = confettiList[i];
@@ -2033,7 +2158,6 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 }
                 requestAnimationFrame(renderCelebration);
             }
-            if (celebrationCanvas) renderCelebration();
 
             // Music controls
             let isMusicPlaying = false;
@@ -2329,6 +2453,77 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 });
             }
 
+            // 12:00 AM Midnight Celebration Auto-Wish System
+            let wasCheckedBeforeMidnight = false;
+            let hasTriggeredMidnightCelebration = false;
+
+            function showMidnightNotification() {
+                let toast = document.getElementById('midnight-toast-banner');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.id = 'midnight-toast-banner';
+                    toast.className = 'midnight-toast-banner';
+                    document.body.appendChild(toast);
+                }
+                toast.innerHTML = '<div class="midnight-toast-content">' +
+                    '<span class="midnight-toast-icon">🕛✨🎂</span>' +
+                    '<div class="midnight-toast-text">' +
+                        '<strong>MIDNIGHT 12:00 AM! HAPPY BIRTHDAY!</strong>' +
+                        '<span>The wait is over! Today is your special day, may all your wishes come true! 💖</span>' +
+                    '</div>' +
+                    '<button class="midnight-toast-close" onclick="this.parentElement.parentElement.classList.remove(\\'show\\')">✕</button>' +
+                '</div>';
+                toast.classList.add('show');
+                setTimeout(() => { if (toast) toast.classList.remove('show'); }, 14000);
+            }
+
+            function triggerMidnightCelebration() {
+                if (audioEngine) {
+                    try {
+                        if (typeof audioEngine.playCelebrationMelody === 'function') {
+                            audioEngine.playCelebrationMelody();
+                        } else {
+                            audioEngine.playChime();
+                            audioEngine.startMusic();
+                        }
+                        setMusicState(true);
+                    } catch (e) {
+                        console.log('Audio autoplay note:', e);
+                    }
+                }
+
+                const wrapper = document.getElementById('bday-countdown-widget');
+                if (wrapper) {
+                    wrapper.classList.add('midnight-strike');
+                    wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+
+                // If envelope is still sealed, pop it open automatically
+                if (!document.body.classList.contains('gate-unwrapped')) {
+                    unwrapSurprise();
+                }
+
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                createConfettiBurst(120, w * 0.5, h * 0.4);
+                setTimeout(() => createConfettiBurst(80, w * 0.2, h * 0.5), 400);
+                setTimeout(() => createConfettiBurst(80, w * 0.8, h * 0.5), 800);
+                setTimeout(() => createConfettiBurst(100, w * 0.5, h * 0.3), 1300);
+                setTimeout(() => createConfettiBurst(70, w * 0.35, h * 0.6), 1800);
+                setTimeout(() => createConfettiBurst(70, w * 0.65, h * 0.6), 2300);
+
+                showMidnightNotification();
+
+                setTimeout(() => {
+                    const celebModal = document.getElementById('birthday-celebration-modal');
+                    if (celebModal && celebModal.classList.contains('hidden')) {
+                        celebModal.classList.remove('hidden');
+                        document.body.classList.add('modal-open');
+                        createConfettiBurst(90, w * 0.5, h * 0.4);
+                    }
+                }, 1200);
+            }
+
             // Countdown timer
             function updateCountdown() {
                 const bdate = state.birthdate;
@@ -2355,10 +2550,17 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                     if (mEl) mEl.textContent = 'YOUR';
                     if (sEl) sEl.textContent = 'DAY!';
                     if (noteEl) noteEl.textContent = '✨ TODAY IS THE BIG DAY! HAPPY BIRTHDAY! 🎂';
+
+                    if (!hasTriggeredMidnightCelebration && wasCheckedBeforeMidnight) {
+                        hasTriggeredMidnightCelebration = true;
+                        triggerMidnightCelebration();
+                    }
                     return;
                 }
+                if (wrapper) wrapper.classList.remove('midnight-strike');
                 const diff = target - now;
                 if (diff > 0) {
+                    wasCheckedBeforeMidnight = true;
                     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                     const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
                     const mins = Math.floor((diff / (1000 * 60)) % 60);
