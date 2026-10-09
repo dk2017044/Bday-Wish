@@ -144,8 +144,8 @@ body.modal-open {
     pointer-events: none;
 }
 
-#ambient-canvas { z-index: 1; }
-#celebration-canvas { z-index: 999; }
+#ambient-canvas { z-index: 95; }
+#celebration-canvas { z-index: 999999; }
 
 .hidden { display: none !important; }
 
@@ -382,11 +382,12 @@ body.modal-open {
     position: fixed;
     inset: 0;
     z-index: 90;
-    background: radial-gradient(ellipse at center, var(--bg-secondary) 0%, var(--bg-main) 100%);
+    background: radial-gradient(circle at 50% 38%, rgba(244, 63, 94, 0.22) 0%, rgba(147, 51, 234, 0.14) 38%, rgba(13, 6, 17, 0.98) 72%), #0d0611;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 24px 20px;
+    overflow-y: auto;
     transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
@@ -411,19 +412,138 @@ body.gate-unwrapped #surprise-gate-screen {
     max-width: 480px;
     width: 100%;
     text-align: center;
+    position: relative;
+    z-index: 10;
 }
 
+/* ==============================================
+   LUXURY ADVANCE BIRTHDAY COUNTDOWN HUB
+   ============================================== */
+.advance-countdown-hub {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 22px;
+    position: relative;
+    z-index: 10;
+}
+
+.advance-hub-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 18px;
+    background: rgba(244, 63, 94, 0.16);
+    border: 1px solid rgba(244, 63, 94, 0.45);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: var(--radius-pill);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #fecdd3;
+    text-transform: uppercase;
+    box-shadow: 0 4px 20px rgba(244, 63, 94, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    margin-bottom: 12px;
+}
+
+.advance-hub-badge .hub-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f43f5e;
+    box-shadow: 0 0 10px #f43f5e;
+    animation: hubPulseGlow 1.4s infinite alternate;
+}
+
+@keyframes hubPulseGlow {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    100% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 14px #ff4d73; }
+}
+
+.advance-timer-cards {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.timer-card-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 66px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+
+.timer-card-unit .t-val {
+    font-family: var(--font-sans, -apple-system, sans-serif);
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, #ffffff 10%, #fef08a 55%, #fbbf24 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 0.5px;
+}
+
+.timer-card-unit .t-lbl {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+.t-sep {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: rgba(251, 191, 36, 0.75);
+    margin-top: -6px;
+    animation: blinkSep 1s infinite alternate;
+}
+
+@keyframes blinkSep {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+.advance-hub-subtitle {
+    font-size: 0.85rem;
+    color: #e2e8f0;
+    letter-spacing: 0.3px;
+    margin: 4px 0 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.advance-hub-subtitle strong {
+    color: #fef08a;
+    font-weight: 700;
+}
+
+/* Floating badge for standard view */
 .floating-badge {
     display: inline-block;
-    padding: 6px 16px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
+    padding: 6px 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     border-radius: var(--radius-pill);
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--accent-primary);
-    margin-bottom: 24px;
+    margin-bottom: 22px;
     animation: floatBadge 3s ease-in-out infinite alternate;
 }
 
@@ -432,27 +552,55 @@ body.gate-unwrapped #surprise-gate-screen {
     100% { transform: translateY(-6px); }
 }
 
+/* Atmospheric romantic halo behind the envelope */
+.gift-box-wrapper {
+    position: relative;
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+.gift-box-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 480px;
+    height: 330px;
+    background: radial-gradient(circle, rgba(244, 63, 94, 0.28) 0%, rgba(168, 85, 247, 0.14) 45%, transparent 72%);
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 0;
+    animation: auraBreath 4s infinite alternate ease-in-out;
+}
+
+@keyframes auraBreath {
+    0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.7; }
+    100% { transform: translate(-50%, -50%) scale(1.06); opacity: 1; }
+}
+
 .envelope-card {
     position: relative;
     width: 100%;
-    max-width: 380px;
-    height: 250px;
-    margin: 0 auto 28px;
-    background: linear-gradient(145deg, #1f141d, #140a12);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    max-width: 410px;
+    height: 265px;
+    margin: 0 auto 24px;
+    background: linear-gradient(145deg, #241221, #130713);
+    border: 1px solid rgba(251, 191, 36, 0.32);
     border-radius: var(--radius-md);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px var(--glow-color);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(244, 63, 94, 0.22);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     perspective: 800px;
+    z-index: 2;
     transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
 }
 
 .envelope-card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 45px var(--glow-color);
+    transform: translateY(-4px) scale(1.015);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), 0 0 50px rgba(244, 63, 94, 0.35);
 }
 
 .envelope-flap {
@@ -460,10 +608,10 @@ body.gate-unwrapped #surprise-gate-screen {
     top: 0;
     left: 0;
     width: 100%;
-    height: 110px;
-    background: linear-gradient(180deg, #2a1b27, #1c0e19);
+    height: 105px;
+    background: linear-gradient(180deg, #32192e, #200d1c);
     clip-path: polygon(0 0, 100% 0, 50% 100%);
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
     z-index: 2;
     transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
     transform-origin: top center;
@@ -476,34 +624,33 @@ body.gate-unwrapped #surprise-gate-screen {
     z-index: 0;
 }
 
+/* Wax seal positioned cleanly at top: 72px */
 .wax-seal {
     position: absolute;
-    top: 90px;
+    top: 72px;
     left: 50%;
     transform: translate3d(-50%, 0, 0);
-    width: 64px;
-    height: 64px;
-    background: radial-gradient(circle at 35% 35%, #ff7188, var(--wax-seal), #801228);
+    width: 66px;
+    height: 66px;
+    background: radial-gradient(circle at 35% 35%, #ff4d73, #be123c 60%, #881337 100%);
     border-radius: 50%;
     z-index: 5;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 20px var(--glow-color);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65), 0 0 25px rgba(244, 63, 94, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: transform var(--transition-bounce), filter var(--transition-fast);
-    will-change: transform, filter;
-    backface-visibility: hidden;
 }
 
 .wax-seal:hover {
-    transform: translate3d(-50%, 0, 0) scale(1.14);
+    transform: translate3d(-50%, 0, 0) scale(1.12);
     filter: brightness(1.15);
 }
 
 .wax-seal.is-locked {
     cursor: not-allowed;
-    filter: brightness(0.95);
+    filter: brightness(0.98);
 }
 
 .wax-seal.is-locked:hover {
@@ -520,20 +667,21 @@ body.gate-unwrapped #surprise-gate-screen {
     40%, 80% { transform: translate3d(-46%, 1px, 0) rotate(6deg); }
 }
 
-.wax-seal-lock-indicator {
+.seal-lock-indicator {
     position: absolute;
-    top: -6px;
-    right: -6px;
-    width: 26px;
-    height: 26px;
-    background: radial-gradient(circle, #f59e0b, #b45309);
-    border: 1.5px solid #fff;
+    top: -3px;
+    right: -3px;
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border: 1.5px solid #ffffff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), 0 0 12px rgba(245, 158, 11, 0.6);
+    font-size: 10px;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
     z-index: 10;
     animation: lockBadgePulse 2s infinite alternate ease-in-out;
 }
@@ -554,10 +702,10 @@ body.gate-unwrapped #surprise-gate-screen {
 }
 
 .seal-inner {
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    border: 2px dashed rgba(255, 255, 255, 0.4);
+    border: 2px dashed rgba(255, 255, 255, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -565,22 +713,25 @@ body.gate-unwrapped #surprise-gate-screen {
 
 .seal-letter {
     font-family: var(--font-serif);
-    font-size: 1.5rem;
+    font-size: 1.55rem;
     font-weight: 700;
     color: #fff;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
+/* Envelope pocket positioned at the bottom with 0 overlap */
 .envelope-pocket {
     position: absolute;
     bottom: 0;
+    left: 0;
     width: 100%;
-    height: 100%;
+    height: 124px;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
-    padding-bottom: 16px;
+    padding-bottom: 6px;
     z-index: 3;
+    pointer-events: none;
 }
 
 .envelope-front-text {
@@ -588,71 +739,45 @@ body.gate-unwrapped #surprise-gate-screen {
     flex-direction: column;
     align-items: center;
     text-align: center;
-}
-
-/* Advance Lock Notice & Pill */
-.advance-lock-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 12px;
-    background: rgba(244, 63, 94, 0.22);
-    border: 1px solid rgba(244, 63, 94, 0.5);
-    border-radius: var(--radius-pill);
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: #fecdd3;
-    margin-bottom: 5px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25);
-}
-
-.advance-countdown-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 14px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(251, 191, 36, 0.45);
-    border-radius: var(--radius-pill);
-    font-size: 0.76rem;
-    color: var(--text-muted);
-    margin-top: 5px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-.advance-countdown-chip strong {
-    color: var(--accent-gold);
-    font-family: monospace;
-    font-size: 0.86rem;
-    letter-spacing: 1px;
+    gap: 4px;
 }
 
 .envelope-front-text .recipient-tag {
     font-family: var(--font-serif);
-    font-size: 1.35rem;
-    color: var(--text-primary);
+    font-size: 1.45rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffffff 30%, #fecdd3 70%, #fbbf24 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     letter-spacing: 0.5px;
+    line-height: 1.2;
+    margin: 0;
 }
 
 .envelope-front-text .tagline {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-top: 2px;
-}
-
-.gate-date-display {
     font-size: 0.8rem;
-    color: var(--accent-gold);
-    margin-top: 3px;
-    font-weight: 600;
+    color: rgba(255, 255, 255, 0.72);
+    letter-spacing: 0.3px;
+    margin: 0;
 }
 
+.envelope-front-text .gate-date-display {
+    font-size: 0.78rem;
+    color: var(--accent-gold);
+    font-weight: 600;
+    background: rgba(251, 191, 36, 0.12);
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    padding: 3px 14px;
+    border-radius: var(--radius-pill);
+    margin-top: 4px;
+}
+
+/* Clean instructions and button */
 .gate-instruction {
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    margin-bottom: 20px;
+    font-size: 0.92rem;
+    color: #f1f5f9;
+    margin-bottom: 16px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .sparkle-pulse {
@@ -666,16 +791,16 @@ body.gate-unwrapped #surprise-gate-screen {
 }
 
 .unlock-btn {
-    padding: 14px 32px;
+    padding: 13px 30px;
     background: var(--accent-gradient);
     border: none;
     border-radius: var(--radius-pill);
     font-family: var(--font-sans);
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #111;
     cursor: pointer;
-    box-shadow: 0 10px 25px var(--glow-color);
+    box-shadow: 0 8px 25px var(--glow-color);
     transition: all var(--transition-smooth);
 }
 
@@ -685,15 +810,80 @@ body.gate-unwrapped #surprise-gate-screen {
 }
 
 .unlock-btn.is-locked {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(244, 63, 94, 0.22));
-    border: 1px solid rgba(251, 191, 36, 0.45);
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(244, 63, 94, 0.2));
+    border: 1px solid rgba(251, 191, 36, 0.5);
     color: #fef08a;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(251, 191, 36, 0.2);
+    cursor: pointer;
+    letter-spacing: 0.5px;
 }
 
 .unlock-btn.is-locked:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+    transform: translateY(-2px) scale(1.02);
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.22), rgba(244, 63, 94, 0.28));
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.35);
+}
+
+/* Standalone Toast popup */
+.standalone-gate-toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(18, 10, 22, 0.95);
+    border: 1px solid rgba(251, 191, 36, 0.6);
+    color: #fef08a;
+    padding: 12px 24px;
+    border-radius: var(--radius-pill);
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba(251, 191, 36, 0.3);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    z-index: 999999;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.standalone-gate-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 480px) {
+    .advance-timer-cards {
+        gap: 5px;
+    }
+    .timer-card-unit {
+        min-width: 58px;
+        padding: 6px 4px;
+    }
+    .timer-card-unit .t-val {
+        font-size: 1.35rem;
+    }
+    .timer-card-unit .t-lbl {
+        font-size: 0.58rem;
+    }
+    .envelope-card {
+        max-width: 330px;
+        height: 240px;
+    }
+    .envelope-pocket {
+        height: 110px;
+    }
+    .wax-seal {
+        top: 66px;
+        width: 60px;
+        height: 60px;
+    }
+    .seal-inner {
+        width: 44px;
+        height: 44px;
+    }
+    .seal-letter {
+        font-size: 1.35rem;
+    }
 }
 
 .gate-top-bar {

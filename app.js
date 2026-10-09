@@ -1859,12 +1859,29 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
         body.standalone-recipient-view:has(#surprise-gate-screen:not(.hidden):not(.fade-out)) .floating-header {
             display: none !important;
         }
+        body.standalone-recipient-view #ambient-canvas {
+            z-index: 10001 !important;
+            pointer-events: none !important;
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+        body.standalone-recipient-view #celebration-canvas {
+            z-index: 10002 !important;
+            pointer-events: none !important;
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+        }
         body.standalone-recipient-view #surprise-gate-screen {
             display: flex !important;
             opacity: 1 !important;
             visibility: visible !important;
             pointer-events: auto !important;
             z-index: 9999 !important;
+            background: radial-gradient(circle at 50% 38%, rgba(244, 63, 94, 0.22) 0%, rgba(147, 51, 234, 0.14) 38%, rgba(13, 6, 17, 0.98) 72%), #0d0611 !important;
         }
         body.standalone-recipient-view #surprise-gate-screen.fade-out {
             opacity: 0 !important;
@@ -1996,27 +2013,62 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
             waxSealEl.appendChild(sealLock);
         }
 
-        const giftBox = cloneDoc.querySelector('.gift-box-wrapper');
-        if (giftBox && !giftBox.querySelector('#gate-advance-pill')) {
-            const advPill = document.createElement('div');
-            advPill.id = 'gate-advance-pill';
-            advPill.className = 'gate-advance-pill hidden';
-            advPill.innerHTML = `
-                <span class="pulse-dot"></span>
-                <span class="pill-text">⏳ ADVANCE BIRTHDAY SURPRISE</span>
-                <span class="gate-advance-timer" id="gate-advance-timer-text">--:--:--</span>
-            `;
-            giftBox.insertBefore(advPill, giftBox.firstChild);
+        // Standalone Toast notification for locked envelope / button tap feedback
+        if (!cloneDoc.querySelector('#standalone-gate-toast')) {
+            const toastDiv = document.createElement('div');
+            toastDiv.id = 'standalone-gate-toast';
+            toastDiv.className = 'standalone-gate-toast hidden';
+            toastDiv.innerHTML = '🔒 Shh... The surprise unlocks automatically at 12:00:00 AM Midnight! ✨';
+            cloneBody.appendChild(toastDiv);
         }
 
-        const envFront = cloneDoc.querySelector('.envelope-front-text');
-        if (envFront && !envFront.querySelector('#gate-advance-chip')) {
-            const chip = document.createElement('div');
-            chip.id = 'gate-advance-chip';
-            chip.className = 'gate-advance-chip hidden';
-            chip.innerHTML = '🔒 Locked Until 12:00 AM';
-            envFront.appendChild(chip);
+        // Luxury Glassmorphism Advance Countdown Hub
+        const giftBox = cloneDoc.querySelector('.gift-box-wrapper');
+        if (giftBox && !giftBox.querySelector('#gate-advance-hub')) {
+            const hub = document.createElement('div');
+            hub.id = 'gate-advance-hub';
+            hub.className = 'advance-countdown-hub hidden';
+            hub.innerHTML = `
+                <div class="advance-hub-badge">
+                    <span class="hub-pulse"></span>
+                    <span>Advance Birthday Surprise</span>
+                </div>
+                <div class="advance-timer-cards">
+                    <div class="timer-card-unit">
+                        <span class="t-val" id="adv-days">00</span>
+                        <span class="t-lbl">Days</span>
+                    </div>
+                    <span class="t-sep">:</span>
+                    <div class="timer-card-unit">
+                        <span class="t-val" id="adv-hours">00</span>
+                        <span class="t-lbl">Hours</span>
+                    </div>
+                    <span class="t-sep">:</span>
+                    <div class="timer-card-unit">
+                        <span class="t-val" id="adv-mins">00</span>
+                        <span class="t-lbl">Mins</span>
+                    </div>
+                    <span class="t-sep">:</span>
+                    <div class="timer-card-unit">
+                        <span class="t-val" id="adv-secs">00</span>
+                        <span class="t-lbl">Secs</span>
+                    </div>
+                </div>
+                <p class="advance-hub-subtitle">Unlocks automatically at <strong>12:00:00 AM Midnight</strong> ✨</p>
+            `;
+            const envCard = giftBox.querySelector('.envelope-card');
+            if (envCard) {
+                giftBox.insertBefore(hub, envCard);
+            } else {
+                giftBox.appendChild(hub);
+            }
         }
+
+        // Remove any leftover redundant pills
+        const oldAdvPill = cloneDoc.querySelector('#gate-advance-pill');
+        if (oldAdvPill) oldAdvPill.remove();
+        const oldAdvChip = cloneDoc.querySelector('#gate-advance-chip');
+        if (oldAdvChip) oldAdvChip.remove();
 
         // Remove old external scripts
         cloneDoc.querySelectorAll('script').forEach(s => s.remove());
@@ -2211,45 +2263,69 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
 
             // Scene 0 Advance Lock & Countdown Elements
             const gateFloatingBadge = document.getElementById('gate-floating-badge');
+            const gateAdvanceHub = document.getElementById('gate-advance-hub');
+            const advDays = document.getElementById('adv-days');
+            const advHours = document.getElementById('adv-hours');
+            const advMins = document.getElementById('adv-mins');
+            const advSecs = document.getElementById('adv-secs');
             const sealLockIndicator = document.getElementById('seal-lock-indicator');
-            const gateAdvancePill = document.getElementById('gate-advance-pill');
             const gateEnvelopeTagline = document.getElementById('gate-envelope-tagline');
-            const gateAdvanceChip = document.getElementById('gate-advance-chip');
-            const gateAdvanceTimerText = document.getElementById('gate-advance-timer-text');
             const gateInstructionText = document.getElementById('gate-instruction-text');
             const openSurpriseBtnText = document.getElementById('open-surprise-btn-text');
+            const gateToast = document.getElementById('standalone-gate-toast');
             const countdownOverlay = document.getElementById('midnight-countdown-overlay');
             const countdownOverlayNum = document.getElementById('countdown-overlay-number');
             const countdownOverlayTagline = document.getElementById('countdown-overlay-tagline');
 
             let isAdvanceLocked = false;
             let isFinal5SecCountdownRunning = false;
+            let toastTimer = null;
 
-            function setGateAdvanceLockState(locked, timeString) {
-                timeString = timeString || '';
+            function showGateToast(msg) {
+                if (!gateToast) return;
+                if (msg) gateToast.innerHTML = msg;
+                gateToast.classList.remove('hidden');
+                void gateToast.offsetWidth;
+                gateToast.classList.add('show');
+                if (toastTimer) clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                    gateToast.classList.remove('show');
+                    setTimeout(() => {
+                        gateToast.classList.add('hidden');
+                    }, 350);
+                }, 2800);
+            }
+
+            function setGateAdvanceLockState(locked, d, h, m, s) {
                 isAdvanceLocked = locked;
                 if (locked) {
                     if (sealLockIndicator) sealLockIndicator.classList.remove('hidden');
-                    if (gateAdvancePill) gateAdvancePill.classList.remove('hidden');
-                    if (gateAdvanceChip) gateAdvanceChip.classList.remove('hidden');
-                    if (gateAdvanceTimerText && timeString) gateAdvanceTimerText.textContent = timeString;
+                    if (gateFloatingBadge) gateFloatingBadge.classList.add('hidden');
+                    if (gateAdvanceHub) gateAdvanceHub.classList.remove('hidden');
+                    if (advDays && d !== undefined) advDays.textContent = d;
+                    if (advHours && h !== undefined) advHours.textContent = h;
+                    if (advMins && m !== undefined) advMins.textContent = m;
+                    if (advSecs && s !== undefined) advSecs.textContent = s;
                     if (waxSealBtn) waxSealBtn.classList.add('is-locked');
                     if (openSurpriseBtn) openSurpriseBtn.classList.add('is-locked');
                     if (openSurpriseBtnText) openSurpriseBtnText.textContent = '🔒 Locked Until 12:00 AM';
-                    if (gateFloatingBadge) gateFloatingBadge.textContent = '⏳ Happy Birthday in Advance!';
-                    if (gateEnvelopeTagline) gateEnvelopeTagline.textContent = 'Surprise locked with love until 12:00:00 AM Midnight! 🕛';
+                    if (gateEnvelopeTagline) {
+                        gateEnvelopeTagline.style.display = 'none';
+                    }
                     if (gateInstructionText) {
-                        gateInstructionText.innerHTML = '🔒 <strong>Happy Birthday in Advance!</strong> Unlocks automatically at 12:00 AM Midnight 🕛';
+                        gateInstructionText.innerHTML = '<span class="sparkle-pulse">✨</span> Locked with Love • Opens Automatically at Midnight 🕛 <span class="sparkle-pulse">✨</span>';
                     }
                 } else {
                     if (sealLockIndicator) sealLockIndicator.classList.add('hidden');
-                    if (gateAdvancePill) gateAdvancePill.classList.add('hidden');
-                    if (gateAdvanceChip) gateAdvanceChip.classList.add('hidden');
+                    if (gateAdvanceHub) gateAdvanceHub.classList.add('hidden');
+                    if (gateFloatingBadge) gateFloatingBadge.classList.remove('hidden');
                     if (waxSealBtn) waxSealBtn.classList.remove('is-locked');
                     if (openSurpriseBtn) openSurpriseBtn.classList.remove('is-locked');
                     if (openSurpriseBtnText) openSurpriseBtnText.textContent = 'Unwrap My Surprise 🎁';
-                    if (gateFloatingBadge) gateFloatingBadge.textContent = '💌 Special Delivery for You';
-                    if (gateEnvelopeTagline) gateEnvelopeTagline.textContent = 'A universe of our favorite memories awaits...';
+                    if (gateEnvelopeTagline) {
+                        gateEnvelopeTagline.style.display = '';
+                        gateEnvelopeTagline.textContent = 'A universe of our favorite memories awaits...';
+                    }
                     if (gateInstructionText) {
                         gateInstructionText.innerHTML = '<span class="sparkle-pulse">✨</span> <strong>Tap the Golden Wax Seal</strong> to unwrap your surprise <span class="sparkle-pulse">✨</span>';
                     }
@@ -2265,6 +2341,7 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
                         waxSealBtn.classList.add('shake-lock');
                     }
                     if (audioEngine) audioEngine.playLocked();
+                    showGateToast('🔒 Shh... The surprise unlocks automatically at 12:00:00 AM Midnight! ✨');
                     return;
                 }
                 unwrapSurprise();
@@ -2755,9 +2832,7 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
                     const mins = Math.floor((totalSecs % 3600) / 60);
                     const secs = totalSecs % 60;
                     const pad = function(n) { return (n < 10 ? '0' : '') + n; };
-                    const timeStr = (days > 0 ? days + 'd ' : '') + pad(hours) + 'h ' + pad(mins) + 'm ' + pad(secs) + 's';
-
-                    setGateAdvanceLockState(true, timeStr);
+                    setGateAdvanceLockState(true, pad(days), pad(hours), pad(mins), pad(secs));
 
                     if (wrapper) wrapper.classList.remove('its-birthday-today');
                     if (wrapper) wrapper.classList.remove('midnight-strike');
