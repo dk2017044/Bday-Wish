@@ -1387,8 +1387,14 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
     // ==========================================
     // 17. PERSISTENCE ENGINE & AUTO-SAVE (LOCALSTORAGE)
     // ==========================================
-    const STORAGE_KEY = 'birthday_surprise_custom_data_v1';
-    const GATE_KEY = 'birthday_surprise_gate_opened_v1';
+    const STORAGE_KEY = 'birthday_surprise_custom_data_v2';
+    const GATE_KEY = 'birthday_surprise_gate_opened_v2';
+
+    // Purge old v1 demo data from visitor cache so fresh custom data always displays
+    try {
+        localStorage.removeItem('birthday_surprise_custom_data_v1');
+        localStorage.removeItem('birthday_surprise_gate_opened_v1');
+    } catch (e) {}
 
     let autoSaveDebounceTimer = null;
     function saveStateToLocalStorage() {
