@@ -104,7 +104,27 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     const envelope = document.getElementById('envelope-interactive');
     const waxSealBtn = document.getElementById('wax-seal-button');
     const openSurpriseBtn = document.getElementById('open-surprise-btn');
+    const openSurpriseBtnText = document.getElementById('open-surprise-btn-text');
     const mainFlow = document.getElementById('main-content-flow');
+
+    // Scene 0 Advance Lock & Countdown Elements
+    const gateFloatingBadge = document.getElementById('gate-floating-badge');
+    const sealLockIndicator = document.getElementById('seal-lock-indicator');
+    const gateAdvancePill = document.getElementById('gate-advance-pill');
+    const gateEnvelopeTagline = document.getElementById('gate-envelope-tagline');
+    const gateAdvanceChip = document.getElementById('gate-advance-chip');
+    const gateAdvanceTimerText = document.getElementById('gate-advance-timer-text');
+    const gateInstructionText = document.getElementById('gate-instruction-text');
+
+    // 5-Second Midnight Countdown Overlay Elements
+    const countdownOverlay = document.getElementById('midnight-countdown-overlay');
+    const countdownOverlayNum = document.getElementById('countdown-overlay-number');
+    const countdownOverlayTagline = document.getElementById('countdown-overlay-tagline');
+
+    // Studio Testing Buttons
+    const btnPreview5sec = document.getElementById('btn-preview-5sec');
+    const btnPreviewAdvance = document.getElementById('btn-preview-advance');
+    const btnPreviewAdvanceLabel = document.getElementById('btn-preview-advance-label');
 
     // Music & Theme
     const vinylDisc = document.getElementById('vinyl-disc');
@@ -353,8 +373,57 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
     playPauseBtn.addEventListener('click', toggleBackgroundMusic);
 
     // ==========================================
-    // 4. SCENE 0: UNWRAPPING THE MYSTERY ENVELOPE
+    // 4. SCENE 0: UNWRAPPING THE MYSTERY ENVELOPE (ADVANCE LOCKED VS READY TO OPEN)
     // ==========================================
+    let isAdvanceLocked = false;
+    let forcedAdvanceMode = null; // null = dynamic by clock, true/false = manual testing mode
+    let isFinal5SecCountdownRunning = false;
+
+    function setGateAdvanceLockState(locked, timeString = '') {
+        isAdvanceLocked = locked;
+        if (locked) {
+            if (sealLockIndicator) sealLockIndicator.classList.remove('hidden');
+            if (gateAdvancePill) gateAdvancePill.classList.remove('hidden');
+            if (gateAdvanceChip) gateAdvanceChip.classList.remove('hidden');
+            if (gateAdvanceTimerText && timeString) gateAdvanceTimerText.textContent = timeString;
+            if (waxSealBtn) waxSealBtn.classList.add('is-locked');
+            if (openSurpriseBtn) openSurpriseBtn.classList.add('is-locked');
+            if (openSurpriseBtnText) openSurpriseBtnText.textContent = '🔒 Locked Until 12:00 AM';
+            if (gateFloatingBadge) gateFloatingBadge.textContent = '⏳ Happy Birthday in Advance!';
+            if (gateEnvelopeTagline) gateEnvelopeTagline.textContent = 'Surprise locked with love until 12:00:00 AM Midnight! 🕛';
+            if (gateInstructionText) {
+                gateInstructionText.innerHTML = '🔒 <strong>Happy Birthday in Advance!</strong> Unlocks automatically at 12:00 AM Midnight 🕛';
+            }
+        } else {
+            if (sealLockIndicator) sealLockIndicator.classList.add('hidden');
+            if (gateAdvancePill) gateAdvancePill.classList.add('hidden');
+            if (gateAdvanceChip) gateAdvanceChip.classList.add('hidden');
+            if (waxSealBtn) waxSealBtn.classList.remove('is-locked');
+            if (openSurpriseBtn) openSurpriseBtn.classList.remove('is-locked');
+            if (openSurpriseBtnText) openSurpriseBtnText.textContent = 'Unwrap My Surprise 🎁';
+            if (gateFloatingBadge) gateFloatingBadge.textContent = '💌 Special Delivery for You';
+            if (gateEnvelopeTagline) gateEnvelopeTagline.textContent = 'A universe of our favorite memories awaits...';
+            if (gateInstructionText) {
+                gateInstructionText.innerHTML = '<span class="sparkle-pulse">✨</span> <strong>Tap the Golden Wax Seal</strong> to unwrap your surprise <span class="sparkle-pulse">✨</span>';
+            }
+        }
+    }
+
+    function tryUnwrapSurprise(e) {
+        if (isAdvanceLocked) {
+            if (e) e.preventDefault();
+            if (waxSealBtn) {
+                waxSealBtn.classList.remove('shake-lock');
+                void waxSealBtn.offsetWidth;
+                waxSealBtn.classList.add('shake-lock');
+            }
+            if (window.birthdayAudio) window.birthdayAudio.playLocked();
+            showStatusFeedback('🔒 Shhh! Happy Birthday in Advance! Yeh surprise 12:00 AM Midnight par hi unlock hoga! 😉✨', 'warning');
+            return;
+        }
+        unwrapSurprise();
+    }
+
     function unwrapSurprise() {
         waxSealBtn.classList.add('broken');
         envelope.classList.add('open-anim');
@@ -406,8 +475,8 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    waxSealBtn.addEventListener('click', unwrapSurprise);
-    openSurpriseBtn.addEventListener('click', unwrapSurprise);
+    waxSealBtn.addEventListener('click', tryUnwrapSurprise);
+    openSurpriseBtn.addEventListener('click', tryUnwrapSurprise);
     if (resealEnvelopeBtn) {
         resealEnvelopeBtn.addEventListener('click', resealEnvelope);
     }
@@ -441,7 +510,63 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
         setTimeout(() => { if (toast) toast.classList.remove('show'); }, 14000);
     }
 
+    // Dramatic 5-Second Cinematic Tick-Tick Countdown Overlay
+    function trigger5SecondCountdown(onComplete) {
+        if (isFinal5SecCountdownRunning) return;
+        isFinal5SecCountdownRunning = true;
+
+        if (countdownOverlay) {
+            countdownOverlay.classList.remove('hidden');
+        }
+
+        let count = 5;
+        function tick() {
+            if (countdownOverlayNum) {
+                countdownOverlayNum.textContent = count;
+                countdownOverlayNum.classList.remove('impact-tick');
+                void countdownOverlayNum.offsetWidth;
+                countdownOverlayNum.classList.add('impact-tick');
+            }
+            if (countdownOverlayTagline) {
+                const taglines = {
+                    5: 'Hold your breath... The magic begins in seconds! 💫',
+                    4: 'Almost midnight... Get ready! ✨',
+                    3: 'Making a birthday wish... 🌟',
+                    2: 'Unwrapping your universe... 💌',
+                    1: '🕛 12:00 AM IS HERE! 🎂'
+                };
+                countdownOverlayTagline.textContent = taglines[count] || 'Countdown...';
+            }
+
+            if (window.birthdayAudio) {
+                try {
+                    window.birthdayAudio.playCountdownTick(count);
+                } catch (err) {}
+            }
+
+            count--;
+            if (count >= 1) {
+                setTimeout(tick, 1000);
+            } else {
+                setTimeout(() => {
+                    if (countdownOverlayNum) countdownOverlayNum.textContent = '🎉';
+                    if (countdownOverlayTagline) countdownOverlayTagline.textContent = '✨ HAPPY BIRTHDAY! 💖';
+                    setTimeout(() => {
+                        if (countdownOverlay) countdownOverlay.classList.add('hidden');
+                        isFinal5SecCountdownRunning = false;
+                        setGateAdvanceLockState(false);
+                        if (typeof onComplete === 'function') onComplete();
+                    }, 800);
+                }, 1000);
+            }
+        }
+        tick();
+    }
+
     function triggerMidnightCelebration() {
+        // Unlock gate immediately
+        setGateAdvanceLockState(false);
+
         // 1. Audio celebration
         if (window.birthdayAudio) {
             try {
@@ -513,48 +638,91 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
             if (bdayFormattedDate) bdayFormattedDate.textContent = `Birthday: ${prettyDate}`;
             if (gateBdayTag) gateBdayTag.textContent = `🎂 Celebration: ${prettyDate}`;
 
-            const isToday = (now.getDate() === target.getDate() && now.getMonth() === target.getMonth());
+            const diff = target.getTime() - now.getTime();
 
-            if (isToday) {
-                countdownWrapper.classList.add('its-birthday-today');
-                unitDays.textContent = '🎉';
-                unitHours.textContent = 'IT\'S';
-                unitMins.textContent = 'YOUR';
-                unitSecs.textContent = 'DAY!';
-                countdownStatusNote.textContent = '✨ TODAY IS THE BIG DAY! HAPPY BIRTHDAY! 🎂';
+            // Determine Advance Lock condition
+            const isAdvance = (forcedAdvanceMode !== null) ? forcedAdvanceMode : (diff > 5000);
 
-                // Automatically trigger live wish if user opened before midnight
-                if (!hasTriggeredMidnightCelebration && wasCheckedBeforeMidnight) {
-                    hasTriggeredMidnightCelebration = true;
-                    triggerMidnightCelebration();
-                }
-                return;
-            }
-
-            countdownWrapper.classList.remove('its-birthday-today');
-            countdownWrapper.classList.remove('midnight-strike');
-            const diff = target - now;
-            if (diff > 0) {
+            if (isAdvance) {
                 wasCheckedBeforeMidnight = true;
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-                const mins = Math.floor((diff / (1000 * 60)) % 60);
-                const secs = Math.floor((diff / 1000) % 60);
+                const totalSecs = Math.max(0, Math.floor(diff / 1000));
+                const days = Math.floor(totalSecs / (3600 * 24));
+                const hours = Math.floor((totalSecs % (3600 * 24)) / 3600);
+                const mins = Math.floor((totalSecs % 3600) / 60);
+                const secs = totalSecs % 60;
+                const pad = n => String(n).padStart(2, '0');
+                const timeStr = (days > 0 ? days + 'd ' : '') + pad(hours) + 'h ' + pad(mins) + 'm ' + pad(secs) + 's';
 
+                setGateAdvanceLockState(true, timeStr);
+
+                countdownWrapper.classList.remove('its-birthday-today');
+                countdownWrapper.classList.remove('midnight-strike');
                 unitDays.textContent = days;
                 unitHours.textContent = hours;
                 unitMins.textContent = mins;
                 unitSecs.textContent = secs;
                 countdownStatusNote.textContent = `⏳ ${days} days until your midnight celebration! ✨`;
+                return;
             }
+
+            // Final 5-second countdown detection (diff <= 5000 && diff > 0)
+            if (diff <= 5000 && diff > 0 && forcedAdvanceMode === null) {
+                wasCheckedBeforeMidnight = true;
+                if (!isFinal5SecCountdownRunning && !hasTriggeredMidnightCelebration) {
+                    trigger5SecondCountdown(() => {
+                        hasTriggeredMidnightCelebration = true;
+                        triggerMidnightCelebration();
+                    });
+                }
+                return;
+            }
+
+            // Unlocked: Midnight has struck or it is birthday daytime
+            setGateAdvanceLockState(false);
+            countdownWrapper.classList.add('its-birthday-today');
+            unitDays.textContent = '🎉';
+            unitHours.textContent = 'IT\'S';
+            unitMins.textContent = 'YOUR';
+            unitSecs.textContent = 'DAY!';
+            countdownStatusNote.textContent = '✨ TODAY IS THE BIG DAY! HAPPY BIRTHDAY! 🎂';
+
+            // Situation 1: Person was waiting on the page before midnight -> Auto-celebrate!
+            if (!hasTriggeredMidnightCelebration && wasCheckedBeforeMidnight && !isFinal5SecCountdownRunning) {
+                hasTriggeredMidnightCelebration = true;
+                triggerMidnightCelebration();
+            }
+            // Situation 2: Person arrived after 12:00 AM -> Gate is unlocked for them to unwrap manually!
         }
 
         updateTimer();
         countdownInterval = setInterval(updateTimer, 1000);
     }
 
-    // Connect Surprise Studio Preview Midnight button
-    const btnPreviewMidnight = document.getElementById('btn-preview-midnight');
+    // Connect Surprise Studio testing buttons
+    if (btnPreview5sec) {
+        btnPreview5sec.addEventListener('click', () => {
+            trigger5SecondCountdown(() => {
+                triggerMidnightCelebration();
+            });
+            showStatusFeedback('⏳ Playing dramatic 5-second countdown & 12 AM auto-open!', 'success');
+        });
+    }
+
+    if (btnPreviewAdvance) {
+        btnPreviewAdvance.addEventListener('click', () => {
+            if (forcedAdvanceMode === null) {
+                forcedAdvanceMode = !isAdvanceLocked;
+            } else {
+                forcedAdvanceMode = !forcedAdvanceMode;
+            }
+            setGateAdvanceLockState(forcedAdvanceMode, '02h 15m 30s');
+            if (btnPreviewAdvanceLabel) {
+                btnPreviewAdvanceLabel.textContent = forcedAdvanceMode ? '🔓 Switch to Unlocked' : '🔒 Switch to Advance Lock';
+            }
+            showStatusFeedback(forcedAdvanceMode ? '🔒 Mode: Advance Locked (Before 12 AM)' : '🔓 Mode: Birthday Unlocked (After 12 AM)', 'info');
+        });
+    }
+
     if (btnPreviewMidnight) {
         btnPreviewMidnight.addEventListener('click', () => {
             triggerMidnightCelebration();
@@ -2175,6 +2343,67 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
             if (vinylDisc) vinylDisc.addEventListener('click', toggleMusic);
             if (playPauseBtn) playPauseBtn.addEventListener('click', toggleMusic);
 
+            // Scene 0 Advance Lock & Countdown Elements
+            const gateFloatingBadge = document.getElementById('gate-floating-badge');
+            const sealLockIndicator = document.getElementById('seal-lock-indicator');
+            const gateAdvancePill = document.getElementById('gate-advance-pill');
+            const gateEnvelopeTagline = document.getElementById('gate-envelope-tagline');
+            const gateAdvanceChip = document.getElementById('gate-advance-chip');
+            const gateAdvanceTimerText = document.getElementById('gate-advance-timer-text');
+            const gateInstructionText = document.getElementById('gate-instruction-text');
+            const openSurpriseBtnText = document.getElementById('open-surprise-btn-text');
+            const countdownOverlay = document.getElementById('midnight-countdown-overlay');
+            const countdownOverlayNum = document.getElementById('countdown-overlay-number');
+            const countdownOverlayTagline = document.getElementById('countdown-overlay-tagline');
+
+            let isAdvanceLocked = false;
+            let isFinal5SecCountdownRunning = false;
+
+            function setGateAdvanceLockState(locked, timeString) {
+                timeString = timeString || '';
+                isAdvanceLocked = locked;
+                if (locked) {
+                    if (sealLockIndicator) sealLockIndicator.classList.remove('hidden');
+                    if (gateAdvancePill) gateAdvancePill.classList.remove('hidden');
+                    if (gateAdvanceChip) gateAdvanceChip.classList.remove('hidden');
+                    if (gateAdvanceTimerText && timeString) gateAdvanceTimerText.textContent = timeString;
+                    if (waxSealBtn) waxSealBtn.classList.add('is-locked');
+                    if (openSurpriseBtn) openSurpriseBtn.classList.add('is-locked');
+                    if (openSurpriseBtnText) openSurpriseBtnText.textContent = '🔒 Locked Until 12:00 AM';
+                    if (gateFloatingBadge) gateFloatingBadge.textContent = '⏳ Happy Birthday in Advance!';
+                    if (gateEnvelopeTagline) gateEnvelopeTagline.textContent = 'Surprise locked with love until 12:00:00 AM Midnight! 🕛';
+                    if (gateInstructionText) {
+                        gateInstructionText.innerHTML = '🔒 <strong>Happy Birthday in Advance!</strong> Unlocks automatically at 12:00 AM Midnight 🕛';
+                    }
+                } else {
+                    if (sealLockIndicator) sealLockIndicator.classList.add('hidden');
+                    if (gateAdvancePill) gateAdvancePill.classList.add('hidden');
+                    if (gateAdvanceChip) gateAdvanceChip.classList.add('hidden');
+                    if (waxSealBtn) waxSealBtn.classList.remove('is-locked');
+                    if (openSurpriseBtn) openSurpriseBtn.classList.remove('is-locked');
+                    if (openSurpriseBtnText) openSurpriseBtnText.textContent = 'Unwrap My Surprise 🎁';
+                    if (gateFloatingBadge) gateFloatingBadge.textContent = '💌 Special Delivery for You';
+                    if (gateEnvelopeTagline) gateEnvelopeTagline.textContent = 'A universe of our favorite memories awaits...';
+                    if (gateInstructionText) {
+                        gateInstructionText.innerHTML = '<span class="sparkle-pulse">✨</span> <strong>Tap the Golden Wax Seal</strong> to unwrap your surprise <span class="sparkle-pulse">✨</span>';
+                    }
+                }
+            }
+
+            function tryUnwrapSurprise(e) {
+                if (isAdvanceLocked) {
+                    if (e && e.preventDefault) e.preventDefault();
+                    if (waxSealBtn) {
+                        waxSealBtn.classList.remove('shake-lock');
+                        void waxSealBtn.offsetWidth;
+                        waxSealBtn.classList.add('shake-lock');
+                    }
+                    if (audioEngine) audioEngine.playLocked();
+                    return;
+                }
+                unwrapSurprise();
+            }
+
             // Envelope unwrapping
             function unwrapSurprise() {
                 if (waxSealBtn) waxSealBtn.classList.add('broken');
@@ -2211,8 +2440,8 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                     }, 800);
                 }, 650);
             }
-            if (waxSealBtn) waxSealBtn.addEventListener('click', unwrapSurprise);
-            if (openSurpriseBtn) openSurpriseBtn.addEventListener('click', unwrapSurprise);
+            if (waxSealBtn) waxSealBtn.addEventListener('click', tryUnwrapSurprise);
+            if (openSurpriseBtn) openSurpriseBtn.addEventListener('click', tryUnwrapSurprise);
 
             // Cake & Candle
             const flame = document.getElementById('flame-element');
@@ -2524,6 +2753,52 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 }, 1200);
             }
 
+            // 5-Second Cinematic Tick-Tick Countdown Overlay in Standalone
+            function trigger5SecondCountdown(onComplete) {
+                if (isFinal5SecCountdownRunning) return;
+                isFinal5SecCountdownRunning = true;
+                if (countdownOverlay) countdownOverlay.classList.remove('hidden');
+
+                let count = 5;
+                function tick() {
+                    if (countdownOverlayNum) {
+                        countdownOverlayNum.textContent = count;
+                        countdownOverlayNum.classList.remove('impact-tick');
+                        void countdownOverlayNum.offsetWidth;
+                        countdownOverlayNum.classList.add('impact-tick');
+                    }
+                    if (countdownOverlayTagline) {
+                        const taglines = {
+                            5: 'Hold your breath... The magic begins in seconds! 💫',
+                            4: 'Almost midnight... Get ready! ✨',
+                            3: 'Making a birthday wish... 🌟',
+                            2: 'Unwrapping your universe... 💌',
+                            1: '🕛 12:00 AM IS HERE! 🎂'
+                        };
+                        countdownOverlayTagline.textContent = taglines[count] || 'Countdown...';
+                    }
+                    if (audioEngine) {
+                        try { audioEngine.playCountdownTick(count); } catch (e) {}
+                    }
+                    count--;
+                    if (count >= 1) {
+                        setTimeout(tick, 1000);
+                    } else {
+                        setTimeout(() => {
+                            if (countdownOverlayNum) countdownOverlayNum.textContent = '🎉';
+                            if (countdownOverlayTagline) countdownOverlayTagline.textContent = '✨ HAPPY BIRTHDAY! 💖';
+                            setTimeout(() => {
+                                if (countdownOverlay) countdownOverlay.classList.add('hidden');
+                                isFinal5SecCountdownRunning = false;
+                                setGateAdvanceLockState(false);
+                                if (typeof onComplete === 'function') onComplete();
+                            }, 800);
+                        }, 1000);
+                    }
+                }
+                tick();
+            }
+
             // Countdown timer
             function updateCountdown() {
                 const bdate = state.birthdate;
@@ -2536,41 +2811,65 @@ Keep shining, keep dreaming, and never stop being your amazing, hilarious, kind 
                 if (now.getTime() > target.getTime() + (24 * 60 * 60 * 1000)) {
                     target = new Date(bYear + 1, parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0);
                 }
-                const isToday = now.getMonth() === target.getMonth() && now.getDate() === target.getDate();
                 const wrapper = document.getElementById('bday-countdown-widget');
                 const dEl = document.querySelector('#unit-days strong');
                 const hEl = document.querySelector('#unit-hours strong');
                 const mEl = document.querySelector('#unit-mins strong');
                 const sEl = document.querySelector('#unit-secs strong');
                 const noteEl = document.getElementById('countdown-status-note');
-                if (isToday) {
-                    if (wrapper) wrapper.classList.add('its-birthday-today');
-                    if (dEl) dEl.textContent = '🎉';
-                    if (hEl) hEl.textContent = "IT'S";
-                    if (mEl) mEl.textContent = 'YOUR';
-                    if (sEl) sEl.textContent = 'DAY!';
-                    if (noteEl) noteEl.textContent = '✨ TODAY IS THE BIG DAY! HAPPY BIRTHDAY! 🎂';
 
-                    if (!hasTriggeredMidnightCelebration && wasCheckedBeforeMidnight) {
-                        hasTriggeredMidnightCelebration = true;
-                        triggerMidnightCelebration();
-                    }
-                    return;
-                }
-                if (wrapper) wrapper.classList.remove('midnight-strike');
-                const diff = target - now;
-                if (diff > 0) {
+                const diff = target.getTime() - now.getTime();
+
+                // Advance Locked before midnight (> 5s)
+                if (diff > 5000) {
                     wasCheckedBeforeMidnight = true;
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-                    const mins = Math.floor((diff / (1000 * 60)) % 60);
-                    const secs = Math.floor((diff / 1000) % 60);
+                    const totalSecs = Math.max(0, Math.floor(diff / 1000));
+                    const days = Math.floor(totalSecs / (3600 * 24));
+                    const hours = Math.floor((totalSecs % (3600 * 24)) / 3600);
+                    const mins = Math.floor((totalSecs % 3600) / 60);
+                    const secs = totalSecs % 60;
+                    const pad = function(n) { return (n < 10 ? '0' : '') + n; };
+                    const timeStr = (days > 0 ? days + 'd ' : '') + pad(hours) + 'h ' + pad(mins) + 'm ' + pad(secs) + 's';
+
+                    setGateAdvanceLockState(true, timeStr);
+
+                    if (wrapper) wrapper.classList.remove('its-birthday-today');
+                    if (wrapper) wrapper.classList.remove('midnight-strike');
                     if (dEl) dEl.textContent = days;
                     if (hEl) hEl.textContent = hours;
                     if (mEl) mEl.textContent = mins;
                     if (sEl) sEl.textContent = secs;
                     if (noteEl) noteEl.textContent = '⏳ ' + days + ' days until your midnight celebration! ✨';
+                    return;
                 }
+
+                // Final 5-second countdown
+                if (diff <= 5000 && diff > 0) {
+                    wasCheckedBeforeMidnight = true;
+                    if (!isFinal5SecCountdownRunning && !hasTriggeredMidnightCelebration) {
+                        trigger5SecondCountdown(function() {
+                            hasTriggeredMidnightCelebration = true;
+                            triggerMidnightCelebration();
+                        });
+                    }
+                    return;
+                }
+
+                // Unlocked state (midnight or after)
+                setGateAdvanceLockState(false);
+                if (wrapper) wrapper.classList.add('its-birthday-today');
+                if (dEl) dEl.textContent = '🎉';
+                if (hEl) hEl.textContent = "IT'S";
+                if (mEl) mEl.textContent = 'YOUR';
+                if (sEl) sEl.textContent = 'DAY!';
+                if (noteEl) noteEl.textContent = '✨ TODAY IS THE BIG DAY! HAPPY BIRTHDAY! 🎂';
+
+                // Situation 1: Person was waiting before midnight -> Auto celebrate!
+                if (!hasTriggeredMidnightCelebration && wasCheckedBeforeMidnight && !isFinal5SecCountdownRunning) {
+                    hasTriggeredMidnightCelebration = true;
+                    triggerMidnightCelebration();
+                }
+                // Situation 2: Person arrived after 12:00 AM -> Gate is unlocked for them to unwrap manually!
             }
             updateCountdown();
             setInterval(updateCountdown, 1000);

@@ -279,6 +279,63 @@ class BirthdayAudioEngine {
         this.startMusic();
     }
 
+    // Tension Tick-Tick audio for the final 5, 4, 3, 2, 1 seconds countdown
+    playCountdownTick(second = 5) {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        // Frequency gently rises as we get closer to midnight
+        const baseFreq = 540 + (5 - Math.max(1, Math.min(5, second))) * 90;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.45, now + 0.08);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.35, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+        osc.connect(gain);
+        gain.connect(this.sfxGain);
+        osc.start(now);
+        osc.stop(now + 0.13);
+
+        // Low dramatic sub-heartbeat thud
+        const sub = this.ctx.createOscillator();
+        const subGain = this.ctx.createGain();
+        sub.type = 'sine';
+        sub.frequency.setValueAtTime(115, now);
+        sub.frequency.exponentialRampToValueAtTime(45, now + 0.14);
+        subGain.gain.setValueAtTime(0.28, now);
+        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+        sub.connect(subGain);
+        subGain.connect(this.sfxGain);
+        sub.start(now);
+        sub.stop(now + 0.15);
+    }
+
+    // Gentle lock click when recipient tries to open before 12:00 AM
+    playLocked() {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        [240, 180].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            const t = now + idx * 0.05;
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, t);
+            gain.gain.setValueAtTime(0.09, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+            osc.connect(gain);
+            gain.connect(this.sfxGain);
+            osc.start(t);
+            osc.stop(t + 0.06);
+        });
+    }
+
     // Scratch Card scratch sound
     playScratch() {
         this.init();

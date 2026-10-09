@@ -99,11 +99,12 @@
 
         <div class="gate-content">
             <div class="gift-box-wrapper">
-                <div class="floating-badge">💌 Special Delivery for You</div>
+                <div class="floating-badge" id="gate-floating-badge">💌 Special Delivery for You</div>
                 
                 <div class="envelope-card" id="envelope-interactive">
                     <div class="envelope-flap"></div>
                     <div class="wax-seal" id="wax-seal-button" title="Click to break the seal and open">
+                        <div class="wax-seal-lock-indicator hidden" id="seal-lock-indicator" title="Locked until 12:00 AM Midnight">🔒</div>
                         <div class="seal-inner">
                             <span class="seal-letter" id="seal-letter-text">A</span>
                             <span class="seal-ring"></span>
@@ -111,21 +112,32 @@
                     </div>
                     <div class="envelope-pocket">
                         <div class="envelope-front-text">
+                            <!-- Advance Lock Pill -->
+                            <div class="advance-lock-pill hidden" id="gate-advance-pill">
+                                <span class="lock-icon">🔒</span>
+                                <span class="advance-label">Happy Birthday in Advance!</span>
+                            </div>
                             <h2 class="recipient-tag">To: <span class="recipient-name-display">Ananya</span> 💖</h2>
-                            <p class="tagline">A universe of our favorite memories awaits...</p>
+                            <p class="tagline" id="gate-envelope-tagline">A universe of our favorite memories awaits...</p>
                             <p class="gate-date-display" id="gate-bday-tag">🎂 Special Celebration Day</p>
+                            
+                            <!-- Advance Countdown Chip -->
+                            <div class="advance-countdown-chip hidden" id="gate-advance-chip">
+                                <span>Unlocks at 12:00 AM in: </span>
+                                <strong id="gate-advance-timer-text">00h 00m 00s</strong>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <p class="gate-instruction">
+                <p class="gate-instruction" id="gate-instruction-text">
                     <span class="sparkle-pulse">✨</span> 
                     <strong>Tap the Golden Wax Seal</strong> to unwrap your surprise
                     <span class="sparkle-pulse">✨</span>
                 </p>
                 <div class="gate-actions-row">
                     <button type="button" class="unlock-btn" id="open-surprise-btn">
-                        <span>Unwrap My Surprise 🎁</span>
+                        <span id="open-surprise-btn-text">Unwrap My Surprise 🎁</span>
                     </button>
                     <button type="button" class="pill-btn gate-studio-btn" id="gate-open-studio-btn">
                         <span>✨ Customize in Surprise Studio</span>
@@ -574,8 +586,14 @@
                             <button type="button" class="btn-start-fresh" id="btn-start-fresh" title="Clear demo text for your partner">
                                 <span>✨ Start Fresh (Clear Demo)</span>
                             </button>
+                            <button type="button" class="btn-start-fresh btn-preview-5sec" id="btn-preview-5sec" title="Test dramatic 5-second countdown with tick-tick and 12 AM auto-open">
+                                <span>⏳ Test 5-Sec Countdown</span>
+                            </button>
+                            <button type="button" class="btn-start-fresh btn-preview-advance" id="btn-preview-advance" title="Toggle Advance Locked vs Unlocked state">
+                                <span id="btn-preview-advance-label">🔒 Toggle Advance Lock</span>
+                            </button>
                             <button type="button" class="btn-start-fresh btn-preview-midnight" id="btn-preview-midnight" title="Preview the live 12:00 AM midnight celebration">
-                                <span>🕛 Test 12 AM Midnight Wish</span>
+                                <span>🕛 12 AM Celebration</span>
                             </button>
                         </div>
                     </div>
@@ -975,6 +993,17 @@
             <button type="button" class="celebration-action-btn" id="claim-celebration-btn">
                 <span>Party Time! Continue Celebration 🥂</span>
             </button>
+        </div>
+    <!-- ==============================================
+         CINEMATIC 5-SECOND MIDNIGHT COUNTDOWN OVERLAY
+         ============================================== -->
+    <div class="midnight-countdown-overlay hidden" id="midnight-countdown-overlay">
+        <div class="countdown-backdrop"></div>
+        <div class="countdown-modal-box">
+            <div class="countdown-pill-badge">🕛 MIDNIGHT COUNTDOWN</div>
+            <div class="countdown-number-display" id="countdown-overlay-number">5</div>
+            <p class="countdown-tagline-text" id="countdown-overlay-tagline">Hold your breath... The magic begins in seconds! ✨</p>
+            <div class="countdown-waves-ring"></div>
         </div>
     </div>
 
