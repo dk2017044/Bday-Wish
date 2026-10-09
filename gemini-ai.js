@@ -325,6 +325,121 @@ No markdown backticks, no explanations.`;
         };
     }
 
+    // Generate both polished front title & heartfelt back note from photo title
+    async generatePhotoTitleAndNote(titleText, existingNote = '', tone = this.selectedTone) {
+        const cleanTitle = (titleText || '').trim();
+        const fallback = this.localPhotoNoteFallback(cleanTitle, tone);
+
+        if (!cleanTitle) {
+            return fallback;
+        }
+
+        const prompt = `System: You are an aesthetic editor and heartfelt writer for a personalized birthday website.
+Task: The user has given a photo title: "${cleanTitle}".
+Please generate:
+1. "title": A short, aesthetic front polaroid title (max 4-5 words) with cute emojis.
+2. "note": A heartfelt, emotionally touching 2-3 sentence memory note to write on the back of the polaroid card.
+
+Tone: ${tone} (Options: Romantic, Bestie, Warm, Poetic).
+Language: If the title is in Hindi or Hinglish, keep the sentiment natural and warm in Hinglish. If in English, keep it in sweet, natural English.
+
+CRITICAL: Return ONLY a valid JSON object without markdown formatting, with this exact schema:
+{"title": "...", "note": "..."}`;
+
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 300
+            }
+        };
+
+        for (const model of this.models) {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.apiKey}`;
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5500);
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: controller.signal,
+                    body: JSON.stringify(payload)
+                });
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const rawOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (rawOutput) {
+                        const jsonStr = rawOutput.replace(/```json|```/gi, '').trim();
+                        try {
+                            const parsed = JSON.parse(jsonStr);
+                            if (parsed.title && parsed.note) {
+                                return {
+                                    title: this.cleanText(parsed.title),
+                                    note: this.cleanText(parsed.note)
+                                };
+                            }
+                        } catch (e) {
+                            // Non-json response fallback
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn(`Fetch error with model ${model}:`, err);
+            }
+        }
+
+        return fallback;
+    }
+
+    localPhotoNoteFallback(cleanTitle, tone = 'Romantic') {
+        const t = (cleanTitle || '').toLowerCase();
+        let polishedTitle = cleanTitle ? (cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1)) : 'Precious Memory';
+        if (!polishedTitle.includes('✨') && !polishedTitle.includes('💖')) {
+            polishedTitle += ' ✨';
+        }
+
+        let note = '';
+
+        if (/hair|baal|hairstyle|curls|locks/.test(t)) {
+            polishedTitle = 'That Gorgeous Hair! ✨💖';
+            note = 'The way your hair catches the light and dances with the wind always steals my breath. Never stop flipping it with that effortless charm! 🌸';
+        } else if (/eye|eyes|aankh|nazar|gaze/.test(t)) {
+            polishedTitle = 'Those Sparkling Eyes ✨🥺';
+            note = 'Your eyes hold an entire universe of warmth and unspoken laughter. One look, and the whole world feels brighter and safer! 💖';
+        } else if (/smile|hasi|muskan|laugh|hasna|chuckle/.test(t)) {
+            polishedTitle = 'That Radiant Smile ✨🌸';
+            note = 'Your laughter is hands down my favorite melody in the world. Never let that precious, contagious smile fade away! 🥰';
+        } else if (/beach|ocean|waves|sea|sunset|samundar|kinare/.test(t)) {
+            polishedTitle = 'Golden Sunset Waves 🌅🌊';
+            note = 'Running toward the water with sparklers in our hands and sand between our toes. Every single golden hour with you is etched in my heart! ✨';
+        } else if (/cafe|coffee|cupcake|tea|chai|food|pizza|treat/.test(t)) {
+            polishedTitle = 'Cozy Cafe Conversations ☕🧁';
+            note = 'Endless banter over hot drinks, sweet desserts, and zero track of time. Thank you for always being my coziest safe space! 🍰💫';
+        } else if (/drive|car|ride|road\\s*trip|trip|travel|ghoomna/.test(t)) {
+            polishedTitle = 'Late Night Wanderlust 🚗💨';
+            note = 'Windows rolled all the way down, our favorite playlist blasting, and the night sky above us. To endless spontaneous road trips together! 🌌🎵';
+        } else if (/party|confetti|birthday|celebrat|bday|jashn/.test(t)) {
+            polishedTitle = 'Party Lights & Confetti 🥳🎉';
+            note = 'Party hats on, confetti in our hair, and hearts full of joy! Nobody lights up a room with infectious energy quite like you do! 🎂🎈';
+        } else if (/outfit|style|dress|look|slay|fashion|suit/.test(t)) {
+            polishedTitle = 'Serving Pure Main Character 🕶️✨';
+            note = 'Dressed to perfection and slaying effortlessly! You truly own every single room you walk into with unmatched grace and confidence. 💅🔥';
+        } else if (/candid|chaos|random|crazy|fun|pagal/.test(t)) {
+            polishedTitle = 'Pure Candid Magic 📸✨';
+            note = 'Unposed, totally spontaneous, and filled with genuine joy. The unfiltered, silly moments with you are always the ones I cherish the most! 🥰';
+        } else {
+            note = `Looking at this photo brings back the warmest flood of memories. Thank you for being such an irreplaceable part of my world — wishing you a year filled with infinite happiness! 💖🎂`;
+        }
+
+        return {
+            title: polishedTitle,
+            note: note
+        };
+    }
+
     async enhanceText(originalText, contextType = 'Birthday Wish', tone = this.selectedTone) {
         if (!originalText || !originalText.trim()) {
             throw new Error('Please write some text first so AI can polish it! ✨');

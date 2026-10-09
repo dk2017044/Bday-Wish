@@ -2546,6 +2546,99 @@ body:has(#surprise-gate-screen:not(.fade-out):not(.hidden)) .floating-header,
     margin-bottom: 20px;
 }
 
+/* Compact AI Prompt Helper Bar for ChatGPT/Gemini */
+.photo-llm-prompt-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 14px;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.15), rgba(244, 63, 94, 0.15));
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.prompt-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.prompt-bar-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    background: rgba(244, 63, 94, 0.25);
+    border: 1px solid rgba(244, 63, 94, 0.5);
+    border-radius: var(--radius-pill);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #fecdd3;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.prompt-bar-text {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-copy-llm-prompt {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #f43f5e, #be123c);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-pill);
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(244, 63, 94, 0.4);
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.btn-copy-llm-prompt:hover {
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 4px 16px rgba(244, 63, 94, 0.6);
+    filter: brightness(1.12);
+}
+
+.btn-copy-llm-prompt.copied {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-color: rgba(52, 211, 153, 0.6);
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.6);
+}
+
+.photo-caption-ai-btn {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.28), rgba(168, 85, 247, 0.28)) !important;
+    border: 1px solid rgba(251, 191, 36, 0.45) !important;
+    color: #fef08a !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    padding: 5px 10px !important;
+}
+
+.photo-caption-ai-btn:hover {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.45), rgba(168, 85, 247, 0.45)) !important;
+    border-color: #fbbf24 !important;
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.45) !important;
+}
+
 .photos-uploader-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

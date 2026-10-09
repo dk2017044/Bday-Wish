@@ -670,6 +670,17 @@
                 <!-- TAB 2: POLAROID PHOTOS UPLOADER -->
                 <div class="studio-tab-pane" id="tab-photos">
 
+                    <!-- Compact AI Prompt Helper Bar for ChatGPT / Gemini -->
+                    <div class="photo-llm-prompt-bar" id="photo-llm-prompt-bar">
+                        <div class="prompt-bar-left">
+                            <span class="prompt-bar-badge">🤖 AI Photo Helper</span>
+                            <span class="prompt-bar-text">Upload 4 photos to ChatGPT / Gemini to auto-create all titles & notes</span>
+                        </div>
+                        <button type="button" class="btn-copy-llm-prompt" id="btn-copy-photo-prompt" title="Copy ready prompt for ChatGPT / Claude / Gemini">
+                            <span class="copy-icon">📋</span>
+                            <span class="btn-text">Copy Prompt</span>
+                        </button>
+                    </div>
 
                     <div class="photos-uploader-grid">
                         
@@ -685,11 +696,11 @@
                             <div class="photo-fields">
                                 <div class="field-with-ai">
                                     <input type="text" class="studio-caption-input" id="input-caption-1" placeholder="Front Caption" value="Golden Hour Beach '23 ✨">
-                                    <button type="button" class="mini-ai-btn" data-target="input-caption-1" data-context="Photo Front Caption" title="AI Fix & Emoji">✨ AI</button>
+                                    <button type="button" class="mini-ai-btn photo-caption-ai-btn" data-target="input-caption-1" data-context="Photo Front Caption" title="AI: Auto-Polish Title & Generate Back Note together">✨ AI Both</button>
                                 </div>
                                 <div class="field-with-ai">
                                     <textarea class="studio-note-input" id="input-note-1" rows="2" placeholder="Secret Note on Back of Polaroid...">"That evening we ran toward the waves with sparklers in our hands, laughing so hard our ribs ached. Always keep that radiant laughter alive!"</textarea>
-                                    <button type="button" class="mini-ai-btn" data-target="input-note-1" data-context="Secret Memory Note on Back of Polaroid" title="AI Fix & Emoji">✨ AI</button>
+                                    <button type="button" class="mini-ai-btn" data-target="input-note-1" data-context="Secret Memory Note on Back of Polaroid" title="AI Polish Note only">✨ AI</button>
                                 </div>
                             </div>
                         </div>
@@ -706,11 +717,11 @@
                             <div class="photo-fields">
                                 <div class="field-with-ai">
                                     <input type="text" class="studio-caption-input" id="input-caption-2" placeholder="Front Caption" value="Celebrate & Joy ☕🧁">
-                                    <button type="button" class="mini-ai-btn" data-target="input-caption-2" data-context="Photo Front Caption" title="AI Fix & Emoji">✨ AI</button>
+                                    <button type="button" class="mini-ai-btn photo-caption-ai-btn" data-target="input-caption-2" data-context="Photo Front Caption" title="AI: Auto-Polish Title & Generate Back Note together">✨ AI Both</button>
                                 </div>
                                 <div class="field-with-ai">
                                     <textarea class="studio-note-input" id="input-note-2" rows="2" placeholder="Secret Note on Back of Polaroid...">"Our endless cafe conversations over iced matcha and cupcakes. Thank you for always being my safe space and biggest cheerleader."</textarea>
-                                    <button type="button" class="mini-ai-btn" data-target="input-note-2" data-context="Secret Memory Note on Back of Polaroid" title="AI Fix & Emoji">✨ AI</button>
+                                    <button type="button" class="mini-ai-btn" data-target="input-note-2" data-context="Secret Memory Note on Back of Polaroid" title="AI Polish Note only">✨ AI</button>
                                 </div>
                             </div>
                         </div>
@@ -727,11 +738,11 @@
                             <div class="photo-fields">
                                 <div class="field-with-ai">
                                     <input type="text" class="studio-caption-input" id="input-caption-3" placeholder="Front Caption" value="Pure Chaos & Confetti 🥳">
-                                    <button type="button" class="mini-ai-btn" data-target="input-caption-3" data-context="Photo Front Caption" title="AI Fix & Emoji">✨ AI</button>
+                                    <button type="button" class="mini-ai-btn photo-caption-ai-btn" data-target="input-caption-3" data-context="Photo Front Caption" title="AI: Auto-Polish Title & Generate Back Note together">✨ AI Both</button>
                                 </div>
                                 <div class="field-with-ai">
                                     <textarea class="studio-note-input" id="input-note-3" rows="2" placeholder="Secret Note on Back of Polaroid...">"Party hats, confetti in our hair, and zero regrets! No one brings energy and pure fun into a room like you do."</textarea>
-                                    <button type="button" class="mini-ai-btn" data-target="input-note-3" data-context="Secret Memory Note on Back of Polaroid" title="AI Fix & Emoji">✨ AI</button>
+                                    <button type="button" class="mini-ai-btn" data-target="input-note-3" data-context="Secret Memory Note on Back of Polaroid" title="AI Polish Note only">✨ AI</button>
                                 </div>
                             </div>
                         </div>
@@ -748,11 +759,11 @@
                             <div class="photo-fields">
                                 <div class="field-with-ai">
                                     <input type="text" class="studio-caption-input" id="input-caption-4" placeholder="Front Caption" value="Summer Days & Daisies 🌼">
-                                    <button type="button" class="mini-ai-btn" data-target="input-caption-4" data-context="Photo Front Caption" title="AI Fix & Emoji">✨ AI</button>
+                                    <button type="button" class="mini-ai-btn photo-caption-ai-btn" data-target="input-caption-4" data-context="Photo Front Caption" title="AI: Auto-Polish Title & Generate Back Note together">✨ AI Both</button>
                                 </div>
                                 <div class="field-with-ai">
                                     <textarea class="studio-note-input" id="input-note-4" rows="2" placeholder="Secret Note on Back of Polaroid...">"Under the warm sun with pastel balloons and wild daisies. Grateful for every single season of life spent together."</textarea>
-                                    <button type="button" class="mini-ai-btn" data-target="input-note-4" data-context="Secret Memory Note on Back of Polaroid" title="AI Fix & Emoji">✨ AI</button>
+                                    <button type="button" class="mini-ai-btn" data-target="input-note-4" data-context="Secret Memory Note on Back of Polaroid" title="AI Polish Note only">✨ AI</button>
                                 </div>
                             </div>
                         </div>

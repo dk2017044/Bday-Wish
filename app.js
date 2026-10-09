@@ -1235,6 +1235,82 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
 
         if (button.classList.contains('loading')) return;
 
+        // Special handling for photo captions: Auto-polish Title AND generate heartfelt Back Note together!
+        const photoCaptionMatch = targetId.match(/^input-caption-(\d+)$/);
+        if (photoCaptionMatch) {
+            const photoIdx = parseInt(photoCaptionMatch[1], 10);
+            const noteElement = document.getElementById(`input-note-${photoIdx}`);
+            const titleToUse = currentText.trim() || `Photo #${photoIdx} Memory`;
+
+            const originalBtnHtml = button.innerHTML;
+            button.classList.add('loading');
+            button.innerHTML = '<span>⏳ Polishing Title & Note...</span>';
+
+            const safetyTimer = setTimeout(() => {
+                if (button.classList.contains('loading')) {
+                    button.innerHTML = originalBtnHtml;
+                    button.classList.remove('loading');
+                    showToast('⚠️ AI request timed out. Using local template! ✨');
+                }
+            }, 8000);
+
+            try {
+                let res = null;
+                if (window.geminiAssistant && typeof window.geminiAssistant.generatePhotoTitleAndNote === 'function') {
+                    res = await window.geminiAssistant.generatePhotoTitleAndNote(titleToUse, noteElement ? noteElement.value : '', state.customTone || 'Romantic');
+                } else {
+                    res = {
+                        title: titleToUse.charAt(0).toUpperCase() + titleToUse.slice(1) + ' ✨',
+                        note: 'Looking at this photo brings back the warmest flood of memories. Wishing you a year filled with infinite happiness! 💖🎂'
+                    };
+                }
+
+                clearTimeout(safetyTimer);
+
+                // 1. Update Title Input
+                targetElement.value = res.title;
+                targetElement.dispatchEvent(new Event('input', { bubbles: true }));
+
+                // 2. Update Back Note Textarea
+                if (noteElement) {
+                    noteElement.value = res.note;
+                    noteElement.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+
+                // 3. Update state
+                if (state.photos && state.photos[photoIdx - 1]) {
+                    state.photos[photoIdx - 1].caption = res.title;
+                    state.photos[photoIdx - 1].note = res.note;
+                }
+
+                // 4. Update live polaroid DOM
+                const liveCard = document.querySelector(`.polaroid-card[data-index="${photoIdx}"]`);
+                if (liveCard) {
+                    const capEl = liveCard.querySelector('.polaroid-caption');
+                    const noteEl = liveCard.querySelector('.polaroid-back-note');
+                    if (capEl) capEl.textContent = res.title;
+                    if (noteEl) noteEl.textContent = res.note;
+                }
+
+                button.innerHTML = '<span>🎉 Title & Note Polished!</span>';
+                if (window.birthdayAudio) window.birthdayAudio.playChime();
+                createConfettiBurst(40, window.innerWidth / 2, window.innerHeight / 2);
+                showToast(`✨ Generated both the title & heartfelt note for Photo #${photoIdx}! 💕`);
+
+                setTimeout(() => {
+                    button.innerHTML = originalBtnHtml;
+                    button.classList.remove('loading');
+                }, 3000);
+            } catch (err) {
+                clearTimeout(safetyTimer);
+                console.error('Gemini Photo Polish Error:', err);
+                showToast('⚠️ Could not connect to AI. Please try again.');
+                button.innerHTML = originalBtnHtml;
+                button.classList.remove('loading');
+            }
+            return;
+        }
+
         if (!currentText.trim()) {
             showToast('✏️ Please type some text first so AI can polish it! ✨');
             return;
@@ -1281,6 +1357,66 @@ Happy 18th Birthday, handsome! Keep shining brighter every single day.`,
     document.querySelectorAll('.btn-ai-polish, .mini-ai-btn').forEach(btn => {
         btn.addEventListener('click', () => triggerAiPolish(btn));
     });
+
+    // Bind Copy LLM Prompt for 4 Photos
+    const copyPhotoPromptBtn = document.getElementById('btn-copy-photo-prompt');
+    if (copyPhotoPromptBtn) {
+        const PHOTO_PROMPT_TEXT = `I am designing a personalized birthday surprise website for someone special. I have attached 4 photos of them.
+
+Please examine all 4 photos and generate:
+1. A short, aesthetic front polaroid title (max 4-5 words, with cute emojis).
+2. A heartfelt, sweet 2-3 sentence memory note to write on the back of the polaroid.
+
+Please format your response strictly as follows so I can easily copy-paste each item:
+
+=== PHOTO 1 ===
+Title: [Short aesthetic title with emoji]
+Note: [Heartfelt 2-3 sentence back note]
+
+=== PHOTO 2 ===
+Title: [Short aesthetic title with emoji]
+Note: [Heartfelt 2-3 sentence back note]
+
+=== PHOTO 3 ===
+Title: [Short aesthetic title with emoji]
+Note: [Heartfelt 2-3 sentence back note]
+
+=== PHOTO 4 ===
+Title: [Short aesthetic title with emoji]
+Note: [Heartfelt 2-3 sentence back note]
+
+Keep the tone affectionate, natural, and memorable!`;
+
+        copyPhotoPromptBtn.addEventListener('click', async () => {
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(PHOTO_PROMPT_TEXT);
+                } else {
+                    const ta = document.createElement('textarea');
+                    ta.value = PHOTO_PROMPT_TEXT;
+                    ta.style.position = 'fixed';
+                    ta.style.opacity = '0';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                }
+
+                copyPhotoPromptBtn.classList.add('copied');
+                copyPhotoPromptBtn.innerHTML = '<span class="copy-icon">✅</span> <span class="btn-text">Prompt Copied!</span>';
+                if (window.birthdayAudio) window.birthdayAudio.playChime();
+                showToast('📋 AI Prompt copied! Upload your 4 photos to ChatGPT or Gemini & paste this prompt! ✨', 4500);
+
+                setTimeout(() => {
+                    copyPhotoPromptBtn.classList.remove('copied');
+                    copyPhotoPromptBtn.innerHTML = '<span class="copy-icon">📋</span> <span class="btn-text">Copy Prompt</span>';
+                }, 2800);
+            } catch (err) {
+                console.error('Clipboard copy error:', err);
+                showToast('⚠️ Could not auto-copy. Please copy manually.');
+            }
+        });
+    }
 
     // ==========================================
     // 16B. FULL PASS AUTO-GENERATION ENGINE (TITLE -> ICON + REWARD + CODE)
